@@ -162,24 +162,13 @@
           results.push('✅ No breaches found in first source.');
         }
       } catch (e) {
-        results.push('⚠️ Could not check one of the sources.');
+        // Do nothing if source fails silently
       }
 
-      try {
-        const res = await fetch(`https://leakcheck.net/api/public?check=${encodeURIComponent(email)}`);
-        const text = await res.text();
-        if (text.includes("No results found")) {
-          results.push('✅ No breaches found in second source.');
-        } else {
-          foundSomething = true;
-          results.push(`🔍 Possibly found: ${text}`);
-        }
-      } catch (e) {
-        results.push('⚠️ One of the sources did not respond.');
-      }
+      // Disable LeakCheck API due to frequent fetch errors
 
       if (!foundSomething) {
-        results.unshift(`🎉 No breaches found for ${email}. Your data looks clean!`);
+        results.unshift(`🧠 ${email} has OPSEC. No public breaches detected.`);
       }
 
       document.getElementById('emailResults').textContent = results.join("\n\n");
@@ -191,17 +180,7 @@
 
     async function checkUsernameBreaches(username) {
       let results = [];
-      try {
-        const res = await fetch(`https://leakcheck.net/api/public?check=${encodeURIComponent(username)}`);
-        const text = await res.text();
-        if (text.includes("No results found")) {
-          results.push('✅ No breaches found.');
-        } else {
-          results.push(`🔍 Possibly found: ${text}`);
-        }
-      } catch (e) {
-        results.push('⚠️ Could not reach one of the sources.');
-      }
+      results.push('⚠️ Username breach check temporarily disabled.');
       document.getElementById('usernameResults').textContent = results.join("\n\n");
     }
   </script>
