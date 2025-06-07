@@ -5,84 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Advanced Breach Checker</title>
   <style>
+    :root {
+      --bg-color: #0d1117;
+      --panel-color: #161b22;
+      --accent: #58a6ff;
+      --success: #3fb950;
+      --danger: #f85149;
+      --neutral: #8b949e;
+      --font: 'Segoe UI', sans-serif;
+    }
+
     body {
-      background-color: #0d0d0d;
-      color: #f2f2f2;
-      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-color);
+      color: white;
+      font-family: var(--font);
+      margin: 0;
+      padding: 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem;
       min-height: 100vh;
-      margin: 0;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 2.4rem;
       margin-bottom: 1rem;
+      color: var(--accent);
     }
 
     input[type="text"] {
-      width: 300px;
-      max-width: 80%;
+      width: 90%;
+      max-width: 400px;
       padding: 12px;
-      border: none;
-      border-radius: 5px;
+      margin: 8px 0;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      background-color: #0d1117;
+      color: white;
       font-size: 1rem;
-      margin-bottom: 1rem;
     }
 
     button {
-      padding: 12px 20px;
-      background-color: #1f1f1f;
-      color: #f2f2f2;
-      border: 1px solid #444;
-      border-radius: 5px;
+      background-color: var(--accent);
+      color: black;
+      padding: 12px 24px;
       font-size: 1rem;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
-      margin-bottom: 2rem;
+      margin-top: 10px;
+      transition: background-color 0.3s;
     }
 
     button:hover {
-      background-color: #333;
+      background-color: #1f6feb;
     }
 
     .result {
-      background: #1a1a1a;
-      border: 1px solid #444;
+      background: var(--panel-color);
+      border: 1px solid #30363d;
+      border-left: 5px solid var(--accent);
       padding: 1rem;
-      border-radius: 10px;
+      border-radius: 8px;
       width: 100%;
       max-width: 700px;
       font-size: 0.95rem;
       white-space: pre-wrap;
-      margin-bottom: 1rem;
-    }
-
-    .section-title {
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      color: #00ffd0;
+      margin-top: 1rem;
     }
 
     .note {
       margin-top: 2rem;
       font-size: 0.9rem;
-      color: #999;
+      color: var(--neutral);
       text-align: center;
     }
   </style>
 </head>
 <body>
-  <h1>Advanced Breach Checker</h1>
-  <input id="emailInput" type="text" placeholder="Enter email address" /><br>
-  <input id="phoneInput" type="text" placeholder="Enter phone number (optional)" /><br>
-  <input id="usernameInput" type="text" placeholder="Enter username (optional)" /><br>
-  <button onclick="checkAllBreaches()">Search</button>
+  <h1>🛡️ Advanced Breach Checker</h1>
 
-  <div id="emailResults" class="result">Email breach results will appear here...</div>
-  <div id="phoneResults" class="result">Phone breach results will appear here...</div>
-  <div id="usernameResults" class="result">Username breach results will appear here...</div>
+  <input id="emailInput" type="text" placeholder="📧 Enter email address" /><br>
+  <input id="phoneInput" type="text" placeholder="📱 Enter phone number (optional)" /><br>
+  <input id="usernameInput" type="text" placeholder="👤 Enter username (optional)" /><br>
+  <button onclick="checkAllBreaches()">🔍 Search</button>
+
+  <div id="emailResults" class="result">Results for email will appear here...</div>
+  <div id="phoneResults" class="result">Results for phone will appear here...</div>
+  <div id="usernameResults" class="result">Results for username will appear here...</div>
 
   <div class="note">Powered by public breach APIs. No data is stored or logged.</div>
 
@@ -92,14 +102,14 @@
       const phone = document.getElementById('phoneInput').value.trim();
       const username = document.getElementById('usernameInput').value.trim();
 
-      document.getElementById('emailResults').textContent = 'Searching email...';
-      document.getElementById('phoneResults').textContent = 'Searching phone...';
-      document.getElementById('usernameResults').textContent = 'Searching username...';
+      document.getElementById('emailResults').textContent = '⏳ Searching email...';
+      document.getElementById('phoneResults').textContent = '⏳ Searching phone...';
+      document.getElementById('usernameResults').textContent = '⏳ Searching username...';
 
       if (email) {
         checkEmailBreaches(email);
       } else {
-        document.getElementById('emailResults').textContent = '❌ No email entered.';
+        document.getElementById('emailResults').textContent = '⚠️ No email entered.';
       }
 
       if (phone) {
@@ -118,49 +128,47 @@
     async function checkEmailBreaches(email) {
       let results = [];
 
-      // XposedOrNot
       try {
         const res = await fetch(`https://api.xposedornot.com/v1/check-email/${encodeURIComponent(email)}`);
         const data = await res.json();
         if (data && data.breaches?.length) {
-          results.push(`🛑 XposedOrNot: Found in: ${data.breaches.map(b => b.name).join(', ')}`);
+          results.push(`❌ XposedOrNot:
+Found in: ${data.breaches.map(b => b.name).join(', ')}`);
         } else {
-          results.push('✅ XposedOrNot: No breaches found.');
+          results.push('✅ XposedOrNot:
+No breaches found.');
         }
       } catch (e) {
         results.push(`⚠️ XposedOrNot error: ${e.message}`);
       }
 
-      // LeakCheck
       try {
         const res = await fetch(`https://leakcheck.net/api/public?check=${encodeURIComponent(email)}`);
         const text = await res.text();
-        results.push(`🔍 LeakCheck: ${text}`);
+        results.push(`🔍 LeakCheck:
+${text}`);
       } catch (e) {
         results.push(`⚠️ LeakCheck error: ${e.message}`);
       }
 
-      document.getElementById('emailResults').textContent = results.join('\n\n');
+      document.getElementById('emailResults').textContent = results.join("\n\n");
     }
 
     async function checkPhoneBreaches(phone) {
-      // This is a placeholder — no public phone breach APIs without keys
       document.getElementById('phoneResults').textContent = '🔒 No public phone number API available (most require a key).';
     }
 
     async function checkUsernameBreaches(username) {
-      // LeakCheck can handle usernames
       let results = [];
-
       try {
         const res = await fetch(`https://leakcheck.net/api/public?check=${encodeURIComponent(username)}`);
         const text = await res.text();
-        results.push(`🔍 LeakCheck: ${text}`);
+        results.push(`🔍 LeakCheck:
+${text}`);
       } catch (e) {
         results.push(`⚠️ LeakCheck error: ${e.message}`);
       }
-
-      document.getElementById('usernameResults').textContent = results.join('\n\n');
+      document.getElementById('usernameResults').textContent = results.join("\n\n");
     }
   </script>
 </body>
