@@ -1,55 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CybrSearch — Breach & Leak Scanner</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<style>
-  body {
-    margin: 0; padding: 60px 0;
-    background: linear-gradient(to bottom right,#0f0f0f,#1a1a1a);
-    color: #e0e0e0; font-family: 'Segoe UI', sans-serif;
-  }
-  .container { max-width: 700px; }
-  .card {
-    background: rgba(20,20,20,0.95); border:1px solid #2c2c2c;
-    backdrop-filter: blur(12px); box-shadow:0 10px 35px rgba(0,0,0,0.6);
-    border-radius:1rem; padding:2rem;
-  }
-  .form-control {
-    background:#121212; color:#fff; border:1px solid #333;
-    border-radius:0.7rem; padding:14px; margin-bottom:1rem;
-    transition: border 0.3s, box-shadow 0.3s;
-  }
-  .form-control:focus {
-    outline:none; border-color:#2dd4bf;
-    box-shadow:0 0 0 2px #2dd4bf55; background:#181818;
-  }
-  .btn-primary {
-    background: linear-gradient(to right,#2dd4bf,#0ea5e9);
-    border:none; font-weight:bold; font-size:17px;
-    border-radius:0.6rem; padding:10px; width:100%;
-    transition: background 0.3s;
-  }
-  .btn-primary:hover {
-    background: linear-gradient(to right,#0ea5e9,#2dd4bf);
-  }
-  .result-box {
-    background:#181818; border-left:5px solid #444;
-    padding:1rem; border-radius:0.6rem; margin-top:0.8rem;
-    font-family: monospace; white-space: pre-wrap;
-  }
-  .result-box.success {border-color:#22c55e; color:#bbf7d0;}
-  .result-box.warning {border-color:#eab308; color:#fef9c3;}
-  .result-box.error {border-color:#ef4444; color:#fecaca;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CybrSearch — Free Breach Scanner</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0; padding: 60px 0;
+      background: linear-gradient(to bottom right,#0f0f0f,#1a1a1a);
+      color: #e0e0e0; font-family: 'Segoe UI', sans-serif;
+    }
+    .container { max-width: 700px; }
+    .card {
+      background: rgba(20,20,20,0.95); border:1px solid #2c2c2c;
+      backdrop-filter: blur(12px); box-shadow:0 10px 35px rgba(0,0,0,0.6);
+      border-radius:1rem; padding:2rem;
+    }
+    .form-control {
+      background:#121212; color:#fff; border:1px solid #333;
+      border-radius:0.7rem; padding:14px; margin-bottom:1rem;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+    .form-control:focus {
+      outline:none; border-color:#2dd4bf;
+      box-shadow:0 0 0 2px #2dd4bf55; background:#181818;
+    }
+    .btn-primary {
+      background: linear-gradient(to right,#2dd4bf,#0ea5e9);
+      border:none; font-weight:bold; font-size:17px;
+      border-radius:0.6rem; padding:10px; width:100%;
+      transition: background 0.3s;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(to right,#0ea5e9,#2dd4bf);
+    }
+    .result-box {
+      background:#181818; border-left:5px solid #444;
+      padding:1rem; border-radius:0.6rem; margin-top:0.8rem;
+      font-family: monospace; white-space: pre-wrap;
+    }
+    .result-box.success {border-color:#22c55e; color:#bbf7d0;}
+    .result-box.warning {border-color:#eab308; color:#fef9c3;}
+    .result-box.error {border-color:#ef4444; color:#fecaca;}
+  </style>
 </head>
 <body>
 
 <div class="container text-center">
   <div class="card">
-    <h1>🧠 CybrSearch Breach Scanner</h1>
+    <h1>🧠 CybrSearch (Free Scanner)</h1>
     <form onsubmit="return searchData();">
       <input id="email" type="email" class="form-control" placeholder="📧 Email">
       <input id="password" type="password" class="form-control" placeholder="🔒 Check Password (optional)">
@@ -61,53 +61,73 @@
 </div>
 
 <script type="module">
-  async function updateResult(msg, type = 'success') {
+  function updateResult(msg, type = 'success') {
     const box = document.createElement('div');
     box.className = `result-box ${type}`;
     box.innerText = msg;
     document.getElementById('results').appendChild(box);
   }
 
-  async function checkEmail(email) {
-    const key = 'YOUR_API_KEY_HERE'; // Replace with your HIBP API key
-    try {
-      const res = await fetch(`https://haveibeenpwned.com/api/v3/breachedaccount/${encodeURIComponent(email)}`, {
-        headers: { 'hibp-api-key': key, 'Accept': 'application/json' }
-      });
-      if(res.status === 404) {
-        updateResult(`✅ No breaches found for ${email}`, 'success');
-      } else {
-        const breaches = await res.json();
-        breaches.forEach(b => {
-          updateResult(`⚠️ ${email} found in breach: ${b.Title} (${b.BreachDate})`, 'warning');
-        });
-      }
-    } catch(e) {
-      updateResult(`❌ Email breach lookup error: ${e.message}`, 'error');
-    }
-  }
-
-  async function sha1(s) {
-    const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(s));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('').toUpperCase();
+  async function sha1(str) {
+    const buffer = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
   }
 
   async function checkPassword(password) {
     const hash = await sha1(password);
-    const prefix = hash.slice(0,5);
+    const prefix = hash.slice(0, 5);
     try {
       const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
       const text = await res.text();
       const lines = text.split('\n');
-      const found = lines.find(l => l.split(':')[0] === hash.slice(5));
-      if(found) {
-        const count = found.split(':')[1];
-        updateResult(`⚠️ Password compromised ${count} times`, 'warning');
+      const match = lines.find(line => line.split(':')[0] === hash.slice(5));
+      if (match) {
+        const count = match.split(':')[1];
+        updateResult(`⚠️ Password has appeared in ${count} breaches.`, 'warning');
       } else {
-        updateResult('✅ Password NOT found in breaches', 'success');
+        updateResult('✅ Password NOT found in known breaches.', 'success');
       }
-    } catch(e) {
-      updateResult(`❌ Password check error: ${e.message}`, 'error');
+    } catch (e) {
+      updateResult(`❌ Error checking password: ${e.message}`, 'error');
+    }
+  }
+
+  async function checkIP(ip) {
+    try {
+      const res = await fetch(`https://ipwho.is/${ip}`);
+      const data = await res.json();
+      if (!data.success) {
+        updateResult(`⚠️ IP Geo lookup failed: ${data.message || "Unknown error"}`, 'warning');
+        return;
+      }
+
+      updateResult(`🌐 IP Info:
+- IP: ${data.ip}
+- Country: ${data.country}
+- Region: ${data.region}
+- City: ${data.city}
+- ISP: ${data.connection?.isp || 'N/A'}
+- Org: ${data.connection?.org || 'N/A'}
+- ASN: ${data.connection?.asn || 'N/A'}`, 'success');
+    } catch (e) {
+      updateResult(`❌ Error fetching IP info: ${e.message}`, 'error');
+    }
+
+    try {
+      const res = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
+      const rdap = await res.json();
+
+      const org = rdap.entities?.[0]?.vcardArray?.[1]?.find(v => v[0] === 'fn')?.[3] || 'N/A';
+      const name = rdap.name || 'N/A';
+      const range = `${rdap.startAddress || 'N/A'} - ${rdap.endAddress || 'N/A'}`;
+
+      updateResult(`📄 RDAP Info:
+- Name: ${name}
+- Org: ${org}
+- Range: ${range}
+- More: https://search.arin.net/rdap/?query=${ip}`, 'success');
+    } catch (e) {
+      updateResult(`❌ Error fetching RDAP info: ${e.message}`, 'error');
     }
   }
 
@@ -115,17 +135,21 @@
     document.getElementById('results').innerHTML = '';
 
     const email = document.getElementById('email').value.trim();
-    const pwd   = document.getElementById('password').value;
-    const ip    = document.getElementById('ip').value.trim();
+    const password = document.getElementById('password').value;
+    const ip = document.getElementById('ip').value.trim();
 
-    if(!email && !pwd && !ip) {
-      alert('❗ Please enter at least an email, password, or IP.');
+    if (!email && !password && !ip) {
+      alert('❗ Enter at least one field to search.');
       return false;
     }
 
-    if(email) await checkEmail(email);
-    if(pwd) await checkPassword(pwd);
-    if(ip) updateResult(`🌐 IP lookup not yet implemented`, 'warning');
+    if (email) {
+      updateResult(`ℹ️ Email breach check is simulated. Actual API requires a key.
+Use https://haveibeenpwned.com/ to check manually.`, 'warning');
+    }
+
+    if (password) await checkPassword(password);
+    if (ip) await checkIP(ip);
 
     return false;
   }
