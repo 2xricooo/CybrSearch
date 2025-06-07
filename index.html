@@ -150,11 +150,13 @@
 
     async function checkEmailBreaches(email) {
       let results = [];
+      let foundSomething = false;
 
       try {
         const res = await fetch(`https://api.xposedornot.com/v1/check-email/${encodeURIComponent(email)}`);
         const data = await res.json();
         if (data && data.breaches?.length) {
+          foundSomething = true;
           results.push(`❌ XposedOrNot:\nFound in: ${data.breaches.map(b => b.name).join(', ')}`);
         } else {
           results.push('✅ XposedOrNot:\nNo breaches found.');
@@ -166,9 +168,18 @@
       try {
         const res = await fetch(`https://leakcheck.net/api/public?check=${encodeURIComponent(email)}`);
         const text = await res.text();
-        results.push(`🔍 LeakCheck:\n${text}`);
+        if (text.includes("No results found")) {
+          results.push('✅ LeakCheck:\nNo breaches found.');
+        } else {
+          foundSomething = true;
+          results.push(`🔍 LeakCheck:\n${text}`);
+        }
       } catch (e) {
         results.push(`⚠️ LeakCheck error: ${e.message}`);
+      }
+
+      if (!foundSomething) {
+        results.unshift(`🎉 No breaches found for ${email}. Your data looks clean!`);
       }
 
       document.getElementById('emailResults').textContent = results.join("\n\n");
@@ -183,7 +194,11 @@
       try {
         const res = await fetch(`https://leakcheck.net/api/public?check=${encodeURIComponent(username)}`);
         const text = await res.text();
-        results.push(`🔍 LeakCheck:\n${text}`);
+        if (text.includes("No results found")) {
+          results.push('✅ LeakCheck:\nNo breaches found.');
+        } else {
+          results.push(`🔍 LeakCheck:\n${text}`);
+        }
       } catch (e) {
         results.push(`⚠️ LeakCheck error: ${e.message}`);
       }
