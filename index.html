@@ -236,21 +236,46 @@
     }
 
     async function checkDiscordBreaches(discord) {
-      document.getElementById('discordResults').textContent = '🔍 Checking public breach dumps and Discord info...';
+      document.getElementById('discordResults').innerHTML = '🔍 Checking public breach dumps and Discord info...';
+
       try {
         const res = await fetch(`https://discord.com/api/v10/users/${discord}`, {
           headers: {
             Authorization: `Bot YOUR_BOT_TOKEN_HERE`
           }
         });
+
         if (res.ok) {
           const data = await res.json();
-          document.getElementById('discordResults').textContent = `✅ ${discord} is a valid Discord user.\nUsername: ${data.username}#${data.discriminator || data.global_name || ''}`;
+
+          const avatarUrl = data.avatar
+            ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`
+            : 'https://cdn.discordapp.com/embed/avatars/0.png';
+
+          const createdAt = new Date((BigInt(discord) >> 22n) + 1420070400000n);
+          const createdAtStr = createdAt.toUTCString();
+
+          document.getElementById('discordResults').innerHTML = `
+            <div style="display:flex; align-items:center; gap:16px;">
+              <img src="${avatarUrl}" alt="Avatar" width="64" height="64" style="border-radius:50%; border:2px solid #5865F2;">
+              <div>
+                <strong>${data.username}#${data.discriminator || data.global_name || ''}</strong><br>
+                ID: ${data.id}<br>
+                Created: ${createdAtStr}
+              </div>
+            </div>
+          `;
         } else {
-          document.getElementById('discordResults').textContent = `❌ ${discord} is not a valid user ID or inaccessible.`;
+          document.getElementById('discordResults').innerHTML = `
+            ❌ User not found or IP not found.<br>
+            (Note: Discord API requires bot permissions.)
+          `;
         }
       } catch (e) {
-        document.getElementById('discordResults').textContent = '⚠️ Error checking Discord ID.';
+        document.getElementById('discordResults').innerHTML = `
+          ⚠️ Error checking Discord ID.<br>
+          Possibly IP not found / API blocked.
+        `;
       }
     }
   </script>
