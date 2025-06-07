@@ -125,16 +125,16 @@
       const ip = document.getElementById("ip").value.trim();
 
       if (!email) updateResult("e", "⚠️ No email entered.", "warning");
-      else updateResult("e", `✅ Email checked (demo): ${email}", "success");
+      else updateResult("e", `✅ Email checked (demo): ${email}`, "success");
 
       if (!phone) updateResult("p", "ℹ️ Phone check skipped.", "warning");
-      else updateResult("p", `✅ Phone checked (demo): ${phone}", "success");
+      else updateResult("p", `✅ Phone checked (demo): ${phone}`, "success");
 
       if (!username) updateResult("u", "ℹ️ Username check skipped.", "warning");
-      else updateResult("u", `✅ Username checked (demo): ${username}", "success");
+      else updateResult("u", `✅ Username checked (demo): ${username}`, "success");
 
       if (!discord) updateResult("d", "ℹ️ Discord check skipped.", "warning");
-      else updateResult("d", `✅ Discord ID checked (demo): ${discord}", "success");
+      else updateResult("d", `✅ Discord ID checked (demo): ${discord}`, "success");
 
       let visitorIP = "Unknown";
       try {
@@ -155,7 +155,7 @@
             updateResult("ipgeo", `⚠️ Geo lookup failed: ${data.message}`, "warning");
           }
         } catch {
-          updateResult("ipgeo", `❌ Error fetching Geo data.`, "error");
+          updateResult("ipgeo", `❌ Error fetching Geo data.", "error");
         }
 
         try {
@@ -172,7 +172,7 @@
 
           updateResult("arin", `🌐 ARIN IP Lookup\nHandle: ${handle}\nNet Name: ${network}\nStart Address: ${startAddress}\nEnd Address: ${endAddress}\nOrg Name: ${orgName}\nOrg Address: ${address}\nMore ARIN Info: https://search.arin.net/rdap/?query=${ip}`, "success");
         } catch {
-          updateResult("arin", `❌ Error fetching ARIN RDAP info.`, "error");
+          updateResult("arin", `❌ Error fetching ARIN RDAP info.", "error");
         }
       } else {
         updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
