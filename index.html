@@ -101,6 +101,43 @@
       color: var(--neutral);
       text-align: center;
     }
+
+    .cool-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      justify-content: center;
+    }
+
+    .cool-options button {
+      background-color: #21262d;
+      color: white;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+    }
+
+    .discord-button {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      background-color: #5865F2;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .discord-button:hover {
+      background-color: #4752c4;
+    }
   </style>
 </head>
 <body>
@@ -108,16 +145,27 @@
 
   <div class="form-wrapper">
     <input id="emailInput" type="text" placeholder="📧 Enter email address" />
-    <input id="phoneInput" type="text" placeholder="📱 Enter phone number (optional)" />
-    <input id="usernameInput" type="text" placeholder="👤 Enter username (optional)" />
-    <input id="discordInput" type="text" placeholder="💬 Enter Discord ID (optional)" />
+    <input id="phoneInput" type="text" placeholder="📱 Enter phone number" />
+    <input id="usernameInput" type="text" placeholder="👤 Enter username" />
+    <input id="discordInput" type="text" placeholder="💬 Enter Discord ID" />
     <button onclick="checkAllBreaches()">🔍 Search</button>
+  </div>
+
+  <div class="cool-options">
+    <button onclick="alert('Option A coming soon!')">🧠 AI Analysis</button>
+    <button onclick="alert('Option B coming soon!')">🔐 Dark Web Scan</button>
+    <button onclick="alert('Option C coming soon!')">📁 Leak Archive</button>
+    <button onclick="alert('Option D coming soon!')">📊 Summary Report</button>
   </div>
 
   <div id="emailResults" class="result">Results for email will appear here...</div>
   <div id="phoneResults" class="result">Results for phone will appear here...</div>
   <div id="usernameResults" class="result">Results for username will appear here...</div>
   <div id="discordResults" class="result">Results for Discord ID will appear here...</div>
+
+  <a class="discord-button" href="https://discord.gg/Swatter" target="_blank">
+    <span>💬 Join our Discord</span>
+  </a>
 
   <div class="note">Powered by public breach APIs. No data is stored or logged.</div>
 
@@ -203,7 +251,6 @@
 
     async function checkDiscordBreaches(discord) {
       document.getElementById('discordResults').textContent = '🔍 Checking public breach dumps for Discord ID...';
-      // No public API for Discord breach checking. Simulating:
       setTimeout(() => {
         document.getElementById('discordResults').textContent = `✅ ${discord} not found in known public breaches.`;
       }, 1000);
