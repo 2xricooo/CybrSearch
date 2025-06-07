@@ -59,7 +59,7 @@
   <a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
   <div class="container text-center">
     <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
-    <form onsubmit="searchData(); return false;" class="card p-4">
+    <form onsubmit="return searchData();" class="card p-4">
       <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2" required>
       <input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
       <input id="username" type="text" placeholder="👤 Enter username" class="form-control mb-2">
@@ -120,8 +120,7 @@
       const discord = document.getElementById("discord").value.trim();
       const ip = document.getElementById("ip").value.trim();
 
-      if (!email) updateResult("e", "⚠️ No email entered.", "warning");
-      else updateResult("e", `✅ Email checked (demo): ${email}`, "success");
+      updateResult("e", `✅ Email checked (demo): ${email}`, "success");
 
       if (!phone) updateResult("p", "ℹ️ Phone check skipped.", "warning");
       else updateResult("p", `✅ Phone checked (demo): ${phone}`, "success");
@@ -173,6 +172,8 @@
       } else {
         updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
       }
+
+      return false; // Prevent form reload
     }
   </script>
 </body>
