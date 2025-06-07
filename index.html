@@ -1,152 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CybrSearch - Breach + Geo IP Checker</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <style>
-    body {
-      background-color: #0d1117;
-      color: #c9d1d9;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding-top: 60px;
-    }
-    .container {
-      max-width: 700px;
-    }
-    .card {
-      background-color: #161b22;
-      border: none;
-      border-radius: 1rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-    .form-control {
-      background-color: #0d1117;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
-    }
-    .btn-primary {
-      background-color: #238636;
-      border: none;
-    }
-    .result-box {
-      background-color: #1c2128;
-      border-left: 5px solid #30363d;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      margin-top: 0.5rem;
-      white-space: pre-wrap;
-    }
-    .result-box.success { border-left-color: #2ea043; }
-    .result-box.warning { border-left-color: #d29922; }
-    .result-box.error { border-left-color: #f85149; }
-    .discord-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #5865f2;
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 10px 20px;
-      font-weight: bold;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
-      z-index: 1000;
-    }
-    .discord-btn:hover {
-      background-color: #4752c4;
-    }
-  </style>
-</head>
-<body>
-  <div class="container text-center">
-    <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
-    <div class="card p-4">
-      <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2">
-      <input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
-      <input id="username" type="text" placeholder="👤 Enter username" class="form-control mb-2">
-      <input id="discord" type="text" placeholder="💬 Enter Discord ID" class="form-control mb-2">
-      <input id="ip" type="text" placeholder="🌐 Enter IP address" class="form-control mb-3">
-      <button class="btn btn-primary w-100" onclick="searchData()">Search</button>
-    </div>
+async function searchData() {
+  document.getElementById("results").innerHTML = "";
 
-    <div class="mt-5 text-start">
-      <h4>🔎 Search Results</h4>
-      <div id="results"></div>
-    </div>
-  </div>
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const username = document.getElementById("username").value.trim();
+  const discord = document.getElementById("discord").value.trim();
+  const ip = document.getElementById("ip").value.trim();
 
-  <a href="https://discord.gg/Swatter" target="_blank" class="discord-btn">💬 Join Discord</a>
+  if (!email) updateResult("e", "⚠️ No email entered.", "warning");
+  else updateResult("e", `✅ Email checked (demo): ${email}`, "success");
 
-  <script>
-    function updateResult(msg, style = 'success') {
-      const box = document.createElement("div");
-      box.className = `result-box ${style}`;
-      box.innerText = msg;
-      document.getElementById("results").appendChild(box);
-    }
+  if (!phone) updateResult("p", "ℹ️ Phone check skipped.", "warning");
+  else updateResult("p", `✅ Phone checked (demo): ${phone}`, "success");
 
-    async function searchData() {
-      document.getElementById("results").innerHTML = "";
+  if (!username) updateResult("u", "ℹ️ Username check skipped.", "warning");
+  else updateResult("u", `✅ Username checked (demo): ${username}`, "success");
 
-      const email = document.getElementById("email").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const username = document.getElementById("username").value.trim();
-      const discord = document.getElementById("discord").value.trim();
-      const ip = document.getElementById("ip").value.trim();
+  if (!discord) updateResult("d", "ℹ️ Discord check skipped.", "warning");
+  else updateResult("d", `✅ Discord ID checked (demo): ${discord}`, "success");
 
-      if (!email) updateResult("⚠️ No email entered.", "warning");
-      else updateResult(`✅ Email checked (demo): ${email}`);
-
-      if (!phone) updateResult("ℹ️ Phone check skipped.", "warning");
-      else updateResult(`✅ Phone checked (demo): ${phone}`);
-
-      if (!username) updateResult("ℹ️ Username check skipped.", "warning");
-      else updateResult(`✅ Username checked (demo): ${username}`);
-
-      if (!discord) updateResult("ℹ️ Discord check skipped.", "warning");
-      else updateResult(`✅ Discord ID checked (demo): ${discord}`);
-
-      if (ip) {
-        updateResult(`🌐 IP submitted: ${ip} (loading ARIN + Geo info...)`, "warning");
-
-        try {
-          const geoRes = await fetch(`https://ipwho.is/${ip}`);
-          const geo = await geoRes.json();
-
-          const rdapRes = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
-          const rdap = await rdapRes.json();
-
-          const lines = [];
-          lines.push(`🌐 Detected IP Info\n`);
-          lines.push(`Detected IP: ${ip}`);
-          lines.push(`Hostname: ${geo.hostname || "N/A"}`);
-          lines.push(`Country: ${geo.country || "N/A"}`);
-          lines.push(`City: ${geo.city || "N/A"}`);
-          lines.push(`Region: ${geo.region || "N/A"}`);
-          lines.push(`Timezone: ${geo.timezone?.id || "N/A"}`);
-          lines.push(`ISP: ${geo.isp || "N/A"}`);
-          lines.push(`Org: ${geo.org || "N/A"}`);
-          lines.push(`\nARIN RDAP Lookup:`);
-          lines.push(`Handle: ${rdap.handle || "N/A"}`);
-          lines.push(`Net Name: ${rdap.name || "N/A"}`);
-          lines.push(`Start Address: ${rdap.startAddress || "N/A"}`);
-          lines.push(`End Address: ${rdap.endAddress || "N/A"}`);
-          lines.push(`Org Name: ${rdap.org?.name || "N/A"}`);
-          lines.push(`Org Address: ${rdap.org?.address?.join(', ') || "N/A"}`);
-          if (rdap.links?.length) {
-            lines.push(`Link: ${rdap.links[0].href}`);
-          }
-
-          updateResult(lines.join('\n'), "success");
-        } catch (err) {
-          updateResult("❌ Error fetching ARIN or geo data.", "error");
-        }
+  if (ip) {
+    // IPWHO.IS (geo + hostname)
+    try {
+      const geo = await fetch(`https://ipwho.is/${ip}`).then(res => res.json());
+      if (geo.success) {
+        updateResult("geo", `🌐 Detected IP: ${geo.ip}
+Hostname: ${geo.connection?.domain || "N/A"}
+Country: ${geo.country}
+City: ${geo.city}
+Region: ${geo.region}
+Timezone: ${geo.timezone}
+ISP: ${geo.connection?.isp || "N/A"}
+Org: ${geo.org}`, "success");
       } else {
-        updateResult("ℹ️ IP geo-location check skipped.", "warning");
+        updateResult("geo", `⚠️ Geo lookup failed: ${geo.message}`, "warning");
       }
+    } catch {
+      updateResult("geo", "❌ Error fetching Geo data.", "error");
     }
-  </script>
-</body>
-</html>
+
+    // ARIN RDAP Lookup
+    try {
+      const rdap = await fetch(`https://rdap.arin.net/registry/ip/${ip}`).then(r => r.json());
+      const handle = rdap.handle || "N/A";
+      const name = rdap.name || "N/A";
+      const startAddress = rdap.startAddress || "N/A";
+      const endAddress = rdap.endAddress || "N/A";
+      const orgName = rdap.entities?.[0]?.vcardArray?.[1]?.find(item => item[0] === "fn")?.[3] || "N/A";
+      const orgAddress = rdap.entities?.[0]?.vcardArray?.[1]?.find(item => item[0] === "adr")?.[3]?.join(", ") || "N/A";
+
+      updateResult("arin", `🌐 ARIN Info
+Handle: ${handle}
+Net Name: ${name}
+Start Address: ${startAddress}
+End Address: ${endAddress}
+Org Name: ${orgName}
+Org Address: ${orgAddress}
+More: https://search.arin.net/rdap/?query=${ip}`, "success");
+    } catch (err) {
+      updateResult("arin", "❌ Error fetching ARIN RDAP info.", "error");
+    }
+  } else {
+    updateResult("ip", "ℹ️ IP geo-location and ARIN check skipped.", "warning");
+  }
+}
