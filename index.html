@@ -92,23 +92,23 @@
       const ip = document.getElementById("ip").value.trim();
 
       if (!email) updateResult("e", "⚠️ No email entered.", "warning");
-      else updateResult("e", `✅ Email checked (demo): ${email}", "success");
+      else updateResult("e", `✅ Email checked (demo): ${email}`, "success");
 
       if (!phone) updateResult("p", "ℹ️ Phone check skipped.", "warning");
-      else updateResult("p", `✅ Phone checked (demo): ${phone}", "success");
+      else updateResult("p", `✅ Phone checked (demo): ${phone}`, "success");
 
       if (!username) updateResult("u", "ℹ️ Username check skipped.", "warning");
-      else updateResult("u", `✅ Username checked (demo): ${username}", "success");
+      else updateResult("u", `✅ Username checked (demo): ${username}`, "success");
 
       if (!discord) updateResult("d", "ℹ️ Discord check skipped.", "warning");
-      else updateResult("d", `✅ Discord ID checked (demo): ${discord}", "success");
+      else updateResult("d", `✅ Discord ID checked (demo): ${discord}`, "success");
 
       if (ip) {
         try {
           const res = await fetch(`https://ipwho.is/${ip}`);
           const data = await res.json();
           if (data.success) {
-            updateResult("ipgeo", `🌐 Detected IP: ${ip}\nHostname: ${data.hostname || 'N/A'}\nCountry: ${data.country}\nCity: ${data.city}\nRegion: ${data.region}\nTimezone: ${data.timezone}\nISP: ${data.connection?.isp || 'N/A'}\nOrg: ${data.connection?.org || 'N/A'}\nAS: ${data.connection?.asn || 'N/A'} ${data.connection?.org || ''}`, "success");
+            updateResult("ipgeo", `🌐 Detected IP: ${ip}\nHostname: ${data.hostname || 'N/A'}\nCountry: ${data.country}\nCity: ${data.city}\nRegion: ${data.region}\nTimezone: ${data.timezone}\nISP: ${data.connection?.isp || 'N/A'}\nOrg: ${data.connection?.org || 'N/A'}\nAS: ${data.connection?.asn || 'N/A'} ${data.connection?.org || ''}`.trim(), "success");
           } else {
             updateResult("ipgeo", `⚠️ Geo lookup failed: ${data.message}`, "warning");
           }
@@ -116,17 +116,17 @@
           updateResult("ipgeo", `❌ Error fetching Geo data.`, "error");
         }
 
-        // ARIN RDAP lookup
         try {
           const rdapRes = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
           const rdap = await rdapRes.json();
-          const network = rdap.name || 'N/A';
+
           const handle = rdap.handle || 'N/A';
+          const network = rdap.name || 'N/A';
           const startAddress = rdap.startAddress || 'N/A';
           const endAddress = rdap.endAddress || 'N/A';
           const orgName = rdap.entities?.[0]?.vcardArray?.[1]?.find(x => x[0] === 'fn')?.[3] || 'N/A';
           const addressParts = rdap.entities?.[0]?.vcardArray?.[1]?.find(x => x[0] === 'adr')?.[3] || [];
-          const address = addressParts.filter(Boolean).join(', ');
+          const address = addressParts?.filter(Boolean).join(', ') || 'N/A';
 
           updateResult("arin", `🌐 ARIN IP Lookup\nHandle: ${handle}\nNet Name: ${network}\nStart Address: ${startAddress}\nEnd Address: ${endAddress}\nOrg Name: ${orgName}\nOrg Address: ${address}\nMore ARIN Info: https://search.arin.net/rdap/?query=${ip}`, "success");
         } catch (err) {
