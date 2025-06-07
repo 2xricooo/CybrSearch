@@ -36,29 +36,30 @@
       padding: 1rem;
       border-radius: 0.5rem;
       margin-top: 0.5rem;
-      white-space: pre-line;
+      white-space: pre-wrap;
     }
     .result-box.success { border-left-color: #2ea043; }
     .result-box.warning { border-left-color: #d29922; }
     .result-box.error { border-left-color: #f85149; }
-    .discord-button {
+    .discord-btn {
       position: fixed;
-      top: 20px;
+      bottom: 20px;
       right: 20px;
-      background-color: #5865F2;
+      background-color: #5865f2;
       color: white;
       border: none;
-      border-radius: 30px;
+      border-radius: 50px;
       padding: 10px 20px;
       font-weight: bold;
-      text-decoration: none;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
       z-index: 1000;
+    }
+    .discord-btn:hover {
+      background-color: #4752c4;
     }
   </style>
 </head>
 <body>
-  <a href="https://discord.gg/Swatter" class="discord-button" target="_blank">Join Discord</a>
-
   <div class="container text-center">
     <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
     <div class="card p-4">
@@ -76,32 +77,14 @@
     </div>
   </div>
 
+  <a href="https://discord.gg/Swatter" target="_blank" class="discord-btn">💬 Join Discord</a>
+
   <script>
-    function updateResult(type, msg, style) {
+    function updateResult(msg, style = 'success') {
       const box = document.createElement("div");
       box.className = `result-box ${style}`;
       box.innerText = msg;
       document.getElementById("results").appendChild(box);
-    }
-
-    async function lookupIP(ip) {
-      try {
-        const res = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
-        const data = await res.json();
-
-        const network = data.name || "Unknown";
-        const orgName = data.entities?.[0]?.vcardArray?.[1]?.find(i => i[0] === "fn")?.[3] || "Unknown";
-        const handle = data.handle || "N/A";
-        const startAddress = data.startAddress || "N/A";
-        const endAddress = data.endAddress || "N/A";
-        const addressObj = data.entities?.[0]?.vcardArray?.[1]?.find(i => i[0] === "adr");
-        const address = addressObj ? addressObj[1].slice(2).filter(Boolean).join(", ") : "N/A";
-
-        updateResult("ip", `📡 Detected IP: ${ip}\n🏢 Hostname: (lookup in progress)\nCountry: (lookup not included)\n\n🧭 Network: ${network}\nOrg Name: ${orgName}\nHandle: ${handle}\nStart: ${startAddress}\nEnd: ${endAddress}\nAddress: ${address}\n🔗 More Info: https://rdap.arin.net/registry/ip/${ip}` , "success");
-
-      } catch (err) {
-        updateResult("ip", `❌ Error fetching ARIN RDAP info for ${ip}`, "error");
-      }
     }
 
     async function searchData() {
@@ -113,22 +96,55 @@
       const discord = document.getElementById("discord").value.trim();
       const ip = document.getElementById("ip").value.trim();
 
-      if (!email) updateResult("e", "⚠️ No email entered.", "warning");
-      else updateResult("e", `✅ Email checked (demo): ${email}`, "success");
+      if (!email) updateResult("⚠️ No email entered.", "warning");
+      else updateResult(`✅ Email checked (demo): ${email}`);
 
-      if (!phone) updateResult("p", "ℹ️ Phone check skipped.", "warning");
-      else updateResult("p", `✅ Phone checked (demo): ${phone}`, "success");
+      if (!phone) updateResult("ℹ️ Phone check skipped.", "warning");
+      else updateResult(`✅ Phone checked (demo): ${phone}`);
 
-      if (!username) updateResult("u", "ℹ️ Username check skipped.", "warning");
-      else updateResult("u", `✅ Username checked (demo): ${username}`, "success");
+      if (!username) updateResult("ℹ️ Username check skipped.", "warning");
+      else updateResult(`✅ Username checked (demo): ${username}`);
 
-      if (!discord) updateResult("d", "ℹ️ Discord check skipped.", "warning");
-      else updateResult("d", `✅ Discord ID checked (demo): ${discord}`, "success");
+      if (!discord) updateResult("ℹ️ Discord check skipped.", "warning");
+      else updateResult(`✅ Discord ID checked (demo): ${discord}`);
 
       if (ip) {
-        await lookupIP(ip);
+        updateResult(`🌐 IP submitted: ${ip} (loading ARIN + Geo info...)`, "warning");
+
+        try {
+          const geoRes = await fetch(`https://ipwho.is/${ip}`);
+          const geo = await geoRes.json();
+
+          const rdapRes = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
+          const rdap = await rdapRes.json();
+
+          const lines = [];
+          lines.push(`🌐 Detected IP Info\n`);
+          lines.push(`Detected IP: ${ip}`);
+          lines.push(`Hostname: ${geo.hostname || "N/A"}`);
+          lines.push(`Country: ${geo.country || "N/A"}`);
+          lines.push(`City: ${geo.city || "N/A"}`);
+          lines.push(`Region: ${geo.region || "N/A"}`);
+          lines.push(`Timezone: ${geo.timezone?.id || "N/A"}`);
+          lines.push(`ISP: ${geo.isp || "N/A"}`);
+          lines.push(`Org: ${geo.org || "N/A"}`);
+          lines.push(`\nARIN RDAP Lookup:`);
+          lines.push(`Handle: ${rdap.handle || "N/A"}`);
+          lines.push(`Net Name: ${rdap.name || "N/A"}`);
+          lines.push(`Start Address: ${rdap.startAddress || "N/A"}`);
+          lines.push(`End Address: ${rdap.endAddress || "N/A"}`);
+          lines.push(`Org Name: ${rdap.org?.name || "N/A"}`);
+          lines.push(`Org Address: ${rdap.org?.address?.join(', ') || "N/A"}`);
+          if (rdap.links?.length) {
+            lines.push(`Link: ${rdap.links[0].href}`);
+          }
+
+          updateResult(lines.join('\n'), "success");
+        } catch (err) {
+          updateResult("❌ Error fetching ARIN or geo data.", "error");
+        }
       } else {
-        updateResult("l", "ℹ️ IP geo-location check skipped.", "warning");
+        updateResult("ℹ️ IP geo-location check skipped.", "warning");
       }
     }
   </script>
