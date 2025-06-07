@@ -32,29 +32,29 @@
     }
 
     h1 {
-      font-size: 2.8rem;
-      margin-bottom: 1.5rem;
+      font-size: 3rem;
+      margin-bottom: 2rem;
       color: var(--accent);
-      text-shadow: 0 2px 8px rgba(88, 166, 255, 0.3);
+      text-shadow: 0 4px 12px rgba(88, 166, 255, 0.4);
     }
 
     .form-wrapper {
       background-color: var(--panel-color);
       padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
       width: 100%;
-      max-width: 500px;
+      max-width: 600px;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.25rem;
       margin-bottom: 2rem;
     }
 
     input[type="text"] {
       padding: 14px;
       border: 1px solid #30363d;
-      border-radius: 8px;
+      border-radius: 10px;
       background-color: #0d1117;
       color: white;
       font-size: 1rem;
@@ -70,9 +70,9 @@
       background-color: var(--accent);
       color: black;
       padding: 14px;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       transition: background-color 0.3s;
     }
@@ -84,7 +84,7 @@
     .result-section {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.25rem;
       width: 100%;
       max-width: 800px;
     }
@@ -92,12 +92,12 @@
     .result {
       background: var(--panel-color);
       border: 1px solid #30363d;
-      border-left: 5px solid var(--accent);
+      border-left: 6px solid var(--accent);
       padding: 1rem;
-      border-radius: 10px;
-      font-size: 0.95rem;
+      border-radius: 12px;
+      font-size: 1rem;
       white-space: pre-wrap;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      box-shadow: 0 0 14px rgba(0,0,0,0.3);
     }
 
     .note {
@@ -107,43 +107,27 @@
       text-align: center;
     }
 
-    .cool-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1.5rem;
-      justify-content: center;
-    }
-
-    .cool-options button {
-      background-color: #21262d;
-      color: white;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      padding: 8px 12px;
-      font-size: 0.95rem;
-    }
-
     .discord-button {
       margin-top: 3rem;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       background-color: #5865F2;
       color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
+      padding: 14px 24px;
+      border-radius: 10px;
       text-decoration: none;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 600;
       transition: background-color 0.3s ease;
     }
 
     .discord-button img {
-      height: 24px;
-      background: white;
+      height: 36px;
+      width: 36px;
+      object-fit: cover;
       border-radius: 50%;
-      padding: 2px;
+      background: white;
     }
 
     .discord-button:hover {
@@ -162,13 +146,6 @@
     <button onclick="checkAllBreaches()">🔍 Search</button>
   </div>
 
-  <div class="cool-options">
-    <button onclick="alert('Option A coming soon!')">🧐 AI Analysis</button>
-    <button onclick="alert('Option B coming soon!')">🔐 Dark Web Scan</button>
-    <button onclick="alert('Option C coming soon!')">📁 Leak Archive</button>
-    <button onclick="alert('Option D coming soon!')">📊 Summary Report</button>
-  </div>
-
   <div class="result-section">
     <div id="emailResults" class="result">Results for email will appear here...</div>
     <div id="phoneResults" class="result">Results for phone will appear here...</div>
@@ -177,7 +154,7 @@
   </div>
 
   <a class="discord-button" href="https://discord.gg/Swatter" target="_blank">
-    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/discordjs/discordjs-original.svg" alt="Discord Logo">
+    <img src="2c415fc0-8ead-4f55-bbbe-8f9912e8b5ba.png" alt="Discord Logo">
     Join our Discord
   </a>
 
