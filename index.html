@@ -157,25 +157,25 @@
         const data = await res.json();
         if (data && data.breaches?.length) {
           foundSomething = true;
-          results.push(`❌ XposedOrNot:\nFound in: ${data.breaches.map(b => b.name).join(', ')}`);
+          results.push(`❌ Found in: ${data.breaches.map(b => b.name).join(', ')}`);
         } else {
-          results.push('✅ XposedOrNot:\nNo breaches found.');
+          results.push('✅ No breaches found in first source.');
         }
       } catch (e) {
-        results.push(`⚠️ XposedOrNot error: ${e.message}`);
+        results.push('⚠️ Could not check one of the sources.');
       }
 
       try {
         const res = await fetch(`https://leakcheck.net/api/public?check=${encodeURIComponent(email)}`);
         const text = await res.text();
         if (text.includes("No results found")) {
-          results.push('✅ LeakCheck:\nNo breaches found.');
+          results.push('✅ No breaches found in second source.');
         } else {
           foundSomething = true;
-          results.push(`🔍 LeakCheck:\n${text}`);
+          results.push(`🔍 Possibly found: ${text}`);
         }
       } catch (e) {
-        results.push(`⚠️ LeakCheck error: ${e.message}`);
+        results.push('⚠️ One of the sources did not respond.');
       }
 
       if (!foundSomething) {
@@ -195,12 +195,12 @@
         const res = await fetch(`https://leakcheck.net/api/public?check=${encodeURIComponent(username)}`);
         const text = await res.text();
         if (text.includes("No results found")) {
-          results.push('✅ LeakCheck:\nNo breaches found.');
+          results.push('✅ No breaches found.');
         } else {
-          results.push(`🔍 LeakCheck:\n${text}`);
+          results.push(`🔍 Possibly found: ${text}`);
         }
       } catch (e) {
-        results.push(`⚠️ LeakCheck error: ${e.message}`);
+        results.push('⚠️ Could not reach one of the sources.');
       }
       document.getElementById('usernameResults').textContent = results.join("\n\n");
     }
