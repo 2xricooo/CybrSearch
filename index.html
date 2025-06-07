@@ -36,30 +36,29 @@
       padding: 1rem;
       border-radius: 0.5rem;
       margin-top: 0.5rem;
+      white-space: pre-line;
     }
     .result-box.success { border-left-color: #2ea043; }
     .result-box.warning { border-left-color: #d29922; }
     .result-box.error { border-left-color: #f85149; }
-
-    #discord-btn {
+    .discord-button {
       position: fixed;
-      bottom: 20px;
+      top: 20px;
       right: 20px;
       background-color: #5865F2;
-      border: none;
       color: white;
-      border-radius: 50px;
+      border: none;
+      border-radius: 30px;
       padding: 10px 20px;
       font-weight: bold;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
       text-decoration: none;
-    }
-    #discord-btn:hover {
-      background-color: #4752c4;
+      z-index: 1000;
     }
   </style>
 </head>
 <body>
+  <a href="https://discord.gg/Swatter" class="discord-button" target="_blank">Join Discord</a>
+
   <div class="container text-center">
     <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
     <div class="card p-4">
@@ -77,31 +76,32 @@
     </div>
   </div>
 
-  <!-- Discord Button -->
-  <a id="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
-
-  <!-- Modal -->
-  <div class="modal fade" id="ipModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content bg-dark text-light">
-        <div class="modal-header border-secondary">
-          <h5 class="modal-title">🌐 ARIN IP Lookup</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body" id="ipModalBody">
-          Loading ARIN data...
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     function updateResult(type, msg, style) {
       const box = document.createElement("div");
       box.className = `result-box ${style}`;
       box.innerText = msg;
       document.getElementById("results").appendChild(box);
+    }
+
+    async function lookupIP(ip) {
+      try {
+        const res = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
+        const data = await res.json();
+
+        const network = data.name || "Unknown";
+        const orgName = data.entities?.[0]?.vcardArray?.[1]?.find(i => i[0] === "fn")?.[3] || "Unknown";
+        const handle = data.handle || "N/A";
+        const startAddress = data.startAddress || "N/A";
+        const endAddress = data.endAddress || "N/A";
+        const addressObj = data.entities?.[0]?.vcardArray?.[1]?.find(i => i[0] === "adr");
+        const address = addressObj ? addressObj[1].slice(2).filter(Boolean).join(", ") : "N/A";
+
+        updateResult("ip", `📡 Detected IP: ${ip}\n🏢 Hostname: (lookup in progress)\nCountry: (lookup not included)\n\n🧭 Network: ${network}\nOrg Name: ${orgName}\nHandle: ${handle}\nStart: ${startAddress}\nEnd: ${endAddress}\nAddress: ${address}\n🔗 More Info: https://rdap.arin.net/registry/ip/${ip}` , "success");
+
+      } catch (err) {
+        updateResult("ip", `❌ Error fetching ARIN RDAP info for ${ip}`, "error");
+      }
     }
 
     async function searchData() {
@@ -126,37 +126,7 @@
       else updateResult("d", `✅ Discord ID checked (demo): ${discord}`, "success");
 
       if (ip) {
-        updateResult("l", `🌐 IP submitted: ${ip} (loading ARIN info...)`, "warning");
-
-        try {
-          const res = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
-          const data = await res.json();
-
-          const name = data.name || "Unknown";
-          const handle = data.handle || "N/A";
-          const start = data.startAddress || "N/A";
-          const end = data.endAddress || "N/A";
-          const org = data.entities?.[0]?.vcardArray?.[1]?.find(v => v[0] === "fn")?.[3] || "N/A";
-          const addressObj = data.entities?.[0]?.vcardArray?.[1]?.find(v => v[0] === "adr");
-          const address = addressObj ? addressObj[3].slice(2).join(', ') : "N/A";
-          const link = data.links?.[0] || `https://arin.net`;
-
-          const modalHtml = `
-            <p><strong>Handle:</strong> ${handle}</p>
-            <p><strong>Net Name:</strong> ${name}</p>
-            <p><strong>Start Address:</strong> ${start}</p>
-            <p><strong>End Address:</strong> ${end}</p>
-            <p><strong>Org Name:</strong> ${org}</p>
-            <p><strong>Org Address:</strong> ${address}</p>
-            <p><a href="${link}" target="_blank">More ARIN Info</a></p>
-          `;
-
-          document.getElementById("ipModalBody").innerHTML = modalHtml;
-          const ipModal = new bootstrap.Modal(document.getElementById("ipModal"));
-          ipModal.show();
-        } catch (err) {
-          updateResult("l", `❌ Error fetching ARIN data.`, "error");
-        }
+        await lookupIP(ip);
       } else {
         updateResult("l", "ℹ️ IP geo-location check skipped.", "warning");
       }
