@@ -81,17 +81,22 @@
       background-color: #1f6feb;
     }
 
+    .result-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 800px;
+    }
+
     .result {
       background: var(--panel-color);
       border: 1px solid #30363d;
       border-left: 5px solid var(--accent);
       padding: 1rem;
       border-radius: 10px;
-      width: 100%;
-      max-width: 800px;
       font-size: 0.95rem;
       white-space: pre-wrap;
-      margin-top: 1rem;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
@@ -120,19 +125,22 @@
     }
 
     .discord-button {
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      background-color: #5865F2;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 24px;
-      cursor: pointer;
-      display: flex;
+      margin-top: 3rem;
+      display: inline-flex;
       align-items: center;
       gap: 10px;
+      background-color: #5865F2;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
       text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
       transition: background-color 0.3s ease;
+    }
+
+    .discord-button img {
+      height: 20px;
     }
 
     .discord-button:hover {
@@ -158,13 +166,16 @@
     <button onclick="alert('Option D coming soon!')">📊 Summary Report</button>
   </div>
 
-  <div id="emailResults" class="result">Results for email will appear here...</div>
-  <div id="phoneResults" class="result">Results for phone will appear here...</div>
-  <div id="usernameResults" class="result">Results for username will appear here...</div>
-  <div id="discordResults" class="result">Results for Discord ID will appear here...</div>
+  <div class="result-section">
+    <div id="emailResults" class="result">Results for email will appear here...</div>
+    <div id="phoneResults" class="result">Results for phone will appear here...</div>
+    <div id="usernameResults" class="result">Results for username will appear here...</div>
+    <div id="discordResults" class="result">Results for Discord ID will appear here...</div>
+  </div>
 
   <a class="discord-button" href="https://discord.gg/Swatter" target="_blank">
-    <span>💬 Join our Discord</span>
+    <img src="https://cdn.jsdelivr.net/gh/encharm/Font-Awesome-SVG-PNG/black/png/256/discord.png" alt="Discord Logo">
+    Join our Discord
   </a>
 
   <div class="note">Powered by public breach APIs. No data is stored or logged.</div>
@@ -250,10 +261,22 @@
     }
 
     async function checkDiscordBreaches(discord) {
-      document.getElementById('discordResults').textContent = '🔍 Checking public breach dumps for Discord ID...';
-      setTimeout(() => {
-        document.getElementById('discordResults').textContent = `✅ ${discord} not found in known public breaches.`;
-      }, 1000);
+      document.getElementById('discordResults').textContent = '🔍 Checking public breach dumps and Discord info...';
+      try {
+        const res = await fetch(`https://discord.com/api/v10/users/${discord}`, {
+          headers: {
+            Authorization: `Bot YOUR_BOT_TOKEN_HERE`
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('discordResults').textContent = `✅ ${discord} is a valid Discord user.\nUsername: ${data.username}#${data.discriminator || data.global_name || ''}`;
+        } else {
+          document.getElementById('discordResults').textContent = `❌ ${discord} is not a valid user ID or inaccessible.`;
+        }
+      } catch (e) {
+        document.getElementById('discordResults').textContent = '⚠️ Error checking Discord ID.';
+      }
     }
   </script>
 </body>
