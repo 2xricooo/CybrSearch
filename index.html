@@ -153,13 +153,10 @@
     <span style="margin-left: 8px;">Join our Discord</span>
   </a>
 
-  <div class="note">Powered by public breach APIs. No data is stored or logged without your consent.</div>
+  <div class="note">Powered by public breach APIs.</div>
 
   <script>
     async function checkAllBreaches() {
-      const confirmed = confirm("🔒 This tool will log your inputs (email, phone, etc.) and your IP address for moderation and audit purposes.\n\nDo you consent to continue?");
-      if (!confirmed) return;
-
       const email = document.getElementById('emailInput').value.trim();
       const phone = document.getElementById('phoneInput').value.trim();
       const username = document.getElementById('usernameInput').value.trim();
