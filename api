@@ -1,0 +1,25 @@
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Only POST requests allowed' });
+  }
+
+  const { message, data } = req.body;
+
+  const payload = {
+    username: "CybrSearch Logger",
+    content: `**Log:** ${message}\n\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``
+  };
+
+  const response = await fetch('https://discord.com/api/webhooks/1383184501991018701/Zm4iwRSIN4mD5riPaoNPK6UaBa5fc7IlWLDvbUvLooJmkhvSGWO0J1wFdcRS5FuqIMBt', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (response.ok) {
+    return res.status(200).json({ ok: true });
+  } else {
+    return res.status(response.status).json({ error: 'Failed to send log' });
+  }
+}
