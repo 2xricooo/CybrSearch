@@ -1140,5 +1140,36 @@ function enterSite(u){
   renderBanned();
   renderAdminStats();
 }
-</script></body>
+</script>
+<script>
+function showError(msg) {
+  document.getElementById("authError").textContent = msg;
+}
+
+function validCredentials(u, p) {
+  if (u.length < 3 || p.length < 3) {
+    showError("Username & password must be at least 3 characters.");
+    return false;
+  }
+  return true;
+}
+
+function login() {
+  const u = document.getElementById("authUsername").value.trim();
+  const p = document.getElementById("authPassword").value.trim();
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+
+  if (!validCredentials(u, p)) return;
+  if (!users[u]) { showError("User not found."); return; }
+  if (banned.includes(u)) { showError("You are banned."); return; }
+  if (users[u] !== p) { showError("Incorrect password."); return; }
+
+  localStorage.setItem("loggedInUser", u);
+  enterSite(u);
+  logToDiscord("Login", `User **${u}** logged in.`);
+}
+</script>
+
+</body>
 </html>
