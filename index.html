@@ -577,6 +577,14 @@
 <p class="text-muted">This panel will show live stats, user counts, top countries, and more.</p>
 <p><strong>Coming soon.</strong></p>
 </div>
+
+<hr/>
+<h5>Manage Users</h5>
+<div class="input-group mb-2">
+<input class="form-control" id="banUserInput" placeholder="Username to ban"/>
+<button class="btn btn-danger" onclick="banUser()">Ban</button>
+</div>
+<div id="bannedList" style="color:#f87171;font-size:0.9rem;"></div>
 </div>
 <div class="tab-pane fade" id="emailintel" role="tabpanel">
 <div class="card p-4 mb-4">
@@ -1752,7 +1760,6 @@ async function sendLogToDiscord(title, fields) {
 window.addEventListener("DOMContentLoaded", renderLiveFeed);
 </script>
 
-<div id="covertTrigger" style="position:fixed;top:2px;right:2px;width:10px;height:10px;z-index:9999;cursor:pointer;"></div>
 <script>
 document.getElementById("covertTrigger").addEventListener("click", toggleAdminTab);
 document.addEventListener("keydown", function(e) {
@@ -1766,7 +1773,6 @@ function toggleAdminTab() {
   }
 }
 </script>
-
 <div id="panicBtn" style="position:fixed;bottom:20px;right:80px;z-index:9999;">
 <button onclick="panicClear()" style="background:#7f1d1d;color:white;border:none;padding:10px 14px;border-radius:6px;font-weight:bold;">
     🔇 Panic
@@ -1778,6 +1784,95 @@ function panicClear() {
   document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#f9fafb;"><h1 style="color:#111;font-size:24px;">Welcome to Weather Tracker 🌤️</h1></div>';
   history.pushState(null, "", "/weather");
 }
+</script>
+
+<div id="authOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;">
+<div style="background:#1e293b;padding:20px;border-radius:10px;width:300px;">
+<h3 style="color:white;margin-bottom:10px;">Login or Signup</h3>
+<input class="form-control mb-2" id="authUsername" placeholder="Username"/>
+<input class="form-control mb-3" id="authPassword" placeholder="Password" type="password"/>
+<button class="btn btn-success w-100 mb-2" onclick="login()">Login</button>
+<button class="btn btn-secondary w-100" onclick="signup()">Signup</button>
+<div id="authError" style="color:red;margin-top:10px;"></div>
+</div>
+</div>
+
+<script>
+function login() {
+  const u = document.getElementById("authUsername").value.trim();
+  const p = document.getElementById("authPassword").value.trim();
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+
+  if (banned.includes(u)) {
+    document.getElementById("authError").textContent = "You are banned.";
+    return;
+  }
+
+  if (users[u] && users[u] === p) {
+    localStorage.setItem("loggedInUser", u);
+    document.getElementById("authOverlay").style.display = "none";
+    if (u === "admin") {
+      const adminTab = document.getElementById("admin-tab");
+      if (adminTab) adminTab.style.display = "block";
+    }
+  } else {
+    document.getElementById("authError").textContent = "Invalid credentials.";
+  }
+}
+
+function signup() {
+  const u = document.getElementById("authUsername").value.trim();
+  const p = document.getElementById("authPassword").value.trim();
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+
+  if (banned.includes(u)) {
+    document.getElementById("authError").textContent = "You are banned.";
+    return;
+  }
+
+  if (users[u]) {
+    document.getElementById("authError").textContent = "Username already taken.";
+    return;
+  }
+
+  users[u] = p;
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("loggedInUser", u);
+  document.getElementById("authOverlay").style.display = "none";
+}
+
+function banUser() {
+  const input = document.getElementById("banUserInput").value.trim();
+  if (!input) return;
+  const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+  if (!banned.includes(input)) {
+    banned.push(input);
+    localStorage.setItem("banned", JSON.stringify(banned));
+  }
+  renderBanned();
+}
+
+function renderBanned() {
+  const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+  const output = banned.map(u => `<div>🚫 ${u}</div>`).join("");
+  document.getElementById("bannedList").innerHTML = output;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const u = localStorage.getItem("loggedInUser");
+  if (!u) {
+    document.getElementById("authOverlay").style.display = "flex";
+  } else {
+    document.getElementById("authOverlay").style.display = "none";
+    if (u === "admin") {
+      const adminTab = document.getElementById("admin-tab");
+      if (adminTab) adminTab.style.display = "block";
+    }
+    renderBanned();
+  }
+});
 </script>
 </body>
 </html>
