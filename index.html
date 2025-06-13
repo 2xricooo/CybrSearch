@@ -1203,3 +1203,47 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const breachForm = document.getElementById("breachForm");
+  if (breachForm) {
+    breachForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("breachEmail").value;
+      const phone = document.getElementById("breachPhone").value;
+      const user = document.getElementById("breachUsername").value;
+      const discord = document.getElementById("breachDiscord").value;
+
+      let result = "<div class='card p-3 mb-3'><h5 class='text-danger'>🚨 Fake Breach Found!</h5>";
+      result += "<p><strong>Email:</strong> " + email + "</p>";
+      result += "<p><strong>Phone:</strong> " + phone + "</p>";
+      result += "<p><strong>Username:</strong> " + user + "</p>";
+      result += "<p><strong>Discord:</strong> " + discord + "</p>";
+      result += "<p class='text-muted'>This data appears in 3 simulated breach incidents.</p></div>";
+
+      document.getElementById("breachResults").innerHTML = result;
+      logToDiscord("Fake Breach Scan", `Searched: ${email || phone || user || discord}`);
+    });
+  }
+
+  const whoisForm = document.getElementById("whoisForm");
+  if (whoisForm) {
+    whoisForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const ip = document.getElementById("whoisIp").value.trim();
+      const result = `
+        <div class="card p-3">
+          <h5 class="text-success">Simulated WHOIS Data</h5>
+          <p><strong>IP:</strong> ${ip}</p>
+          <p><strong>Org:</strong> FakeNet Inc.</p>
+          <p><strong>Country:</strong> US</p>
+        </div>`;
+      document.getElementById("whoisResults").innerHTML = result;
+      logToDiscord("IP Lookup", `IP searched: ${ip}`);
+    });
+  }
+});
+</script>
+
+</body>
