@@ -567,11 +567,7 @@
 <hr/>
 <h5>Manage Users</h5>
 <div class="input-group mb-2">
-
-
 </div>
-
-
 <hr/>
 <div style="background:#1e293b;padding:20px;border-radius:12px;">
 <h4 style="margin-bottom:10px;">🛠 Admin Controls</h4>
@@ -1798,7 +1794,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
-
 <div id="authButtonsWrapper" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;gap:10px;"><div id="panicBtn" style="position:fixed;bottom:20px;right:80px;z-index:9999;">
 <button onclick="panicClear()" style="background:#7f1d1d;color:white;border:none;padding:10px 14px;border-radius:6px;font-weight:bold;">
     🔇 Panic
@@ -1833,6 +1828,106 @@ function renderBanned() {
   const list = document.getElementById("bannedList");
   if (list) list.innerHTML = html;
 }
+</script>
+
+<script>
+function showError(msg) {
+  const err = document.getElementById("authError");
+  if (err) err.textContent = msg;
+}
+
+function validCredentials(u, p) {
+  if (!u || !p) {
+    showError("Username and password cannot be empty.");
+    return false;
+  }
+  if (u.length < 3 || p.length < 6) {
+    showError("Username ≥3 characters, password ≥6.");
+    return false;
+  }
+  if (/[^a-zA-Z0-9]/.test(u)) {
+    showError("Username must be alphanumeric.");
+    return false;
+  }
+  return true;
+}
+
+function login() {
+  const u = document.getElementById("authUsername").value.trim();
+  const p = document.getElementById("authPassword").value.trim();
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+
+  if (!validCredentials(u, p)) return;
+  if (banned.includes(u)) {
+    showError("You are banned.");
+    return;
+  }
+
+  if (users[u] && users[u] === p) {
+    localStorage.setItem("loggedInUser", u);
+    enterSite(u);
+  } else {
+    showError("Invalid credentials.");
+  }
+}
+
+function signup() {
+  const u = document.getElementById("authUsername").value.trim();
+  const p = document.getElementById("authPassword").value.trim();
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+
+  if (!validCredentials(u, p)) return;
+  if (banned.includes(u)) {
+    showError("You are banned.");
+    return;
+  }
+
+  if (users[u]) {
+    showError("Username already taken.");
+    return;
+  }
+
+  users[u] = p;
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("loggedInUser", u);
+  enterSite(u);
+}
+
+function logout() {
+  localStorage.removeItem("loggedInUser");
+  document.getElementById("authOverlay").style.display = "flex";
+  document.getElementById("logoutBtn").style.display = "none";
+  const adminTab = document.getElementById("admin-tab");
+  if (adminTab) adminTab.style.display = "none";
+}
+
+function enterSite(u) {
+  document.getElementById("authOverlay").style.display = "none";
+  document.getElementById("logoutBtn").style.display = "block";
+  if (u === "sysadmin") {
+    const adminTab = document.getElementById("admin-tab");
+    if (adminTab) adminTab.style.display = "block";
+  }
+  renderBanned();
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  if (!users["sysadmin"]) {
+    users["sysadmin"] = "!Admin420!";
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+
+  const u = localStorage.getItem("loggedInUser");
+  if (u) {
+    enterSite(u);
+  } else {
+    const overlay = document.getElementById("authOverlay");
+    if (overlay) overlay.style.display = "flex";
+  }
+});
 </script>
 </body>
 </html>
