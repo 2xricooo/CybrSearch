@@ -340,6 +340,13 @@
   background-color: #166534 !important;
   border-color: #22c55e !important;
 }
+
+#liveFeedContainer {
+  color: #ffffff !important;
+}
+#liveFeedContainer .text-muted {
+  color: #bbbbbb !important;
+}
 </style>
 </head>
 <body>
@@ -434,7 +441,6 @@
 <i class="fas fa-book me-2"></i>Incident Logbook
           </button>
 </li>
-
 <li class="nav-item" role="presentation">
 <button class="nav-link" data-bs-target="#feed" data-bs-toggle="tab" id="feed-tab" role="tab" type="button">
 <i class="fas fa-rss me-2"></i>Live Feed
@@ -668,7 +674,6 @@
 <div class="mt-4" id="incidentLog"></div>
 </div>
 </div>
-
 <div class="tab-pane fade" id="feed" role="tabpanel">
 <div class="card p-4 mb-4">
 <h4 class="mb-3"><i class="fas fa-rss me-2"></i> Live Activity Feed</h4>
@@ -731,7 +736,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
 <script>
     // Discord Webhook URL
-    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1382971774299410532/rnLBAzl7H5ILvU_x3QBggpLJ9E745uC2iqGrTGzft5A5H9XZQiOxWHDFL9PRRxDhahIR';
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1382984425444212756/MjH6CdWPbSRp3QAT3NmZfde8O9zm3CjE_MA8NsCplskPGEW8qtlrW4WfPnyD8nkj2gRK';
     
     // Sample breach data
     const breachDatabase = [
@@ -1585,7 +1590,7 @@ function searchUsernameOSINT(e) {
 window.addEventListener("DOMContentLoaded", renderIncidentLog);
 </script>
 <script>
-const WEBHOOK = "https://discord.com/api/webhooks/1382971774299410532/rnLBAzl7H5ILvU_x3QBggpLJ9E745uC2iqGrTGzft5A5H9XZQiOxWHDFL9PRRxDhahIR";
+const WEBHOOK = "https://discord.com/api/webhooks/1382984425444212756/MjH6CdWPbSRp3QAT3NmZfde8O9zm3CjE_MA8NsCplskPGEW8qtlrW4WfPnyD8nkj2gRK";
 
 async function sendLogToDiscord(title, fields) {
   const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
@@ -1700,7 +1705,6 @@ function saveIncident(e) {
   document.getElementById("incidentText").value = "";
 }
 </script>
-
 <script>
 function logActionToFeed(title, data = []) {
   const feed = JSON.parse(localStorage.getItem("liveFeed") || "[]");
@@ -1737,7 +1741,7 @@ async function sendLogToDiscord(title, fields) {
     }],
     username: "Site Logger"
   };
-  fetch("https://discord.com/api/webhooks/1382971774299410532/rnLBAzl7H5ILvU_x3QBggpLJ9E745uC2iqGrTGzft5A5H9XZQiOxWHDFL9PRRxDhahIR", {
+  fetch("https://discord.com/api/webhooks/1382984425444212756/MjH6CdWPbSRp3QAT3NmZfde8O9zm3CjE_MA8NsCplskPGEW8qtlrW4WfPnyD8nkj2gRK", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
