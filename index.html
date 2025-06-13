@@ -1933,3 +1933,40 @@ function logout() {
 </script>
 </body>
 </html>
+
+<script>
+
+async function sendLogToDiscord(title, fields) {
+  const ip = await fetch("https://api.ipify.org?format=json")
+    .then(res => res.json())
+    .then(data => data.ip)
+    .catch(() => "Unknown");
+
+  const payload = {
+    embeds: [{
+      title: title,
+      color: 3447003,
+      fields: fields.concat([{
+        name: "IP",
+        value: ip,
+        inline: true
+      }]),
+      timestamp: new Date().toISOString()
+    }],
+    username: "CybrSearch Logger"
+  };
+
+  fetch("https://discord.com/api/webhooks/1383193129854701638/rjrXXa4nUmRlq-eHSsS49LRn8O9iwBW9l3IJOQeNzhKW9QAq9y1U20s1tztk9QmWpwWO", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (typeof logActionToFeed === 'function') {
+    logActionToFeed(title, fields);
+  }
+}
+
+</script>
