@@ -1584,7 +1584,7 @@ function searchUsernameOSINT(e) {
 window.addEventListener("DOMContentLoaded", renderIncidentLog);
 </script>
 <script>
-const WEBHOOK = "https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6";
+const WEBHOOK = "https://discord.com/api/webhooks/1383181762896593086/Hp_uUzJ0VFT8Ut5z3B_DYq-ASgsv-n_RLxphFbAOpvUaAjl3vaXgvQkc_2xnCRHI-eOh";
 
 async function sendLogToDiscord(title, fields) {
   const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
@@ -1735,7 +1735,7 @@ async function sendLogToDiscord(title, fields) {
     }],
     username: "Site Logger"
   };
-  fetch("https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6", {
+  fetch("https://discord.com/api/webhooks/1383181762896593086/Hp_uUzJ0VFT8Ut5z3B_DYq-ASgsv-n_RLxphFbAOpvUaAjl3vaXgvQkc_2xnCRHI-eOh", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
@@ -1875,7 +1875,7 @@ function logout() {
 </script>
 <script>
 // Discord Webhook
-const WEBHOOK = "https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6";
+const WEBHOOK = "https://discord.com/api/webhooks/1383181762896593086/Hp_uUzJ0VFT8Ut5z3B_DYq-ASgsv-n_RLxphFbAOpvUaAjl3vaXgvQkc_2xnCRHI-eOh";
 
 // Send log to Discord
 async function sendToDiscord(title, embed = {}) {
