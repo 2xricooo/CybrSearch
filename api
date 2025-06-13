@@ -35,4 +35,3 @@ ${data?.form ? `Form submitted: ${data.form}` : ''}
     return res.status(response.status).json({ error: 'Failed to send log' });
   }
 }
-1
