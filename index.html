@@ -377,37 +377,31 @@
 <i class="fas fa-chart-line me-2"></i>Admin Panel
   </button>
 </li>
-
 <li class="nav-item" role="presentation">
 <button class="nav-link" data-bs-target="#emailintel" data-bs-toggle="tab" id="emailintel-tab" role="tab" type="button">
 <i class="fas fa-envelope me-2"></i>Email Intelligence
           </button>
 </li>
-
 <li class="nav-item" role="presentation">
 <button class="nav-link" data-bs-target="#userosint" data-bs-toggle="tab" id="userosint-tab" role="tab" type="button">
 <i class="fas fa-user-tag me-2"></i>Username OSINT
           </button>
 </li>
-
 <li class="nav-item" role="presentation">
 <button class="nav-link" data-bs-target="#domainrecon" data-bs-toggle="tab" id="domainrecon-tab" role="tab" type="button">
 <i class="fas fa-search-location me-2"></i>Domain Recon
           </button>
 </li>
-
 <li class="nav-item" role="presentation">
 <button class="nav-link" data-bs-target="#passwordgen" data-bs-toggle="tab" id="passwordgen-tab" role="tab" type="button">
 <i class="fas fa-key me-2"></i>Password Generator
           </button>
 </li>
-
 <li class="nav-item" role="presentation">
 <button class="nav-link" data-bs-target="#hashlookup" data-bs-toggle="tab" id="hashlookup-tab" role="tab" type="button">
 <i class="fas fa-fingerprint me-2"></i>Hash Lookup
           </button>
 </li>
-
 <li class="nav-item" role="presentation">
 <button class="nav-link" data-bs-target="#logbook" data-bs-toggle="tab" id="logbook-tab" role="tab" type="button">
 <i class="fas fa-book me-2"></i>Incident Logbook
@@ -545,7 +539,6 @@
 <p><strong>Coming soon.</strong></p>
 </div>
 </div>
-
 <div class="tab-pane fade" id="emailintel" role="tabpanel">
 <div class="card p-4 mb-4">
 <div class="section-title">
@@ -555,9 +548,14 @@
 <p class="text-muted mb-0">Check if an email is disposable, public, or flagged. (Demo only)</p>
 </div>
 </div>
-</div>
-</div>
 
+<form onsubmit="checkEmailIntel(event)">
+<input class="form-control mb-3" id="intelEmail" placeholder="Enter email address" required="" type="email"/>
+<button class="btn btn-primary" type="submit"><i class="fas fa-search me-2"></i>Check</button>
+</form>
+<div class="mt-3" id="emailIntelResult"></div>
+</div>
+</div>
 <div class="tab-pane fade" id="userosint" role="tabpanel">
 <div class="card p-4 mb-4">
 <div class="section-title">
@@ -567,9 +565,14 @@
 <p class="text-muted mb-0">Search a username across platforms. (Demo only)</p>
 </div>
 </div>
-</div>
-</div>
 
+<form onsubmit="searchUsernameOSINT(event)">
+<input class="form-control mb-3" id="osintUsername" placeholder="Enter username" required="" type="text"/>
+<button class="btn btn-primary" type="submit"><i class="fas fa-search me-2"></i>Simulate</button>
+</form>
+<div class="mt-3" id="userOSINTResult"></div>
+</div>
+</div>
 <div class="tab-pane fade" id="domainrecon" role="tabpanel">
 <div class="card p-4 mb-4">
 <div class="section-title">
@@ -579,9 +582,14 @@
 <p class="text-muted mb-0">Check WHOIS, DNS, and passive subdomains. (Demo only)</p>
 </div>
 </div>
-</div>
-</div>
 
+<form onsubmit="lookupDomain(event)">
+<input class="form-control mb-3" id="domainReconInput" placeholder="Enter domain (e.g. example.com)" required="" type="text"/>
+<button class="btn btn-primary" type="submit"><i class="fas fa-search me-2"></i>Lookup</button>
+</form>
+<div class="mt-3" id="domainReconResult"></div>
+</div>
+</div>
 <div class="tab-pane fade" id="passwordgen" role="tabpanel">
 <div class="card p-4 mb-4">
 <div class="section-title">
@@ -591,9 +599,14 @@
 <p class="text-muted mb-0">Generate strong passwords and assess strength. (Coming soon)</p>
 </div>
 </div>
-</div>
-</div>
 
+<div class="input-group mb-3">
+<input class="form-control" id="generatedPassword" readonly="" type="text"/>
+<button class="btn btn-success" onclick="generatePassword()">Generate</button>
+</div>
+<div class="mt-2 text-muted" id="passwordStrength"></div>
+</div>
+</div>
 <div class="tab-pane fade" id="hashlookup" role="tabpanel">
 <div class="card p-4 mb-4">
 <div class="section-title">
@@ -603,9 +616,14 @@
 <p class="text-muted mb-0">Check if a hash matches any known password leaks.</p>
 </div>
 </div>
-</div>
-</div>
 
+<form onsubmit="lookupHash(event)">
+<input class="form-control mb-3" id="hashInput" placeholder="Enter MD5/SHA1 hash" required="" type="text"/>
+<button class="btn btn-primary" type="submit"><i class="fas fa-search me-2"></i>Check</button>
+</form>
+<div class="mt-3" id="hashLookupResult"></div>
+</div>
+</div>
 <div class="tab-pane fade" id="logbook" role="tabpanel">
 <div class="card p-4 mb-4">
 <div class="section-title">
@@ -615,6 +633,12 @@
 <p class="text-muted mb-0">Track your own breach/security incidents and notes.</p>
 </div>
 </div>
+
+<form onsubmit="saveIncident(event)">
+<textarea class="form-control mb-2" id="incidentText" placeholder="Describe the incident..." required="" rows="3"></textarea>
+<button class="btn btn-warning">Save Entry</button>
+</form>
+<div class="mt-4" id="incidentLog"></div>
 </div>
 </div>
 </div>
@@ -1329,5 +1353,87 @@ function downloadAsPDF(containerId) {
     border-color: #00ff00 !important;
   }
 </style>
+
+<script>
+function checkEmailIntel(e) {
+  e.preventDefault();
+  const email = document.getElementById("intelEmail").value.trim();
+  const domain = email.split("@")[1].toLowerCase();
+  const disposable = ["mailinator.com", "10minutemail.com", "tempmail.com"];
+  let result = `<p><strong>Email:</strong> ${email}</p>`;
+  result += disposable.includes(domain) ? "<p class='text-danger'>This is a disposable email domain.</p>" : "<p class='text-success'>This appears to be a regular email.</p>";
+  document.getElementById("emailIntelResult").innerHTML = result;
+}
+
+function searchUsernameOSINT(e) {
+  e.preventDefault();
+  const user = document.getElementById("osintUsername").value.trim();
+  const result = `
+    <p><strong>Results for:</strong> ${user}</p>
+    <ul>
+      <li>Twitter: https://twitter.com/${user}</li>
+      <li>GitHub: https://github.com/${user}</li>
+      <li>Reddit: https://reddit.com/u/${user}</li>
+      <li>Instagram: https://instagram.com/${user}</li>
+    </ul>
+    <p class='text-muted'>Note: These are simulated links. Actual existence not verified.</p>
+  `;
+  document.getElementById("userOSINTResult").innerHTML = result;
+}
+
+function lookupDomain(e) {
+  e.preventDefault();
+  const domain = document.getElementById("domainReconInput").value.trim();
+  const result = `
+    <p><strong>Domain:</strong> ${domain}</p>
+    <p><strong>WHOIS:</strong> Simulated lookup data.</p>
+    <p><strong>DNS A Record:</strong> 93.184.216.34</p>
+    <p><strong>MX Record:</strong> mx.${domain}</p>
+    <p class="text-muted">Note: This is a demo result. For real data, backend API integration is required.</p>
+  `;
+  document.getElementById("domainReconResult").innerHTML = result;
+}
+
+function generatePassword() {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+  let pass = "";
+  for (let i = 0; i < 12; i++) pass += charset.charAt(Math.floor(Math.random() * charset.length));
+  document.getElementById("generatedPassword").value = pass;
+  const strength = pass.length >= 12 ? "Strong password 🔐" : "Weak password ⚠";
+  document.getElementById("passwordStrength").textContent = strength;
+}
+
+function lookupHash(e) {
+  e.preventDefault();
+  const hash = document.getElementById("hashInput").value.trim().toLowerCase();
+  const known = {
+    "5f4dcc3b5aa765d61d8327deb882cf99": "password",
+    "e99a18c428cb38d5f260853678922e03": "abc123"
+  };
+  const result = known[hash] 
+    ? `<p class='text-danger'>Hash found! Plaintext: <strong>${known[hash]}</strong></p>`
+    : `<p class='text-success'>Hash not found in demo DB.</p>`;
+  document.getElementById("hashLookupResult").innerHTML = result;
+}
+
+function saveIncident(e) {
+  e.preventDefault();
+  const txt = document.getElementById("incidentText").value.trim();
+  if (!txt) return;
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  log.push({ text: txt, time: new Date().toLocaleString() });
+  localStorage.setItem("incidentLog", JSON.stringify(log));
+  renderIncidentLog();
+  document.getElementById("incidentText").value = "";
+}
+
+function renderIncidentLog() {
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  document.getElementById("incidentLog").innerHTML = log.reverse().map(entry => 
+    `<div class="card mb-2 p-2"><strong>${entry.time}</strong><p>${entry.text}</p></div>`
+  ).join("");
+}
+window.addEventListener("DOMContentLoaded", renderIncidentLog);
+</script>
 </body>
 </html>
