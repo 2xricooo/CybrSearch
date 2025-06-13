@@ -357,19 +357,122 @@
     I Understand &amp; Agree
   </button>
 </div>
+
 <script>
-  function acceptConsent() {
-    localStorage.setItem("consentGiven", "true");
-    document.getElementById("consentOverlay").style.display = "none";
-  }
-  window.addEventListener("load", () => {
-    if (localStorage.getItem("consentGiven") !== "true") {
-      document.getElementById("consentOverlay").style.display = "flex";
-    } else {
-      document.getElementById("consentOverlay").style.display = "none";
+    function login() {
+        const u = document.getElementById("authUsername").value.trim();
+        const p = document.getElementById("authPassword").value.trim();
+        const users = JSON.parse(localStorage.getItem("users") || "{}");
+        const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+
+        if (!u || !p) {
+            document.getElementById("authError").textContent = "Username and password cannot be empty.";
+            return;
+        }
+
+        if (u.length < 3 || p.length < 6) {
+            document.getElementById("authError").textContent = "Username must be at least 3 characters and password 6 characters.";
+            return;
+        }
+
+        if (banned.includes(u)) {
+            document.getElementById("authError").textContent = "You are banned.";
+            return;
+        }
+
+        if (users[u] && users[u] === p) {
+            localStorage.setItem("loggedInUser", u);
+            document.getElementById("authOverlay").style.display = "none";
+            document.getElementById("logoutBtn").style.display = "block";
+            if (u === "sysadmin") {
+                const adminTab = document.getElementById("admin-tab");
+                if (adminTab) adminTab.style.display = "block";
+            }
+        } else {
+            document.getElementById("authError").textContent = "Invalid credentials.";
+        }
     }
-  });
-</script>
+
+    function signup() {
+        const u = document.getElementById("authUsername").value.trim();
+        const p = document.getElementById("authPassword").value.trim();
+        const users = JSON.parse(localStorage.getItem("users") || "{}");
+        const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+
+        if (!u || !p) {
+            document.getElementById("authError").textContent = "Username and password cannot be empty.";
+            return;
+        }
+
+        if (u.length < 3 || p.length < 6) {
+            document.getElementById("authError").textContent = "Username must be at least 3 characters and password 6 characters.";
+            return;
+        }
+
+        if (banned.includes(u)) {
+            document.getElementById("authError").textContent = "You are banned.";
+            return;
+        }
+
+        if (users[u]) {
+            document.getElementById("authError").textContent = "Username already taken.";
+            return;
+        }
+
+        users[u] = p;
+        localStorage.setItem("users", JSON.stringify(users));
+        localStorage.setItem("loggedInUser", u);
+        document.getElementById("authOverlay").style.display = "none";
+        document.getElementById("logoutBtn").style.display = "block";
+    }
+
+    function logout() {
+        localStorage.removeItem("loggedInUser");
+        document.getElementById("authOverlay").style.display = "flex";
+        document.getElementById("logoutBtn").style.display = "none";
+        const adminTab = document.getElementById("admin-tab");
+        if (adminTab) adminTab.style.display = "none";
+    }
+
+    function banUser() {
+        const input = document.getElementById("banUserInput").value.trim();
+        if (!input) return;
+        const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+        if (!banned.includes(input)) {
+            banned.push(input);
+            localStorage.setItem("banned", JSON.stringify(banned));
+        }
+        renderBanned();
+    }
+
+    function renderBanned() {
+        const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+        const output = banned.map(u => `<div>🚫 ${u}</div>`).join("");
+        document.getElementById("bannedList").innerHTML = output;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        const users = JSON.parse(localStorage.getItem("users") || "{}");
+        if (!users["sysadmin"]) {
+            users["sysadmin"] = "!Admin420!";
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+
+        const u = localStorage.getItem("loggedInUser");
+        if (!u) {
+            document.getElementById("authOverlay").style.display = "flex";
+        } else {
+            document.getElementById("authOverlay").style.display = "none";
+            document.getElementById("logoutBtn").style.display = "block";
+            if (u === "sysadmin") {
+                const adminTab = document.getElementById("admin-tab");
+                if (adminTab) adminTab.style.display = "block";
+            }
+            renderBanned();
+        }
+    });
+    </script>
+
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
 <div class="container">
 <a class="navbar-brand" href="#">
@@ -577,7 +680,6 @@
 <p class="text-muted">This panel will show live stats, user counts, top countries, and more.</p>
 <p><strong>Coming soon.</strong></p>
 </div>
-
 <hr/>
 <h5>Manage Users</h5>
 <div class="input-group mb-2">
@@ -1759,7 +1861,6 @@ async function sendLogToDiscord(title, fields) {
 
 window.addEventListener("DOMContentLoaded", renderLiveFeed);
 </script>
-
 <script>
 document.getElementById("covertTrigger").addEventListener("click", toggleAdminTab);
 document.addEventListener("keydown", function(e) {
@@ -1785,7 +1886,6 @@ function panicClear() {
   history.pushState(null, "", "/weather");
 }
 </script>
-
 <div id="authOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;">
 <div style="background:#1e293b;padding:20px;border-radius:10px;width:300px;">
 <h3 style="color:white;margin-bottom:10px;">Login or Signup</h3>
@@ -1796,7 +1896,6 @@ function panicClear() {
 <div id="authError" style="color:red;margin-top:10px;"></div>
 </div>
 </div>
-
 <script>
 function login() {
   const u = document.getElementById("authUsername").value.trim();
