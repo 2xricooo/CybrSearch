@@ -316,6 +316,26 @@
 </style>
 </head>
 <body>
+<div id="consentOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;">
+<h2 style="color:white;margin-bottom:1rem;">Consent Required</h2>
+<p style="color:#ccc;max-width:500px;margin-bottom:2rem;">By using this site, you agree to the terms of use and acknowledge that it is intended for educational and lawful purposes only.</p>
+<button onclick="acceptConsent()" style="padding:10px 20px;border:none;background:#3b82f6;color:white;border-radius:5px;font-weight:600;">
+    I Understand &amp; Agree
+  </button>
+</div>
+<script>
+  function acceptConsent() {
+    localStorage.setItem("consentGiven", "true");
+    document.getElementById("consentOverlay").style.display = "none";
+  }
+  window.addEventListener("load", () => {
+    if (localStorage.getItem("consentGiven") !== "true") {
+      document.getElementById("consentOverlay").style.display = "flex";
+    } else {
+      document.getElementById("consentOverlay").style.display = "none";
+    }
+  });
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
 <div class="container">
 <a class="navbar-brand" href="#">
