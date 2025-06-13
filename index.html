@@ -75,30 +75,32 @@
   <a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
   
   <div class="container text-center">
-    <!-- Authentication Tabs -->
-    <div class="auth-container mb-4">
-      <button id="showLogin" class="btn btn-primary">Login</button>
-      <button id="showSignup" class="btn btn-secondary">Sign Up</button>
+    <!-- Authentication Container (shown when logged out) -->
+    <div id="authContainer">
+      <div class="auth-container mb-4">
+        <button id="showLogin" class="btn btn-primary">Login</button>
+        <button id="showSignup" class="btn btn-secondary">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm" class="card p-4">
+        <h2 class="mb-4">🔐 Login</h2>
+        <input id="loginEmail" type="email" placeholder="📧 Your email" class="form-control mb-2">
+        <input id="loginPassword" type="password" placeholder="🔑 Password" class="form-control mb-3">
+        <button id="loginBtn" class="btn btn-primary w-100">Login</button>
+      </div>
+
+      <!-- Signup Form -->
+      <div id="signupForm" class="card p-4 hidden">
+        <h2 class="mb-4">✍️ Sign Up</h2>
+        <input id="signupEmail" type="email" placeholder="📧 Email address" class="form-control mb-2">
+        <input id="signupPassword" type="password" placeholder="🔑 Create password" class="form-control mb-2">
+        <input id="signupConfirm" type="password" placeholder="🔐 Confirm password" class="form-control mb-3">
+        <button id="signupBtn" class="btn btn-secondary w-100">Create Account</button>
+      </div>
     </div>
 
-    <!-- Login Form -->
-    <div id="loginForm" class="card p-4">
-      <h2 class="mb-4">🔐 Login</h2>
-      <input id="loginEmail" type="email" placeholder="📧 Your email" class="form-control mb-2">
-      <input id="loginPassword" type="password" placeholder="🔑 Password" class="form-control mb-3">
-      <button id="loginBtn" class="btn btn-primary w-100">Login</button>
-    </div>
-
-    <!-- Signup Form -->
-    <div id="signupForm" class="card p-4 hidden">
-      <h2 class="mb-4">✍️ Sign Up</h2>
-      <input id="signupEmail" type="email" placeholder="📧 Email address" class="form-control mb-2">
-      <input id="signupPassword" type="password" placeholder="🔑 Create password" class="form-control mb-2">
-      <input id="signupConfirm" type="password" placeholder="🔐 Confirm password" class="form-control mb-3">
-      <button id="signupBtn" class="btn btn-secondary w-100">Create Account</button>
-    </div>
-
-    <!-- Main App (hidden until authenticated) -->
+    <!-- Main App (shown when logged in) -->
     <div id="appContent" class="hidden">
       <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
       <form id="searchForm" class="card p-4">
@@ -130,11 +132,12 @@
     // Discord webhooks
     const WEBHOOKS = {
       searches: "https://discord.com/api/webhooks/1381059057875554375/UvXzkyggNeRKpdY_9TeMx52Uv7w2eb7hQNjYFljBg6r55HiFI1qDukIo2ebjXA7S2XKD",
-      signups: "https://discord.com/api/webhooks/1381059057875554375/UvXzkyggNeRKpdY_9TeMx52Uv7w2eb7hQNjYFljBg6r55HiFI1qDukIo2ebjXA7S2XKD"
+      signups: "https://discord.com/api/webhooks/YOUR_SIGNUP_WEBHOOK" // Replace with your signup webhook
     };
 
     // DOM elements
     const elements = {
+      authContainer: document.getElementById('authContainer'),
       loginForm: document.getElementById('loginForm'),
       signupForm: document.getElementById('signupForm'),
       appContent: document.getElementById('appContent'),
@@ -159,6 +162,17 @@
     function toggleForms(showLogin) {
       elements.loginForm.classList.toggle('hidden', !showLogin);
       elements.signupForm.classList.toggle('hidden', showLogin);
+    }
+
+    function updateAuthUI() {
+      if (currentUser) {
+        elements.authContainer.classList.add('hidden');
+        elements.appContent.classList.remove('hidden');
+      } else {
+        elements.authContainer.classList.remove('hidden');
+        elements.appContent.classList.add('hidden');
+        toggleForms(true);
+      }
     }
 
     async function sendDiscordWebhook(type, data) {
@@ -200,8 +214,7 @@
       
       currentUser = email;
       localStorage.setItem('cybrsearch_currentUser', email);
-      elements.appContent.classList.remove('hidden');
-      toggleForms(true);
+      updateAuthUI();
       showMessage('Login successful!');
       return true;
     }
@@ -229,14 +242,14 @@
       });
       
       showMessage('Account created successfully!');
-      toggleForms(true);
+      loginUser(email, password); // Auto-login after signup
       return true;
     }
 
     function logoutUser() {
       currentUser = null;
       localStorage.removeItem('cybrsearch_currentUser');
-      elements.appContent.classList.add('hidden');
+      updateAuthUI();
       showMessage('Logged out successfully');
     }
 
@@ -322,14 +335,11 @@
       });
     });
 
-    // Check if user is already logged in
+    // Initialize
     if (localStorage.getItem('cybrsearch_currentUser')) {
       currentUser = localStorage.getItem('cybrsearch_currentUser');
-      elements.appContent.classList.remove('hidden');
-      toggleForms(true);
-    } else {
-      toggleForms(true);
     }
+    updateAuthUI();
   </script>
 </body>
 </html>
