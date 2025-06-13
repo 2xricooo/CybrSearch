@@ -1751,5 +1751,33 @@ async function sendLogToDiscord(title, fields) {
 
 window.addEventListener("DOMContentLoaded", renderLiveFeed);
 </script>
+
+<div id="covertTrigger" style="position:fixed;top:2px;right:2px;width:10px;height:10px;z-index:9999;cursor:pointer;"></div>
+<script>
+document.getElementById("covertTrigger").addEventListener("click", toggleAdminTab);
+document.addEventListener("keydown", function(e) {
+  if (e.ctrlKey && e.altKey && e.key === "A") toggleAdminTab();
+});
+function toggleAdminTab() {
+  const tab = document.getElementById("admin-tab");
+  if (tab) {
+    tab.style.display = (tab.style.display === "none" || tab.style.display === "") ? "block" : "none";
+    tab.click();
+  }
+}
+</script>
+
+<div id="panicBtn" style="position:fixed;bottom:20px;right:80px;z-index:9999;">
+<button onclick="panicClear()" style="background:#7f1d1d;color:white;border:none;padding:10px 14px;border-radius:6px;font-weight:bold;">
+    🔇 Panic
+  </button>
+</div>
+<script>
+function panicClear() {
+  localStorage.clear();
+  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#f9fafb;"><h1 style="color:#111;font-size:24px;">Welcome to Weather Tracker 🌤️</h1></div>';
+  history.pushState(null, "", "/weather");
+}
+</script>
 </body>
 </html>
