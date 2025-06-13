@@ -357,7 +357,6 @@
     I Understand &amp; Agree
   </button>
 </div>
-
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
 <div class="container">
 <a class="navbar-brand" href="#">
@@ -372,7 +371,7 @@
 <button class="btn btn-sm btn-outline-warning ms-2" onclick="toggleTerminalMode()" title="Toggle Terminal UI">
 <i class="fas fa-terminal"></i>
 </button>
-</div>
+<button class="btn btn-danger btn-sm ms-2" onclick="logout()" title="Log Out">Logout</button></div>
 </div>
 </nav>
 <div class="container py-5">
@@ -731,7 +730,12 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
 <script>
     // Discord Webhook URL
-    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6"Collection #1",
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6';
+    
+    // Sample breach data
+    const breachDatabase = [
+      {
+        name: "Collection #1",
         domain: "multiple",
         date: "January 2019",
         records: 772904991,
@@ -1741,19 +1745,6 @@ async function sendLogToDiscord(title, fields) {
 
 window.addEventListener("DOMContentLoaded", renderLiveFeed);
 </script>
-
-<div id="panicBtn" style="position:fixed;bottom:20px;right:80px;z-index:9999;">
-<button onclick="panicClear()" style="background:#7f1d1d;color:white;border:none;padding:10px 14px;border-radius:6px;font-weight:bold;">
-    🔇 Panic
-  </button>
-</div>
-<script>
-function panicClear() {
-  localStorage.clear();
-  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#f9fafb;"><h1 style="color:#111;font-size:24px;">Welcome to Weather Tracker 🌤️</h1></div>';
-  history.pushState(null, "", "/weather");
-}
-</script>
 <div id="authOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;">
 <div style="background:#1e293b;padding:20px;border-radius:10px;width:300px;">
 <h3 style="color:white;margin-bottom:10px;">Login or Signup</h3>
@@ -1764,7 +1755,6 @@ function panicClear() {
 <div id="authError" style="color:red;margin-top:10px;"></div>
 </div>
 </div>
-
 <script>
 function acceptConsent() {
   // Store consent status in localStorage
@@ -1787,9 +1777,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
-
-<button class="btn btn-danger" id="logoutBtn" onclick="logout()" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:none;">Logout</button>
-
 <script>
 // =============== AUTH SYSTEM =================
 function showError(msg){document.getElementById("authError").textContent = msg;}
@@ -1871,6 +1858,80 @@ window.addEventListener("DOMContentLoaded",()=>{
 
   const u=localStorage.getItem("loggedInUser");
   if(u){enterSite(u);} else {document.getElementById("authOverlay").style.display="flex";}
+});
+</script>
+<!-- 🔒 Panic and Logout Buttons -->
+<script>
+function panicClear() {
+  localStorage.clear();
+  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#f9fafb;"><h1 style="color:#111;font-size:24px;">Welcome to Weather Tracker 🌤️</h1></div>';
+  history.pushState(null, "", "/weather");
+}
+
+function logout() {
+  localStorage.removeItem("userSession");
+  location.reload();
+}
+</script>
+<script>
+// Discord Webhook
+const WEBHOOK = "https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6";
+
+// Send log to Discord
+async function sendToDiscord(title, embed = {}) {
+  const ip = await fetch("https://api.ipify.org?format=json").then(r => r.json()).then(d => d.ip).catch(() => "Unknown");
+  const payload = {
+    username: "Logger",
+    embeds: [{
+      title,
+      color: 5814783,
+      fields: embed.fields || [],
+      footer: { text: "IP: " + ip },
+      timestamp: new Date().toISOString()
+    }]
+  };
+  fetch(WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+}
+
+// Panic Clear
+function panicClear() {
+  localStorage.clear();
+  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:white;"><h1 style="font-size:24px;">Session Reset. Redirecting...</h1></div>';
+  history.pushState(null, "", "/");
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem("userSession");
+  sendToDiscord("🔓 Logout Triggered");
+  location.reload();
+}
+
+// General page load log
+document.addEventListener("DOMContentLoaded", () => {
+  sendToDiscord("📥 Page Loaded");
+});
+</script>
+
+<div id="adminPanel" style="display:none; padding: 20px; background: #1e293b; color: white; margin: 20px; border-radius: 8px;">
+<h2>👑 Admin Panel</h2>
+<p>Welcome, Rico. You have admin access.</p>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = localStorage.getItem("userSession");
+  try {
+    const parsed = JSON.parse(user);
+    if (parsed?.username === "Rico") {
+      const panel = document.getElementById("adminPanel");
+      if (panel) panel.style.display = "block";
+    }
+  } catch (e) {}
 });
 </script>
 </body>
