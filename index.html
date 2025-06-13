@@ -428,8 +428,8 @@
 <i class="fas fa-bolt"></i>
 </div>
 <div>
-<h3 class="mb-1">Stresser Tool (Simulated)</h3>
-<p class="text-muted mb-0">Simulates sending traffic to a target for educational/demo use only</p>
+<h3 class="mb-1">Stresser Tool</h3>
+<p class="text-muted mb-0">Send stress test commands to a specified target (for authorized use only)</p>
 </div>
 </div>
 <form id="stresserForm">
@@ -437,7 +437,7 @@
 <input class="form-control" id="targetIP" placeholder="Target IP or Hostname" required="" type="text"/>
 </div>
 <div class="mb-3">
-<input class="form-control" id="duration" placeholder="Duration (seconds)" required="" type="number"/>
+<input class="form-control" id="duration" max="1000" placeholder="Duration (seconds)" required="" type="number"/>
 </div>
 <div class="mb-3">
 <select class="form-control" id="method" required="">
