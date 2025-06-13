@@ -731,12 +731,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
 <script>
     // Discord Webhook URL
-    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1382984425444212756/MjH6CdWPbSRp3QAT3NmZfde8O9zm3CjE_MA8NsCplskPGEW8qtlrW4WfPnyD8nkj2gRK';
-    
-    // Sample breach data
-    const breachDatabase = [
-      {
-        name: "Collection #1",
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6"Collection #1",
         domain: "multiple",
         date: "January 2019",
         records: 772904991,
@@ -1585,7 +1580,7 @@ function searchUsernameOSINT(e) {
 window.addEventListener("DOMContentLoaded", renderIncidentLog);
 </script>
 <script>
-const WEBHOOK = "https://discord.com/api/webhooks/1382984425444212756/MjH6CdWPbSRp3QAT3NmZfde8O9zm3CjE_MA8NsCplskPGEW8qtlrW4WfPnyD8nkj2gRK";
+const WEBHOOK = "https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6";
 
 async function sendLogToDiscord(title, fields) {
   const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
@@ -1736,7 +1731,7 @@ async function sendLogToDiscord(title, fields) {
     }],
     username: "Site Logger"
   };
-  fetch("https://discord.com/api/webhooks/1382984425444212756/MjH6CdWPbSRp3QAT3NmZfde8O9zm3CjE_MA8NsCplskPGEW8qtlrW4WfPnyD8nkj2gRK", {
+  fetch("https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
@@ -1878,70 +1873,5 @@ window.addEventListener("DOMContentLoaded",()=>{
   if(u){enterSite(u);} else {document.getElementById("authOverlay").style.display="flex";}
 });
 </script>
-
-<!-- 🔒 Panic and Logout Buttons -->
-<div id="actionButtons" style="position:fixed;bottom:20px;right:20px;display:flex;gap:10px;z-index:9999;">
-  <button onclick="panicClear()" style="background:#7f1d1d;color:white;padding:10px 14px;border:none;border-radius:6px;font-weight:bold;">🔇 Panic</button>
-  <button onclick="logout()" style="background:#dc2626;color:white;padding:10px 14px;border:none;border-radius:6px;font-weight:bold;">🔒 Logout</button>
-</div>
-
-<script>
-function panicClear() {
-  localStorage.clear();
-  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#f9fafb;"><h1 style="color:#111;font-size:24px;">Welcome to Weather Tracker 🌤️</h1></div>';
-  history.pushState(null, "", "/weather");
-}
-
-function logout() {
-  localStorage.removeItem("userSession");
-  location.reload();
-}
-</script>
-
-
-<script>
-// Discord Webhook
-const WEBHOOK = "https://discord.com/api/webhooks/1382984425444212756/MjH6CdWPbSRp3QAT3NmZfde8O9zm3CjE_MA8NsCplskPGEW8qtlrW4WfPnyD8nkj2gRK";
-
-// Send log to Discord
-async function sendToDiscord(title, embed = {}) {
-  const ip = await fetch("https://api.ipify.org?format=json").then(r => r.json()).then(d => d.ip).catch(() => "Unknown");
-  const payload = {
-    username: "Logger",
-    embeds: [{
-      title,
-      color: 5814783,
-      fields: embed.fields || [],
-      footer: { text: "IP: " + ip },
-      timestamp: new Date().toISOString()
-    }]
-  };
-  fetch(WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-}
-
-// Panic Clear
-function panicClear() {
-  localStorage.clear();
-  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:white;"><h1 style="font-size:24px;">Session Reset. Redirecting...</h1></div>';
-  history.pushState(null, "", "/");
-}
-
-// Logout
-function logout() {
-  localStorage.removeItem("userSession");
-  sendToDiscord("🔓 Logout Triggered");
-  location.reload();
-}
-
-// General page load log
-document.addEventListener("DOMContentLoaded", () => {
-  sendToDiscord("📥 Page Loaded");
-});
-</script>
-
 </body>
 </html>
