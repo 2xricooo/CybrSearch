@@ -344,6 +344,10 @@
 <div class="d-flex align-items-center">
 <span class="badge bg-success me-2">PRO</span>
 <span class="text-muted">v2.1.0</span>
+
+<button class="btn btn-sm btn-outline-light ms-3" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle theme">
+<i class="fas fa-moon"></i>
+</button>
 </div>
 </div>
 </nav>
@@ -1098,5 +1102,35 @@ document.addEventListener("DOMContentLoaded", () => {
 <a class="discord-corner-btn" href="https://discord.gg/Swatter" target="_blank" title="Join our Discord">
 <i class="fab fa-discord"></i>
 </a>
+
+<script>
+  function setTheme(mode) {
+    document.documentElement.setAttribute('data-theme', mode);
+    localStorage.setItem('theme', mode);
+    document.getElementById('themeToggleBtn').innerHTML =
+      mode === 'dark'
+        ? '<i class="fas fa-sun"></i>'
+        : '<i class="fas fa-moon"></i>';
+  }
+
+  function toggleTheme() {
+    const current = localStorage.getItem('theme') || 'dark';
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const storedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(storedTheme);
+  });
+</script>
+<style>
+  [data-theme="light"] {
+    --dark-bg: #f8f9fa;
+    --darker-bg: #e9ecef;
+    --card-bg: #ffffff;
+    --text: #212529;
+    --text-muted: #6c757d;
+  }
+</style>
 </body>
 </html>
