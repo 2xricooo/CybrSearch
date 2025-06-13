@@ -347,7 +347,6 @@
 <button class="btn btn-sm btn-outline-light ms-3" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle theme">
 <i class="fas fa-moon"></i>
 </button>
-
 <button class="btn btn-sm btn-outline-warning ms-2" onclick="toggleTerminalMode()" title="Toggle Terminal UI">
 <i class="fas fa-terminal"></i>
 </button>
@@ -377,6 +376,42 @@
 <button class="nav-link" data-bs-target="#admin" data-bs-toggle="tab" id="admin-tab" role="tab" style="display:none;" type="button">
 <i class="fas fa-chart-line me-2"></i>Admin Panel
   </button>
+</li>
+
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#emailintel" data-bs-toggle="tab" id="emailintel-tab" role="tab" type="button">
+<i class="fas fa-envelope me-2"></i>Email Intelligence
+          </button>
+</li>
+
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#userosint" data-bs-toggle="tab" id="userosint-tab" role="tab" type="button">
+<i class="fas fa-user-tag me-2"></i>Username OSINT
+          </button>
+</li>
+
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#domainrecon" data-bs-toggle="tab" id="domainrecon-tab" role="tab" type="button">
+<i class="fas fa-search-location me-2"></i>Domain Recon
+          </button>
+</li>
+
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#passwordgen" data-bs-toggle="tab" id="passwordgen-tab" role="tab" type="button">
+<i class="fas fa-key me-2"></i>Password Generator
+          </button>
+</li>
+
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#hashlookup" data-bs-toggle="tab" id="hashlookup-tab" role="tab" type="button">
+<i class="fas fa-fingerprint me-2"></i>Hash Lookup
+          </button>
+</li>
+
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#logbook" data-bs-toggle="tab" id="logbook-tab" role="tab" type="button">
+<i class="fas fa-book me-2"></i>Incident Logbook
+          </button>
 </li>
 </ul>
 <div class="tab-content" id="toolTabsContent">
@@ -435,7 +470,6 @@
 <i class="fas fa-file-pdf me-1"></i> Export Breach PDF
   </button>
 </div>
-
 </div>
 <!-- IP Lookup Tab -->
 <div class="tab-pane fade" id="whois" role="tabpanel">
@@ -470,7 +504,6 @@
 <i class="fas fa-file-pdf me-1"></i> Export WHOIS PDF
   </button>
 </div>
-
 </div>
 <div class="tab-pane fade" id="stresser" role="tabpanel">
 <div class="card p-4 mb-4">
@@ -510,6 +543,78 @@
 <h4 class="mb-3"><i class="fas fa-chart-line me-2"></i> Admin Dashboard</h4>
 <p class="text-muted">This panel will show live stats, user counts, top countries, and more.</p>
 <p><strong>Coming soon.</strong></p>
+</div>
+</div>
+
+<div class="tab-pane fade" id="emailintel" role="tabpanel">
+<div class="card p-4 mb-4">
+<div class="section-title">
+<div class="tool-icon"><i class="fas fa-envelope"></i></div>
+<div>
+<h3 class="mb-1">Email Intelligence</h3>
+<p class="text-muted mb-0">Check if an email is disposable, public, or flagged. (Demo only)</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="tab-pane fade" id="userosint" role="tabpanel">
+<div class="card p-4 mb-4">
+<div class="section-title">
+<div class="tool-icon"><i class="fas fa-user-tag"></i></div>
+<div>
+<h3 class="mb-1">Username OSINT</h3>
+<p class="text-muted mb-0">Search a username across platforms. (Demo only)</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="tab-pane fade" id="domainrecon" role="tabpanel">
+<div class="card p-4 mb-4">
+<div class="section-title">
+<div class="tool-icon"><i class="fas fa-search-location"></i></div>
+<div>
+<h3 class="mb-1">Domain Recon</h3>
+<p class="text-muted mb-0">Check WHOIS, DNS, and passive subdomains. (Demo only)</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="tab-pane fade" id="passwordgen" role="tabpanel">
+<div class="card p-4 mb-4">
+<div class="section-title">
+<div class="tool-icon"><i class="fas fa-key"></i></div>
+<div>
+<h3 class="mb-1">Password Generator</h3>
+<p class="text-muted mb-0">Generate strong passwords and assess strength. (Coming soon)</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="tab-pane fade" id="hashlookup" role="tabpanel">
+<div class="card p-4 mb-4">
+<div class="section-title">
+<div class="tool-icon"><i class="fas fa-fingerprint"></i></div>
+<div>
+<h3 class="mb-1">Hash Lookup</h3>
+<p class="text-muted mb-0">Check if a hash matches any known password leaks.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="tab-pane fade" id="logbook" role="tabpanel">
+<div class="card p-4 mb-4">
+<div class="section-title">
+<div class="tool-icon"><i class="fas fa-book"></i></div>
+<div>
+<h3 class="mb-1">Incident Logbook</h3>
+<p class="text-muted mb-0">Track your own breach/security incidents and notes.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1166,18 +1271,17 @@ document.addEventListener("DOMContentLoaded", () => {
     --text-muted: #6c757d;
   }
 </style>
-
 <div id="aiHelp" style="position:fixed;bottom:20px;left:20px;z-index:9999;">
 <button class="btn btn-dark" onclick="toggleHelpChat()">
 <i class="fas fa-robot me-1"></i> Help
   </button>
-<div id="chatBox" style="display:none;margin-top:10px;background:#1e293b;padding:15px;border-radius:8px;max-width:300px;">
-<p class="text-white"><strong>Ask me:</strong></p>
-<ul style="color:#ccc;">
+<div id="chatBox" style="display:none;margin-top:10px;background:#1e293b;padding:15px;border-radius:8px;max-width:300px;color:#ffffff;font-size:0.9rem;">
+<p style="color:#fff;font-weight:600;margin-bottom:0.5rem;">Ask me:</p>
+<ul style="color:#ccc;margin:0;padding-left:20px;">
 <li>What’s a breach?</li>
 <li>How does WHOIS work?</li>
 </ul>
-<p class="text-muted small">This is a scripted assistant.</p>
+<p class="text-muted small" style="margin-top:1rem;">This is a scripted assistant.</p>
 </div>
 </div>
 <script>
@@ -1186,7 +1290,6 @@ function toggleHelpChat() {
   chat.style.display = chat.style.display === "none" ? "block" : "none";
 }
 </script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 function toggleTerminalMode() {
