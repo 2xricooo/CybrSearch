@@ -357,7 +357,6 @@
     I Understand &amp; Agree
   </button>
 </div>
-
 <script>
     function login() {
         const u = document.getElementById("authUsername").value.trim();
@@ -472,7 +471,6 @@
         }
     });
     </script>
-
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
 <div class="container">
 <a class="navbar-brand" href="#">
@@ -1970,6 +1968,29 @@ window.addEventListener("DOMContentLoaded", () => {
       if (adminTab) adminTab.style.display = "block";
     }
     renderBanned();
+  }
+});
+</script>
+
+<script>
+function acceptConsent() {
+  // Store consent status in localStorage
+  localStorage.setItem("userConsent", "true");
+
+  // Hide the consent overlay
+  const overlay = document.getElementById("consentOverlay");
+  if (overlay) {
+    overlay.style.display = "none";
+  }
+}
+
+// Automatically hide consent overlay if user already agreed
+window.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem("userConsent") === "true") {
+    const overlay = document.getElementById("consentOverlay");
+    if (overlay) {
+      overlay.style.display = "none";
+    }
   }
 });
 </script>
