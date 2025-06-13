@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CybrSearch - Advanced Security Tools</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CybrSearch - Advanced Security Tools</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
     :root {
       --dark-bg: #0f172a;
       --darker-bg: #0b1120;
@@ -288,122 +289,198 @@
         flex-direction: column;
       }
     }
-  </style>
+  
+  .discord-corner-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #5865F2;
+    color: white;
+    font-size: 24px;
+    padding: 12px 14px;
+    border-radius: 50%;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  .discord-corner-btn:hover {
+    background-color: #4752C4;
+    transform: scale(1.1);
+  }
+
+</style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
-    <div class="container">
-      <a class="navbar-brand" href="#">
-        <i class="fas fa-shield-alt me-2"></i>CybrSearch
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
+<div class="container">
+<a class="navbar-brand" href="#">
+<i class="fas fa-shield-alt me-2"></i>CybrSearch
       </a>
-      <div class="d-flex align-items-center">
-        <span class="badge bg-success me-2">PRO</span>
-        <span class="text-muted">v2.1.0</span>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-10">
-        <ul class="nav nav-tabs mb-4" id="toolTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="breach-tab" data-bs-toggle="tab" data-bs-target="#breach" type="button" role="tab">
-              <i class="fas fa-user-secret me-2"></i>Breach Scan
+<div class="d-flex align-items-center">
+<span class="badge bg-success me-2">PRO</span>
+<span class="text-muted">v2.1.0</span>
+</div>
+</div>
+</nav>
+<div class="container py-5">
+<div class="row justify-content-center">
+<div class="col-lg-10">
+<ul class="nav nav-tabs mb-4" id="toolTabs" role="tablist">
+<li class="nav-item" role="presentation">
+<button class="nav-link active" data-bs-target="#breach" data-bs-toggle="tab" id="breach-tab" role="tab" type="button">
+<i class="fas fa-user-secret me-2"></i>Breach Scan
             </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="whois-tab" data-bs-toggle="tab" data-bs-target="#whois" type="button" role="tab">
-              <i class="fas fa-globe me-2"></i>IP Lookup
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#whois" data-bs-toggle="tab" id="whois-tab" role="tab" type="button">
+<i class="fas fa-globe me-2"></i>IP Lookup
             </button>
-          </li>
-        </ul>
-        
-        <div class="tab-content" id="toolTabsContent">
-          <!-- Breach Scan Tab -->
-          <div class="tab-pane fade show active" id="breach" role="tabpanel">
-            <div class="card p-4 mb-4">
-              <div class="section-title">
-                <div class="tool-icon">
-                  <i class="fas fa-user-secret"></i>
-                </div>
-                <div>
-                  <h3 class="mb-1">Breach Scanner</h3>
-                  <p class="text-muted mb-0">Check if your information appears in known data breaches</p>
-                </div>
-              </div>
-              <form id="breachForm">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <div class="input-group">
-                      <input id="breachEmail" type="email" class="form-control" placeholder="Email address">
-                      <span class="search-icon"><i class="fas fa-envelope"></i></span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="input-group">
-                      <input id="breachPhone" type="text" class="form-control" placeholder="Phone number">
-                      <span class="search-icon"><i class="fas fa-phone"></i></span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="input-group">
-                      <input id="breachUsername" type="text" class="form-control" placeholder="Username">
-                      <span class="search-icon"><i class="fas fa-user"></i></span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="input-group">
-                      <input id="breachDiscord" type="text" class="form-control" placeholder="Discord ID (User#1234)">
-                      <span class="search-icon"><i class="fab fa-discord"></i></span>
-                    </div>
-                  </div>
-                  <div class="col-12">
-                    <button type="submit" class="btn btn-primary w-100 py-3">
-                      <i class="fas fa-search me-2"></i>Scan for Breaches
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-target="#stresser" data-bs-toggle="tab" id="stresser-tab" role="tab" type="button">
+<i class="fas fa-bolt me-2"></i>Stresser
+        </button>
+</li></ul>
+<div class="tab-content" id="toolTabsContent">
+<!-- Breach Scan Tab -->
+<div class="tab-pane fade show active" id="breach" role="tabpanel">
+<div class="card p-4 mb-4">
+<div class="section-title">
+<div class="tool-icon">
+<i class="fas fa-user-secret"></i>
+</div>
+<div>
+<h3 class="mb-1">Breach Scanner</h3>
+<p class="text-muted mb-0">Check if your information appears in known data breaches</p>
+</div>
+</div>
+<form id="breachForm">
+<div class="row g-3">
+<div class="col-md-6">
+<div class="input-group">
+<input class="form-control" id="breachEmail" placeholder="Email address" type="email"/>
+<span class="search-icon"><i class="fas fa-envelope"></i></span>
+</div>
+</div>
+<div class="col-md-6">
+<div class="input-group">
+<input class="form-control" id="breachPhone" placeholder="Phone number" type="text"/>
+<span class="search-icon"><i class="fas fa-phone"></i></span>
+</div>
+</div>
+<div class="col-md-6">
+<div class="input-group">
+<input class="form-control" id="breachUsername" placeholder="Username" type="text"/>
+<span class="search-icon"><i class="fas fa-user"></i></span>
+</div>
+</div>
+<div class="col-md-6">
+<div class="input-group">
+<input class="form-control" id="breachDiscord" placeholder="Discord ID (User#1234)" type="text"/>
+<span class="search-icon"><i class="fab fa-discord"></i></span>
+</div>
+</div>
+<div class="col-12">
+<button class="btn btn-primary w-100 py-3" type="submit">
+<i class="fas fa-search me-2"></i>Scan for Breaches
                     </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-            
-            <div id="breachResults"></div>
-          </div>
-          
-          <!-- IP Lookup Tab -->
-          <div class="tab-pane fade" id="whois" role="tabpanel">
-            <div class="card p-4 mb-4">
-              <div class="section-title">
-                <div class="tool-icon">
-                  <i class="fas fa-globe"></i>
-                </div>
-                <div>
-                  <h3 class="mb-1">ARIN IP Lookup</h3>
-                  <p class="text-muted mb-0">Query ARIN WHOIS database for IP registration information</p>
-                </div>
-              </div>
-              <form id="whoisForm">
-                <div class="input-group mb-3">
-                  <input type="text" id="whoisIp" class="form-control" placeholder="Enter IP address (e.g., 8.8.8.8)" required>
-                  <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-search me-2"></i>Lookup
+</div>
+</div>
+</form>
+</div>
+<div id="breachResults"></div>
+</div>
+<!-- IP Lookup Tab -->
+<div class="tab-pane fade" id="whois" role="tabpanel">
+<div class="card p-4 mb-4">
+<div class="section-title">
+<div class="tool-icon">
+<i class="fas fa-globe"></i>
+</div>
+<div>
+<h3 class="mb-1">ARIN IP Lookup</h3>
+<p class="text-muted mb-0">Query ARIN WHOIS database for IP registration information</p>
+</div>
+</div>
+<form id="whoisForm">
+<div class="input-group mb-3">
+<input class="form-control" id="whoisIp" placeholder="Enter IP address (e.g., 8.8.8.8)" required="" type="text"/>
+<button class="btn btn-primary" type="submit">
+<i class="fas fa-search me-2"></i>Lookup
                   </button>
+</div>
+<div class="form-text">
+<i class="fas fa-info-circle me-2"></i>Queries ARIN WHOIS database for IP registration information
                 </div>
-                <div class="form-text">
-                  <i class="fas fa-info-circle me-2"></i>Queries ARIN WHOIS database for IP registration information
-                </div>
-              </form>
-            </div>
-            
-            <div id="whoisResults"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+</form>
+</div>
+<div id="whoisResults"></div>
+</div>
+<div class="tab-pane fade" id="stresser" role="tabpanel">
+<div class="card p-4 mb-4">
+<div class="section-title">
+<div class="tool-icon">
+<i class="fas fa-bolt"></i>
+</div>
+<div>
+<h3 class="mb-1">Stresser Tool (Simulated)</h3>
+<p class="text-muted mb-0">Simulates sending traffic to a target for educational/demo use only</p>
+</div>
+</div>
+<form id="stresserForm">
+<div class="mb-3">
+<input class="form-control" id="targetIP" placeholder="Target IP or Hostname" required="" type="text"/>
+</div>
+<div class="mb-3">
+<input class="form-control" id="duration" placeholder="Duration (seconds)" required="" type="number"/>
+</div>
+<div class="mb-3">
+<select class="form-control" id="method" required="">
+<option value="">Select Method</option>
+<option value="UDP">UDP</option>
+<option value="TCP">TCP</option>
+<option value="HTTP">HTTP</option>
+</select>
+</div>
+<button class="btn btn-primary w-100 py-2" type="submit">
+<i class="fas fa-play me-2"></i>Start Test (Simulated)
+          </button>
+</form>
+<div class="mt-4" id="stresserResult"></div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script><script>
+    document.getElementById("stresserForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const ip = document.getElementById("targetIP").value.trim();
+      const duration = document.getElementById("duration").value.trim();
+      const method = document.getElementById("method").value;
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
+      const resultDiv = document.getElementById("stresserResult");
+      if (!ip || !duration || !method) {
+        resultDiv.innerHTML = '<div class="alert alert-danger">All fields are required.</div>';
+        return;
+      }
+
+      resultDiv.innerHTML = '<div class="text-center"><div class="loading-spinner mx-auto mb-3"></div><p>Launching simulated stress test...</p></div>';
+
+      await sendToDiscord("Stresser action requested", {
+        fields: [
+          { name: "Target", value: ip },
+          { name: "Duration", value: duration + "s" },
+          { name: "Method", value: method }
+        ]
+      });
+
+      setTimeout(() => {
+        resultDiv.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>Simulated ${method} stress test to ${ip} for ${duration}s completed.</div>`;
+      }, 2000);
+    });
+    </script>
+<script>
     // Discord Webhook URL
     const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1382961640429060126/QHGyv7qLgs-kO8MnexMB9CklvvprO-xngMNvvFRQlK2ZovDWnWap78Bs6OVtxS9qFMrE';
     
@@ -971,5 +1048,9 @@
       }
     });
   </script>
+<!-- Discord Button -->
+<a class="discord-corner-btn" href="https://discord.gg/Swatter" target="_blank" title="Join our Discord">
+<i class="fab fa-discord"></i>
+</a>
 </body>
 </html>
