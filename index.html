@@ -1181,25 +1181,7 @@ function logout() {
 </script>
 
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const searchBtn = document.querySelector('button[type="submit"]');
-  const inputFields = document.querySelectorAll('input');
-  if (searchBtn && inputFields.length > 0) {
-    searchBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      let values = [];
-      inputFields.forEach(input => {
-        if (input.value) values.push(input.value);
-      });
-      if (values.length) {
-        alert("Searching for: " + values.join(", "));
-        // Add actual search logic here
-      }
-    });
-  }
-});
-</script>
+
 
 </body>
 </html>
