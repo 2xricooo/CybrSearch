@@ -357,7 +357,6 @@
     I Understand &amp; Agree
   </button>
 </div>
-
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--darker-bg)">
 <div class="container">
 <a class="navbar-brand" href="#">
@@ -568,10 +567,24 @@
 <hr/>
 <h5>Manage Users</h5>
 <div class="input-group mb-2">
-<input class="form-control" id="banUserInput" placeholder="Username to ban"/>
-<button class="btn btn-danger" onclick="banUser()">Ban</button>
+
+
 </div>
-<div id="bannedList" style="color:#f87171;font-size:0.9rem;"></div>
+
+
+<hr/>
+<div style="background:#1e293b;padding:20px;border-radius:12px;">
+<h4 style="margin-bottom:10px;">🛠 Admin Controls</h4>
+<div class="input-group mb-3" style="display:flex;gap:8px;">
+<input class="form-control" id="banUserInput" placeholder="Enter username to ban/unban"/>
+<button class="btn btn-danger" onclick="banUser()">Ban</button>
+<button class="btn btn-secondary" onclick="unbanUser()">Unban</button>
+</div>
+<div style="margin-top:10px;">
+<h6 style="margin-bottom:5px;">🚫 Banned Users:</h6>
+<div id="bannedList" style="color:#f87171;font-size:0.9rem;padding-left:5px;"></div>
+</div>
+</div>
 </div>
 <div class="tab-pane fade" id="emailintel" role="tabpanel">
 <div class="card p-4 mb-4">
@@ -1746,12 +1759,6 @@ async function sendLogToDiscord(title, fields) {
 
 window.addEventListener("DOMContentLoaded", renderLiveFeed);
 </script>
-
-<div id="panicBtn" style="position:fixed;bottom:20px;right:80px;z-index:9999;">
-<button onclick="panicClear()" style="background:#7f1d1d;color:white;border:none;padding:10px 14px;border-radius:6px;font-weight:bold;">
-    🔇 Panic
-  </button>
-</div>
 <script>
 function panicClear() {
   localStorage.clear();
@@ -1769,7 +1776,6 @@ function panicClear() {
 <div id="authError" style="color:red;margin-top:10px;"></div>
 </div>
 </div>
-
 <script>
 function acceptConsent() {
   // Store consent status in localStorage
@@ -1793,90 +1799,40 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<button class="btn btn-danger" id="logoutBtn" onclick="logout()" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:none;">Logout</button>
-
+<div id="authButtonsWrapper" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;gap:10px;"><div id="panicBtn" style="position:fixed;bottom:20px;right:80px;z-index:9999;">
+<button onclick="panicClear()" style="background:#7f1d1d;color:white;border:none;padding:10px 14px;border-radius:6px;font-weight:bold;">
+    🔇 Panic
+  </button>
+</div><button class="btn btn-danger" id="logoutBtn" onclick="logout()" style="position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 14px;background:#dc2626;color:white;border:none;border-radius:6px;font-weight:bold;">Logout</button></div>
 <script>
-// =============== AUTH SYSTEM =================
-function showError(msg){document.getElementById("authError").textContent = msg;}
-
-function validCredentials(u,p){
-  if(!u||!p) {showError("Username and password cannot be empty.");return false;}
-  if(u.length<3 || p.length<6){showError("Username ≥3 chars & password ≥6 chars.");return false;}
-  if(/[^a-zA-Z0-9]/.test(u)){showError("Username can only contain letters & numbers.");return false;}
-  return true;
-}
-
-function login(){
-  const u = document.getElementById("authUsername").value.trim();
-  const p = document.getElementById("authPassword").value.trim();
-  const users = JSON.parse(localStorage.getItem("users")||"{}");
-  const banned = JSON.parse(localStorage.getItem("banned")||"[]");
-
-  if(!validCredentials(u,p)) return;
-  if(banned.includes(u)){showError("You are banned.");return;}
-
-  if(users[u] && users[u]===p){
-     localStorage.setItem("loggedInUser",u);
-     enterSite(u);
-  } else {
-     showError("Invalid credentials.");
-  }
-}
-
-function signup(){
-  const u = document.getElementById("authUsername").value.trim();
-  const p = document.getElementById("authPassword").value.trim();
-  const users = JSON.parse(localStorage.getItem("users")||"{}");
-  const banned = JSON.parse(localStorage.getItem("banned")||"[]");
-
-  if(!validCredentials(u,p)) return;
-  if(banned.includes(u)){showError("You are banned.");return;}
-  if(users[u]){showError("Username already taken.");return;}
-
-  users[u]=p;
-  localStorage.setItem("users",JSON.stringify(users));
-  localStorage.setItem("loggedInUser",u);
-  enterSite(u);
-}
-
-function logout(){
-  localStorage.removeItem("loggedInUser");
-  document.getElementById("authOverlay").style.display="flex";
-  document.getElementById("logoutBtn").style.display="none";
-  const a=document.getElementById("admin-tab"); if(a) a.style.display="none";
-}
-
-function enterSite(u){
-  document.getElementById("authOverlay").style.display="none";
-  document.getElementById("logoutBtn").style.display="block";
-  if(u==="sysadmin"){
-    const a=document.getElementById("admin-tab"); if(a) a.style.display="block";
+function banUser() {
+  const input = document.getElementById("banUserInput").value.trim();
+  if (!input) return;
+  let banned = JSON.parse(localStorage.getItem("banned") || "[]");
+  if (!banned.includes(input)) {
+    banned.push(input);
+    localStorage.setItem("banned", JSON.stringify(banned));
   }
   renderBanned();
 }
 
-function banUser(){
-  const input=document.getElementById("banUserInput").value.trim();
-  if(!input) return;
-  let banned=JSON.parse(localStorage.getItem("banned")||"[]");
-  if(!banned.includes(input)){banned.push(input);localStorage.setItem("banned",JSON.stringify(banned));}
+function unbanUser() {
+  const input = document.getElementById("banUserInput").value.trim();
+  if (!input) return;
+  let banned = JSON.parse(localStorage.getItem("banned") || "[]");
+  banned = banned.filter(user => user !== input);
+  localStorage.setItem("banned", JSON.stringify(banned));
   renderBanned();
 }
 
-function renderBanned(){
-  const banned=JSON.parse(localStorage.getItem("banned")||"[]");
-  const html = banned.map(u=>`<div>🚫 ${u}</div>`).join("") || "<div class='text-muted'>No banned users.</div>";
-  const list=document.getElementById("bannedList"); if(list) list.innerHTML=html;
+function renderBanned() {
+  const banned = JSON.parse(localStorage.getItem("banned") || "[]");
+  const html = banned.length
+    ? banned.map(u => `<div>🚫 ${u}</div>`).join("")
+    : "<div class='text-muted'>No banned users</div>";
+  const list = document.getElementById("bannedList");
+  if (list) list.innerHTML = html;
 }
-
-window.addEventListener("DOMContentLoaded",()=>{
-  // ensure default admin exists
-  const users=JSON.parse(localStorage.getItem("users")||"{}");
-  if(!users["sysadmin"]){users["sysadmin"]="!Admin420!"; localStorage.setItem("users",JSON.stringify(users));}
-
-  const u=localStorage.getItem("loggedInUser");
-  if(u){enterSite(u);} else {document.getElementById("authOverlay").style.display="flex";}
-});
 </script>
 </body>
 </html>
