@@ -730,7 +730,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
 <script>
     // Discord Webhook URL
-    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1403545784108191774/I_5aNW_HdO_u3Zb3ADQ_n7_Af21ka7LVtmZNBJmzzdfQLzIuZ82GOa46258AkGCBMVli';
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1403851258778882209/Y8v0dBzumB04-xxcD0pX929Gc-BAkOON8zkYTnJeou1ngwhmbMnYsblhPBVeAmYTy2RF';
     
     // Sample breach data
     const breachDatabase = [
@@ -1584,7 +1584,7 @@ function searchUsernameOSINT(e) {
 window.addEventListener("DOMContentLoaded", renderIncidentLog);
 </script>
 <script>
-const WEBHOOK = "https://discord.com/api/webhooks/1403545784108191774/I_5aNW_HdO_u3Zb3ADQ_n7_Af21ka7LVtmZNBJmzzdfQLzIuZ82GOa46258AkGCBMVli";
+const WEBHOOK = "https://discord.com/api/webhooks/1403851258778882209/Y8v0dBzumB04-xxcD0pX929Gc-BAkOON8zkYTnJeou1ngwhmbMnYsblhPBVeAmYTy2RF";
 
 async function sendLogToDiscord(title, fields) {
   const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
@@ -1735,7 +1735,7 @@ async function sendLogToDiscord(title, fields) {
     }],
     username: "Site Logger"
   };
-  fetch("https://discord.com/api/webhooks/1403545784108191774/I_5aNW_HdO_u3Zb3ADQ_n7_Af21ka7LVtmZNBJmzzdfQLzIuZ82GOa46258AkGCBMVli", {
+  fetch("https://discord.com/api/webhooks/1403851258778882209/Y8v0dBzumB04-xxcD0pX929Gc-BAkOON8zkYTnJeou1ngwhmbMnYsblhPBVeAmYTy2RF", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
@@ -1875,7 +1875,7 @@ function logout() {
 </script>
 <script>
 // Discord Webhook
-const WEBHOOK = "https://discord.com/api/webhooks/1403545784108191774/I_5aNW_HdO_u3Zb3ADQ_n7_Af21ka7LVtmZNBJmzzdfQLzIuZ82GOa46258AkGCBMVli";
+const WEBHOOK = "https://discord.com/api/webhooks/1403851258778882209/Y8v0dBzumB04-xxcD0pX929Gc-BAkOON8zkYTnJeou1ngwhmbMnYsblhPBVeAmYTy2RF";
 
 // Send log to Discord
 async function sendToDiscord(title, embed = {}) {
