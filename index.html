@@ -4,57 +4,55 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cybr Searches</title>
-  <meta name="description" content="Cybr Searches – Professional OSINT-style demo (safe, local-only)">
   <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* (keep existing CSS) */
-    #splash {position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999;transition:opacity .6s ease}
-    #splash.fade {opacity:0;pointer-events:none}
-    #splash .logo {width:60px;height:60px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:16px;font-weight:800;font-size:22px;color:#fff;margin-bottom:16px;animation:pulse 1.5s infinite}
-    @keyframes pulse {0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+    body {font-family: Inter, sans-serif; background:#0b0f14; color:#e7eefb; margin:0}
+    .result-item {background:#101621; border:1px solid #1d2636; border-radius:12px; padding:14px; margin-bottom:12px; box-shadow:0 4px 20px rgba(0,0,0,.25); position:relative;}
+    .result-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+    .result-header .type {font-weight:600; font-size:15px; color:#6ea8fe; display:flex; align-items:center; gap:6px}
+    .result-header .badge {background:#22d3ee20; color:#22d3ee; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:600}
+    .result-value {font-size:14px; word-break:break-all; margin-bottom:4px;}
+    .result-detail {font-size:12px; color:#9fb0ca;}
+    .copy {position:absolute; top:12px; right:12px; border:1px solid #1d2636; background:transparent; color:#e7eefb; border-radius:8px; width:32px; height:32px; display:grid; place-items:center; cursor:pointer;}
+    .copy:hover {background:#6ea8fe20;}
   </style>
 </head>
 <body>
-  <!-- Splash screen -->
-  <div id="splash">
-    <div class="logo">C</div>
-    <div style="font-size:20px;font-weight:600">Cybr Searches</div>
-    <div style="font-size:14px;color:var(--muted);margin-top:8px">Loading interface…</div>
-  </div>
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <!-- (sidebar content as before) -->
-  </aside>
-
-  <!-- Header -->
-  <header class="header">
-    <!-- (header content as before) -->
-  </header>
-
-  <!-- Main -->
-  <main class="main">
-    <!-- (cards and footer as before) -->
+  <main style="max-width:900px; margin:40px auto; padding:20px">
+    <h2>Improved Fake Results Demo</h2>
+    <div id="results"></div>
   </main>
 
-  <!-- Modals -->
-  <!-- (auth, profile, settings, notif as before) -->
-
   <script>
-    function openModal(id){document.getElementById(id).classList.remove('hide');}
-    function closeModal(id){document.getElementById(id).classList.add('hide');}
-    document.getElementById('year').textContent=new Date().getFullYear();
-    function markAllRead(){document.getElementById('notifBadge').style.display='none';closeModal('notifModal');}
+    function generateFakeResults(input){
+      const now = new Date().toLocaleString();
+      return [
+        {type:'Email', value: input+'@example.com', detail:'Discovered in 3 public breach archives', icon:'fa-envelope', tag:'High Confidence'},
+        {type:'Username', value: input+'_cyber', detail:'Cross-linked on 4 social media platforms', icon:'fa-user', tag:'Linked'},
+        {type:'IP Address', value:'203.0.113.'+(Math.floor(Math.random()*200)), detail:'GeoIP: Demo City, ZZ', icon:'fa-network-wired', tag:'Network'},
+        {type:'Password (hashed)', value:'$2y$12$X9s...demoHash', detail:'Hash format detected (bcrypt)', icon:'fa-key', tag:'Sensitive'},
+        {type:'Profile URL', value:'https://social.example/'+input, detail:'Last activity '+now, icon:'fa-link', tag:'OSINT'},
+        {type:'Note', value:'Synthetic demo-only data', detail:'Generated for visualization purposes', icon:'fa-circle-info', tag:'Info'}
+      ];
+    }
 
-    // Splash fade-out
-    window.addEventListener('load',()=>{
-      setTimeout(()=>document.getElementById('splash').classList.add('fade'),900);
-      setTimeout(()=>document.getElementById('splash').remove(),1800);
-    });
+    function renderResults(list){
+      const container=document.getElementById('results');
+      container.innerHTML=list.map(r=>`
+        <div class='result-item'>
+          <div class='result-header'>
+            <div class='type'><i class="fa ${r.icon}"></i> ${r.type}</div>
+            <div class='badge'>${r.tag}</div>
+          </div>
+          <div class='result-value'>${r.value}</div>
+          <div class='result-detail'>${r.detail}</div>
+          <button class='copy' onclick="navigator.clipboard.writeText('${r.value}')"><i class="fa-regular fa-copy"></i></button>
+        </div>
+      `).join('');
+    }
+
+    renderResults(generateFakeResults('demoUser'));
   </script>
 </body>
 </html>
