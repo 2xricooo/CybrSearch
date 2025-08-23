@@ -1,58 +1,708 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cybr Searches</title>
+  <meta name="description" content="Cybr Searches — Professional OSINT-style Interface" />
   <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <style>
-    body {font-family: Inter, sans-serif; background:#0b0f14; color:#e7eefb; margin:0}
-    .result-item {background:#101621; border:1px solid #1d2636; border-radius:12px; padding:14px; margin-bottom:12px; box-shadow:0 4px 20px rgba(0,0,0,.25); position:relative;}
-    .result-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
-    .result-header .type {font-weight:600; font-size:15px; color:#6ea8fe; display:flex; align-items:center; gap:6px}
-    .result-header .badge {background:#22d3ee20; color:#22d3ee; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:600}
-    .result-value {font-size:14px; word-break:break-all; margin-bottom:4px;}
-    .result-detail {font-size:12px; color:#9fb0ca;}
-    .copy {position:absolute; top:12px; right:12px; border:1px solid #1d2636; background:transparent; color:#e7eefb; border-radius:8px; width:32px; height:32px; display:grid; place-items:center; cursor:pointer;}
-    .copy:hover {background:#6ea8fe20;}
+    :root{
+      --bg: #0b0f14;
+      --panel: #121824;
+      --panel-2: #0f1520;
+      --text: #e6eefc;
+      --muted:#9fb0c7;
+      --primary:#4f7cff;
+      --primary-400:#6a91ff;
+      --accent:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --card:#0d131d;
+      --border:#1c2534;
+      --chip:#172133;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    [data-theme="light"]{
+      --bg:#f7f9fc; --panel:#ffffff; --panel-2:#f2f5fb; --text:#0b1220; --muted:#415168;
+      --primary:#315eff; --primary-400:#466fff; --accent:#16a34a; --warn:#b45309; --danger:#b91c1c;
+      --card:#ffffff; --border:#e8eef8; --chip:#eef3ff; --shadow: 0 8px 25px rgba(10,31,68,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--text);}
+
+    /* Splash */
+    #splash{position:fixed;inset:0;background:linear-gradient(180deg,var(--panel-2),var(--bg));display:flex;align-items:center;justify-content:center;z-index:9999;}
+    .splash-card{display:flex;flex-direction:column;align-items:center;gap:16px}
+    .splash-logo{width:74px;height:74px;border-radius:18px;background:radial-gradient(70% 70% at 30% 30%,var(--primary-400),var(--primary));box-shadow:0 12px 40px rgba(79,124,255,.45);display:grid;place-items:center;}
+    .splash-logo span{font-weight:800;font-size:36px;color:white;text-shadow:0 2px 10px rgba(0,0,0,.25)}
+    .splash-title{font-size:22px;font-weight:800;letter-spacing:.3px}
+    .spinner{width:48px;height:48px;border-radius:50%;border:4px solid rgba(255,255,255,.12);border-top-color:var(--primary);animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .splash-fade{animation:fadeOut .5s ease forwards}
+    @keyframes fadeOut{to{opacity:0;visibility:hidden}}
+
+    /* Auth Gate */
+    #auth-gate{position:fixed;inset:0;background:linear-gradient(180deg,var(--panel-2),var(--bg));display:none;align-items:center;justify-content:center;z-index:9998}
+    .auth-card{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px}
+    .auth-card h2{margin:0 0 6px 0}
+    .auth-card p{margin:0 0 12px 0;color:var(--muted)}
+    .field{margin-bottom:10px}
+    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    .field input{width:100%;background:var(--panel-2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+
+    /* Layout */
+    .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh;visibility:hidden}
+    .sidebar{background:var(--panel);border-right:1px solid var(--border);padding:18px 14px;position:sticky;top:0;height:100vh}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:10px;border-radius:12px;background:var(--panel-2);}
+    .brand .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#7aa2ff);display:grid;place-items:center;color:white;font-weight:800}
+    .brand .name{font-weight:800}
+    .menu{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+    .menu a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--text);text-decoration:none;border:1px solid transparent}
+    .menu a .tag{margin-left:auto;font-size:11px;padding:2px 6px;border-radius:999px;background:var(--chip);color:var(--primary)}
+    .menu a.active,.menu a:hover{background:var(--panel-2);border-color:var(--border)}
+    .footer{padding:12px 8px 0 8px;color:var(--muted);font-size:12px}
+
+    .content{padding:20px 24px}
+    .topbar{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .search-wrap{flex:1;display:flex;gap:10px}
+    .search-wrap input{flex:1;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+    .btn{background:var(--primary);color:white;border:none;border-radius:10px;padding:12px 14px;font-weight:600;cursor:pointer}
+    .btn.secondary{background:var(--panel);color:var(--text);border:1px solid var(--border)}
+    .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+    .icon-btn{position:relative;background:var(--panel);border:1px solid var(--border);color:var(--text);width:42px;height:42px;border-radius:10px;display:grid;place-items:center;cursor:pointer}
+    .icon-btn .badge{position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;border-radius:999px;font-size:11px;padding:2px 6px;border:2px solid var(--panel)}
+
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+    .card h3{margin:0;padding:14px 16px;border-bottom:1px solid var(--border)}
+    .card .body{padding:16px}
+    .muted{color:var(--muted)}
+
+    /* Progress */
+    .progress{height:10px;background:var(--panel-2);border:1px solid var(--border);border-radius:999px;overflow:hidden}
+    .progress > div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),#7aa2ff);transition:width .2s ease}
+
+    /* Results */
+    .results-controls{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+    .chip{background:var(--chip);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:999px;font-size:12px;cursor:pointer}
+    .chip.active{outline:2px solid var(--primary);}
+    .result{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+    .result:hover{border-color:var(--primary)}
+    .result-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+    .result-head .rtype{font-weight:700}
+    .result-head .tag{margin-left:auto;background:rgba(34,197,94,.12);color:var(--accent);padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid rgba(34,197,94,.25)}
+    .result .value{font-weight:600}
+    .result small{color:var(--muted)}
+    .copy-btn{position:absolute;top:10px;right:10px;background:transparent;border:1px solid var(--border);color:var(--text);width:34px;height:34px;border-radius:8px;display:grid;place-items:center;cursor:pointer}
+
+    /* KPI */
+    .kpi-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
+    .kpi .big{font-size:22px;font-weight:800}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;display:none;z-index:9997}
+    .modal.open{display:block}
+    .modal .backdrop{position:absolute;inset:0;background:rgba(10,15,25,.6);backdrop-filter:blur(2px);animation:fadeIn .2s ease}
+    .modal .panel{position:relative;max-width:560px;margin:5% auto;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);animation:pop .18s ease}
+    .modal .panel .hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
+    .modal .panel .bd{padding:16px}
+    .modal .close{background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes pop{from{transform:scale(.98);opacity:.7}to{transform:scale(1);opacity:1}}
+
+    /* Logs panel */
+    .logs{max-height:240px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:8px;background:var(--panel-2)}
+    .log-item{padding:6px 8px;border-bottom:1px solid var(--border);font-size:13px}
+    .log-item:last-child{border-bottom:none}
+
+    @media (max-width: 1100px){
+      .app{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto}
+      .grid{grid-template-columns:1fr}
+    }
+
+    /* Buttons / inputs */
+    .btn{transition:filter .2s}
+    .btn:hover{filter:brightness(1.08)}
+    input,select,button{font-family:inherit}
   </style>
 </head>
 <body>
-  <main style="max-width:900px; margin:40px auto; padding:20px">
-    <h2>Improved Fake Results Demo</h2>
-    <div id="results"></div>
-  </main>
+  <!-- Splash Screen -->
+  <div id="splash">
+    <div class="splash-card">
+      <div class="splash-logo"><span>C</span></div>
+      <div class="splash-title">Cybr Searches</div>
+      <div class="spinner" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <!-- Auth Gate (must login first) -->
+  <div id="auth-gate">
+    <div class="auth-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="splash-logo" style="width:42px;height:42px;border-radius:12px"><span style="font-size:22px">C</span></div>
+        <div>
+          <h2 style="margin:0">Login to Cybr Searches</h2>
+          <p>Access the dashboard after login. Activity is shown in the Logs panel.</p>
+        </div>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input id="login-email" type="email" placeholder="you@example.com" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="login-pass" type="password" placeholder="••••••••" />
+      </div>
+      <button class="btn" id="login-btn" style="width:100%;background:var(--primary);margin-top:6px">Log in</button>
+      <p class="muted" style="margin-top:10px;font-size:12px">By continuing you acknowledge activity logging in-app. Optional “Send to Discord” can be toggled inside Settings/Logs.</p>
+    </div>
+  </div>
+
+  <div class="app" id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div>
+          <div class="name">Cybr Searches</div>
+          <div class="muted" style="font-size:12px">Professional OSINT-style UI</div>
+        </div>
+      </div>
+      <nav class="menu">
+        <a class="active" href="#"><i class="fa-solid fa-magnifying-glass"></i> Advanced Search</a>
+        <a href="#"><i class="fa-regular fa-envelope"></i> Email Search</a>
+        <a href="#"><i class="fa-regular fa-user"></i> Person Search</a>
+        <a href="#"><i class="fa-solid fa-phone"></i> Phone Search</a>
+        <a href="#"><i class="fa-solid fa-globe"></i> Domain Search</a>
+        <a href="#"><i class="fa-regular fa-credit-card"></i> Credit Card Search</a>
+        <a href="#"><i class="fa-solid fa-database"></i> Databases <span class="tag">42</span></a>
+        <a href="#" id="btn-history"><i class="fa-regular fa-clock"></i> History</a>
+        <a href="#" id="btn-profile"><i class="fa-regular fa-id-badge"></i> My Profile</a>
+        <a href="#" id="btn-settings"><i class="fa-solid fa-gear"></i> Settings</a>
+      </nav>
+      <div class="footer">Status: <span style="color:var(--accent);font-weight:700">Online</span></div>
+    </aside>
+
+    <!-- Main -->
+    <main class="content">
+      <div class="topbar">
+        <div class="search-wrap">
+          <input id="q" type="text" placeholder="Enter an email, username, phone number, IP address..." />
+          <button class="btn" id="btn-analyze"><i class="fa-solid fa-bolt"></i> Analyze</button>
+          <button class="btn secondary" id="btn-auth"><i class="fa-regular fa-circle-user"></i> Account</button>
+        </div>
+        <button class="icon-btn" id="btn-theme" title="Toggle theme"><i class="fa-regular fa-moon"></i></button>
+        <button class="icon-btn" id="btn-notifs" title="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span class="badge" id="notif-badge" style="display:none">0</span>
+        </button>
+      </div>
+
+      <div class="grid">
+        <!-- LEFT: Search & Results -->
+        <section class="card">
+          <h3>Professional OSINT Search</h3>
+          <div class="body">
+            <div class="progress" id="progress" aria-hidden="true" style="display:none"><div></div></div>
+
+            <div class="results-controls" id="filters" style="display:none">
+              <span class="muted" style="margin-right:8px">Filters:</span>
+              <button class="chip active" data-filter="all">All</button>
+              <button class="chip" data-filter="email">Emails</button>
+              <button class="chip" data-filter="username">Usernames</button>
+              <button class="chip" data-filter="ip">IPs</button>
+              <button class="chip" data-filter="social">Social</button>
+              <button class="chip" data-filter="phone">Phones</button>
+              <button class="chip" data-filter="domain">Domains</button>
+              <button class="chip" data-filter="password">Passwords</button>
+            </div>
+
+            <div id="empty" class="muted" style="padding:18px;border:1px dashed var(--border);border-radius:12px">Use the search bar above to start an analysis…</div>
+            <div id="results"></div>
+
+            <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+              <button class="btn ghost" id="btn-export-json"><i class="fa-solid fa-file-export"></i> Export JSON</button>
+              <button class="btn ghost" id="btn-export-csv"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+              <button class="btn ghost" id="btn-clear"><i class="fa-regular fa-trash-can"></i> Clear</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT: System, Logs & Stats -->
+        <aside class="card">
+          <h3>System & Activity</h3>
+          <div class="body">
+            <div class="kpi-wrap">
+              <div class="kpi"><div class="muted">Requests today</div><div class="big" id="kpi-req">0</div></div>
+              <div class="kpi"><div class="muted">Avg. response</div><div class="big" id="kpi-rt">320ms</div></div>
+              <div class="kpi"><div class="muted">Active users</div><div class="big" id="kpi-users">12</div></div>
+            </div>
+
+            <div style="height:12px"></div>
+            <div class="muted" style="margin-bottom:6px;display:flex;align-items:center;gap:8px">
+              <i class="fa-regular fa-rectangle-list"></i> Activity Logs
+            </div>
+
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+              <label style="display:flex;align-items:center;gap:6px">
+                <input type="checkbox" id="toggle-discord" />
+                <span>Send logs to Discord</span>
+              </label>
+              <input id="webhook-url" type="text" placeholder="Webhook URL" style="flex:1;min-width:220px;background:var(--panel-2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px"
+                     value="https://discord.com/api/webhooks/1404210578066636883/0H0THVIdTlLFfL7vLfgu0P0TAFGudDtqyd0vvtDim4rLy4P8A1BLSKHL1EFxjjlwokHb" />
+              <button class="btn secondary" id="btn-test-webhook" title="Send a test log">Test</button>
+            </div>
+
+            <div class="logs" id="logs" aria-live="polite"></div>
+
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+              <button class="btn ghost" id="btn-download-json"><i class="fa-solid fa-download"></i> Download JSON</button>
+              <button class="btn ghost" id="btn-download-csv"><i class="fa-solid fa-file-csv"></i> Download CSV</button>
+              <button class="btn ghost" id="btn-clear-logs"><i class="fa-regular fa-trash-can"></i> Clear Logs</button>
+            </div>
+
+            <div style="height:12px"></div>
+            <div class="muted">Latest updates</div>
+            <ul id="updates" style="padding-left:18px;margin-top:6px">
+              <li>Security update applied</li>
+              <li>New breach database synced</li>
+              <li>UI performance improvements</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- PROFILE MODAL -->
+  <div class="modal" id="modal-profile" aria-hidden="true">
+    <div class="backdrop" data-close="modal-profile"></div>
+    <div class="panel">
+      <div class="hd">
+        <strong>My Profile</strong>
+        <button class="close" data-close="modal-profile">×</button>
+      </div>
+      <div class="bd">
+        <div class="field"><label>Username</label><input type="text" id="profile-username" value="unknown" /></div>
+        <div class="field"><label>Status</label><input type="text" id="profile-status" value="Free" /></div>
+        <div class="field"><label>Last Login</label><input type="text" id="profile-last" value="—" /></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal" id="modal-settings" aria-hidden="true">
+    <div class="backdrop" data-close="modal-settings"></div>
+    <div class="panel">
+      <div class="hd">
+        <strong>Settings</strong>
+        <button class="close" data-close="modal-settings">×</button>
+      </div>
+      <div class="bd">
+        <div class="field">
+          <label>Theme</label>
+          <select id="theme-select">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Animations</label>
+          <select id="anim-select">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Results per search</label>
+          <select id="count-select">
+            <option>8</option>
+            <option selected>12</option>
+            <option>16</option>
+            <option>24</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS MODAL -->
+  <div class="modal" id="modal-notifs" aria-hidden="true">
+    <div class="backdrop" data-close="modal-notifs"></div>
+    <div class="panel">
+      <div class="hd">
+        <strong>Notifications</strong>
+        <div>
+          <button class="btn ghost" id="btn-mark-read" style="padding:6px 10px">Mark all as read</button>
+          <button class="close" data-close="modal-notifs">×</button>
+        </div>
+      </div>
+      <div class="bd">
+        <ul id="notif-list" style="margin:0;padding-left:18px"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT MODAL (shortcut from topbar) -->
+  <div class="modal" id="modal-auth" aria-hidden="true">
+    <div class="backdrop" data-close="modal-auth"></div>
+    <div class="panel">
+      <div class="hd">
+        <strong>Account</strong>
+        <button class="close" data-close="modal-auth">×</button>
+      </div>
+      <div class="bd">
+        <p class="muted" style="margin-top:0">You’re already logged in to access the app. Use Settings or Profile to edit your details.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn secondary" id="btn-open-profile"><i class="fa-regular fa-id-badge"></i> Profile</button>
+          <button class="btn secondary" id="btn-open-settings"><i class="fa-solid fa-gear"></i> Settings</button>
+          <button class="btn" id="btn-logout" style="background:var(--danger)"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    function generateFakeResults(input){
-      const now = new Date().toLocaleString();
-      return [
-        {type:'Email', value: input+'@example.com', detail:'Discovered in 3 public breach archives', icon:'fa-envelope', tag:'High Confidence'},
-        {type:'Username', value: input+'_cyber', detail:'Cross-linked on 4 social media platforms', icon:'fa-user', tag:'Linked'},
-        {type:'IP Address', value:'203.0.113.'+(Math.floor(Math.random()*200)), detail:'GeoIP: Demo City, ZZ', icon:'fa-network-wired', tag:'Network'},
-        {type:'Password (hashed)', value:'$2y$12$X9s...demoHash', detail:'Hash format detected (bcrypt)', icon:'fa-key', tag:'Sensitive'},
-        {type:'Profile URL', value:'https://social.example/'+input, detail:'Last activity '+now, icon:'fa-link', tag:'OSINT'},
-        {type:'Note', value:'Synthetic demo-only data', detail:'Generated for visualization purposes', icon:'fa-circle-info', tag:'Info'}
-      ];
-    }
+  // ===== Configuration =====
+  const state = {
+    theme: localStorage.getItem('cybr-theme') || 'dark',
+    anim: localStorage.getItem('cybr-anim') || 'on',
+    results: [],
+    activity: [],
+    requestsToday: 0,
+    notifCount: 0,
+    loggedIn: false,
+    userEmail: null
+  };
 
-    function renderResults(list){
-      const container=document.getElementById('results');
-      container.innerHTML=list.map(r=>`
-        <div class='result-item'>
-          <div class='result-header'>
-            <div class='type'><i class="fa ${r.icon}"></i> ${r.type}</div>
-            <div class='badge'>${r.tag}</div>
-          </div>
-          <div class='result-value'>${r.value}</div>
-          <div class='result-detail'>${r.detail}</div>
-          <button class='copy' onclick="navigator.clipboard.writeText('${r.value}')"><i class="fa-regular fa-copy"></i></button>
+  // ===== Helpers =====
+  const $ = (q,root=document)=>root.querySelector(q);
+  const $$ = (q,root=document)=>Array.from(root.querySelectorAll(q));
+  const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
+  const escapeHtml = (s='')=>s.replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+
+  function setTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('cybr-theme', t);
+    const sel = $('#theme-select'); if(sel) sel.value=t;
+  }
+
+  function addNotif(text){
+    const li = document.createElement('li');
+    li.textContent = text;
+    $('#notif-list').prepend(li);
+    state.notifCount++;
+    const b = $('#notif-badge');
+    b.textContent = state.notifCount;
+    b.style.display = 'inline-block';
+  }
+
+  // ===== Logs =====
+  function logActivity(message){
+    const entry = { time: new Date().toISOString(), message };
+    state.activity.unshift(entry);
+    renderLogs(true);
+    maybeSendToDiscord(entry);
+  }
+
+  function renderLogs(autoscroll=false){
+    const box = $('#logs');
+    if(!box) return;
+    box.innerHTML = state.activity.map(l => `
+      <div class="log-item">[${new Date(l.time).toLocaleString()}] ${escapeHtml(l.message)}</div>
+    `).join('');
+    if(autoscroll) box.scrollTop = 0; // newest at top, auto “visible”
+  }
+
+  async function maybeSendToDiscord(entry){
+    const enabled = $('#toggle-discord')?.checked;
+    const url = $('#webhook-url')?.value?.trim();
+    if(!enabled || !url) return;
+    try{
+      const payload = {
+        embeds:[{
+          title: 'Cybr Searches Log',
+          color: 3447003,
+          fields: [
+            { name:'Event', value: entry.message || '—' },
+            { name:'When', value: new Date(entry.time).toLocaleString() }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      };
+      await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    }catch(e){ console.warn('Webhook failed', e); }
+  }
+
+  function downloadJSON(){
+    const blob = new Blob([JSON.stringify(state.activity,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `cybr-logs-${Date.now()}.json`;
+    a.click();
+  }
+
+  function downloadCSV(){
+    const header = 'time,message\n';
+    const rows = state.activity.map(l=>`"${l.time}","${(l.message||'').replaceAll('"','""')}"`).join('\n');
+    const blob = new Blob([header+rows], {type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `cybr-logs-${Date.now()}.csv`;
+    a.click();
+  }
+
+  // ===== Results =====
+  const ICONS = {
+    email: 'fa-regular fa-envelope',
+    username: 'fa-regular fa-user',
+    ip: 'fa-solid fa-network-wired',
+    social: 'fa-brands fa-twitter',
+    phone: 'fa-solid fa-phone',
+    domain: 'fa-solid fa-globe',
+    password: 'fa-solid fa-key'
+  };
+  const BADGES = ['High Confidence','Linked','New','Sensitive','Breached','Archived'];
+
+  function fakeValue(kind, q, i){
+    const base = q.replace(/\s+/g,'').toLowerCase() || 'target';
+    switch(kind){
+      case 'email': return `${base}${i%3?'.':''}${i}@example.com`;
+      case 'username': return `${base}_${(1000+i)}`;
+      case 'ip': return `${(i%200)+12}.${(i%50)+10}.${(i%100)+20}.${(i%150)+30}`;
+      case 'social': return `https://twitter.com/${base}${i}`;
+      case 'phone': return `+1 (555) ${String(100+ (i*7)%900).padStart(3,'0')}-${String(1000+(i*37)%9000).padStart(4,'0')}`;
+      case 'domain': return `${base}${i}.net`;
+      case 'password': return `Hash:${(Math.random().toString(16).slice(2,10)).toUpperCase()}…`;
+      default: return base;
+    }
+  }
+  function fakeDetail(kind){
+    switch(kind){
+      case 'email': return 'Found in breach dataset (2023) • SMTP: valid';
+      case 'username': return 'Mentioned across 3 platforms • Activity: medium';
+      case 'ip': return 'ASN: 13335 • Country: US • Risk: low';
+      case 'social': return 'Profile exists • Last post: ~14 days ago';
+      case 'phone': return 'Carrier: DemoTel • Line type: mobile';
+      case 'domain': return 'WHOIS: privacy protected • Host: demo-edge';
+      case 'password': return 'Format: SHA1 (truncated preview)';
+      default: return '—';
+    }
+  }
+
+  function generateFakeResults(query, count=12){
+    const kinds = ['email','username','ip','social','phone','domain','password'];
+    const out = [];
+    for(let i=0;i<count;i++){
+      const kind = kinds[i % kinds.length];
+      const value = fakeValue(kind, query, i);
+      out.push({
+        type: kind.charAt(0).toUpperCase()+kind.slice(1),
+        kind,
+        icon: ICONS[kind],
+        value,
+        detail: fakeDetail(kind),
+        badge: BADGES[i % BADGES.length]
+      });
+    }
+    return out;
+  }
+
+  function renderResults(filter='all'){
+    const box = $('#results');
+    box.innerHTML = '';
+    const data = state.results.filter(r => filter==='all' ? true : r.kind===filter);
+    if(!data.length){
+      box.innerHTML = `<div class="muted" style="padding:12px">No results for filter: ${filter}</div>`;
+      return;
+    }
+    for(const r of data){
+      const el = document.createElement('div');
+      el.className = 'result';
+      el.setAttribute('data-kind', r.kind);
+      el.innerHTML = `
+        <button class="copy-btn" title="Copy" data-copy="${r.value}"><i class="fa-regular fa-copy"></i></button>
+        <div class="result-head">
+          <span class="rtype"><i class="${r.icon}"></i> ${r.type}</span>
+          <span class="tag">${r.badge}</span>
         </div>
-      `).join('');
+        <div class="value">${escapeHtml(r.value)}</div>
+        <small>${escapeHtml(r.detail)}</small>
+      `;
+      box.appendChild(el);
+    }
+  }
+
+  // ===== Search Flow =====
+  async function runSearch(){
+    const q = $('#q').value.trim();
+    if(!q){ addNotif('Enter something to analyze'); return; }
+
+    $('#empty').style.display = 'none';
+    $('#filters').style.display = 'flex';
+    $('#results').innerHTML = '';
+
+    // progress
+    const bar = $('#progress');
+    const fill = $('#progress > div');
+    bar.style.display = 'block';
+    fill.style.width = '0%';
+
+    for(let pct=0;pct<=100;pct+=Math.floor(Math.random()*18)+6){
+      fill.style.width = Math.min(pct,100) + '%';
+      if(state.anim==='on') await sleep(180);
     }
 
-    renderResults(generateFakeResults('demoUser'));
+    const count = parseInt($('#count-select').value, 10) || 12;
+    state.results = generateFakeResults(q, count);
+    renderResults('all');
+
+    // KPIs
+    state.requestsToday += 1; $('#kpi-req').textContent = state.requestsToday;
+    addNotif('Your search is complete');
+
+    // Logs
+    logActivity(`Search performed: ${q}`);
+
+    // hide progress
+    bar.style.display = 'none';
+  }
+
+  // ===== Modal helpers =====
+  function openModal(id){ $('#'+id).classList.add('open'); }
+  function closeModal(id){ $('#'+id).classList.remove('open'); }
+
+  // ===== Init =====
+  window.addEventListener('DOMContentLoaded', async ()=>{
+    setTheme(state.theme);
+
+    // splash fade
+    setTimeout(()=>{
+      $('#splash').classList.add('splash-fade');
+      // show login gate first
+      $('#auth-gate').style.display = 'flex';
+      // session started log (visible, optionally sent if user enables toggle later and clicks Test or does actions after enabling)
+      logActivity('Session started');
+    }, 500);
+
+    // Auth
+    $('#login-btn').addEventListener('click', ()=>{
+      const email = $('#login-email').value.trim();
+      const pass  = $('#login-pass').value.trim();
+      if(!email || !pass) { alert('Enter credentials'); return; }
+      state.loggedIn = true;
+      state.userEmail = email;
+      $('#auth-gate').style.display = 'none';
+      $('#app').style.visibility = 'visible';
+      logActivity('User logged in');
+      $('#profile-username').value = email.split('@')[0] || 'user';
+      $('#profile-last').value = new Date().toLocaleString();
+    });
+
+    // Topbar actions
+    $('#btn-analyze').addEventListener('click', runSearch);
+    $('#q').addEventListener('keydown', e=>{ if(e.key==='Enter') runSearch(); });
+    $('#btn-auth').addEventListener('click', ()=> openModal('modal-auth'));
+    $('#btn-profile').addEventListener('click', ()=> openModal('modal-profile'));
+    $('#btn-settings').addEventListener('click', ()=> openModal('modal-settings'));
+
+    // Account modal shortcuts
+    $('#btn-open-profile').addEventListener('click', ()=>{ closeModal('modal-auth'); openModal('modal-profile'); });
+    $('#btn-open-settings').addEventListener('click', ()=>{ closeModal('modal-auth'); openModal('modal-settings'); });
+    $('#btn-logout').addEventListener('click', ()=>{
+      state.loggedIn=false; state.userEmail=null;
+      logActivity('User logged out');
+      location.reload();
+    });
+
+    // Theme + Anim
+    $('#btn-theme').addEventListener('click', ()=>{
+      const t = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+      setTheme(t);
+    });
+    $('#theme-select').addEventListener('change', e=> setTheme(e.target.value));
+    $('#anim-select').value = state.anim;
+    $('#anim-select').addEventListener('change', e=>{
+      state.anim = e.target.value; localStorage.setItem('cybr-anim', state.anim);
+    });
+
+    // Filters
+    $$('#filters .chip').forEach(ch=> ch.addEventListener('click', ()=>{
+      $$('#filters .chip').forEach(c=>c.classList.remove('active'));
+      ch.classList.add('active');
+      renderResults(ch.dataset.filter);
+    }));
+
+    // Copy delegation
+    $('#results').addEventListener('click', e=>{
+      const btn = e.target.closest('[data-copy]');
+      if(btn){
+        const t = btn.getAttribute('data-copy');
+        navigator.clipboard.writeText(t);
+        addNotif('Copied to clipboard');
+        logActivity(`Copied: ${t}`);
+      }
+    });
+
+    // Export results
+    $('#btn-export-json').addEventListener('click', ()=>{
+      const blob = new Blob([JSON.stringify(state.results,null,2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `cybr-results-${Date.now()}.json`;
+      a.click();
+      logActivity('Results exported (JSON)');
+    });
+    $('#btn-export-csv').addEventListener('click', ()=>{
+      const header = 'type,kind,value,detail,badge\n';
+      const rows = state.results.map(r=>[r.type,r.kind,`"${(r.value||'').replaceAll('"','""')}"`,`"${(r.detail||'').replaceAll('"','""')}"`,r.badge].join(','));
+      const blob = new Blob([header+rows.join('\n')], {type:'text/csv'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `cybr-results-${Date.now()}.csv`;
+      a.click();
+      logActivity('Results exported (CSV)');
+    });
+    $('#btn-clear').addEventListener('click', ()=>{ state.results=[]; $('#results').innerHTML=''; $('#empty').style.display='block'; logActivity('Results cleared'); });
+
+    // Notifications
+    $('#btn-notifs').addEventListener('click', ()=> openModal('modal-notifs'));
+    $('#btn-mark-read').addEventListener('click', ()=>{ state.notifCount=0; $('#notif-badge').style.display='none'; $('#notif-list').innerHTML=''; });
+
+    // Logs downloads
+    $('#btn-download-json').addEventListener('click', ()=>{ downloadJSON(); logActivity('Logs downloaded (JSON)'); });
+    $('#btn-download-csv').addEventListener('click', ()=>{ downloadCSV(); logActivity('Logs downloaded (CSV)'); });
+    $('#btn-clear-logs').addEventListener('click', ()=>{ state.activity=[]; renderLogs(); addNotif('Logs cleared'); });
+
+    // Test webhook
+    $('#btn-test-webhook').addEventListener('click', ()=>{
+      const enabled = $('#toggle-discord').checked;
+      const url = $('#webhook-url').value.trim();
+      if(!enabled) { alert('Enable "Send logs to Discord" first.'); return; }
+      if(!url) { alert('Enter a webhook URL.'); return; }
+      maybeSendToDiscord({ time:new Date().toISOString(), message:'Test webhook event' });
+      addNotif('Test log sent');
+    });
+
+    // Sidebar History quick action
+    $('#btn-history').addEventListener('click', ()=>{
+      openModal('modal-notifs');
+      addNotif('History shortcut opened');
+    });
+
+    // Footer initial notifs
+    addNotif('Welcome to Cybr Searches');
+  });
   </script>
 </body>
 </html>
