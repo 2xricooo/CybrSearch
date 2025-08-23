@@ -46,27 +46,22 @@
       <section class="tab-pane fade show active" id="home">
         <div class="card p-4"><h3>Welcome to CybrSearch</h3></div>
       </section>
-      <section class="tab-pane fade" id="tools"><div class="card p-4"><h5>Tools Section</h5></div></section>
-      <section class="tab-pane fade" id="feed"><div class="card p-4"><h5>Live Feed</h5><div id="liveFeedContainer"></div></div></section>
-      <section class="tab-pane fade" id="admin"><div class="card p-4"><h5>Admin Dashboard</h5><table class="table table-dark" id="adminLogTable"><tbody></tbody></table></div></section>
+      <section class="tab-pane fade" id="tools">
+        <div class="row g-4">
+          <div class="col-md-6"><div class="card p-3"><h5>Breach Scan</h5><input id="breachInput" class="form-control mb-2"/><button class="btn btn-danger" onclick="breachScan()">Scan</button></div></div>
+          <div class="col-md-6"><div class="card p-3"><h5>WHOIS Lookup</h5><input id="whoisInput" class="form-control mb-2"/><button class="btn btn-info" onclick="whoisLookup()">Lookup</button></div></div>
+        </div>
+      </section>
+      <section class="tab-pane fade" id="feed">
+        <div class="card p-4"><h5>Live Feed</h5><div id="liveFeedContainer"></div></div>
+      </section>
+      <section class="tab-pane fade" id="admin">
+        <div class="card p-4"><h5>Admin Dashboard</h5><table class="table table-dark" id="adminLogTable"><tbody></tbody></table></div>
+      </section>
       <section class="tab-pane fade" id="account">
         <div class="row">
-          <div class="col-md-6">
-            <div class="card p-3">
-              <h5>Sign Up</h5>
-              <input id="signupUser" class="form-control mb-2" placeholder="Username"/>
-              <input id="signupPass" type="password" class="form-control mb-2" placeholder="Password"/>
-              <button class="btn btn-success" onclick="handleSignup()">Sign Up</button>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card p-3">
-              <h5>Login</h5>
-              <input id="loginUser" class="form-control mb-2" placeholder="Username"/>
-              <input id="loginPass" type="password" class="form-control mb-2" placeholder="Password"/>
-              <button class="btn btn-primary" onclick="handleLogin()">Login</button>
-            </div>
-          </div>
+          <div class="col-md-6"><div class="card p-3"><h5>Sign Up</h5><input id="signupUser" class="form-control mb-2" placeholder="Username"/><input id="signupPass" type="password" class="form-control mb-2" placeholder="Password"/><button class="btn btn-success" onclick="handleSignup()">Sign Up</button></div></div>
+          <div class="col-md-6"><div class="card p-3"><h5>Login</h5><input id="loginUser" class="form-control mb-2" placeholder="Username"/><input id="loginPass" type="password" class="form-control mb-2" placeholder="Password"/><button class="btn btn-primary" onclick="handleLogin()">Login</button></div></div>
         </div>
       </section>
     </div>
@@ -74,43 +69,72 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+  const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1408830668057743360/IKwfdTYSpFfSDURSOdcxFJiVTDWNC6MhzTH7NX0vSFd93UIklE1kSSRfDJXbwKnb0hHs";
+
+  // ===== USER SYSTEM =====
   function getUsers(){ return JSON.parse(localStorage.getItem("users")||"[]"); }
   function saveUsers(users){ localStorage.setItem("users", JSON.stringify(users)); }
   function handleSignup(){
-    let u = document.getElementById("signupUser").value.trim();
-    let p = document.getElementById("signupPass").value.trim();
-    if(!u || !p){ alert("Enter username and password"); return; }
-    let users = getUsers();
-    if(users.find(x=>x.username===u)){ alert("Username already exists!"); return; }
+    let u=document.getElementById("signupUser").value.trim();
+    let p=document.getElementById("signupPass").value.trim();
+    if(!u||!p){alert("Enter username and password");return;}
+    let users=getUsers();
+    if(users.find(x=>x.username===u)){alert("Username exists!");return;}
     users.push({username:u,password:p});
     saveUsers(users);
     alert("Signup successful! Please login.");
   }
   function handleLogin(){
-    let u = document.getElementById("loginUser").value.trim();
-    let p = document.getElementById("loginPass").value.trim();
-    let users = getUsers();
-    let found = users.find(x=>x.username===u && x.password===p);
-    if(!found){ alert("Invalid credentials"); return; }
-    localStorage.setItem("currentUser", u);
+    let u=document.getElementById("loginUser").value.trim();
+    let p=document.getElementById("loginPass").value.trim();
+    let users=getUsers();
+    let found=users.find(x=>x.username===u&&x.password===p);
+    if(!found){alert("Invalid credentials");return;}
+    localStorage.setItem("currentUser",u);
     updateUIForLogin();
     alert("Logged in as "+u);
   }
   function logout(){ localStorage.removeItem("currentUser"); updateUIForLogin(); }
   function updateUIForLogin(){
-    let user = localStorage.getItem("currentUser");
-    let adminTab = document.getElementById("admin-tab");
+    let user=localStorage.getItem("currentUser");
+    let adminTab=document.getElementById("admin-tab");
     if(user){
-      document.getElementById("authStatus").innerText = "Welcome, "+user;
-      document.getElementById("logoutBtn").style.display = "inline-block";
-      if(user==="Rico"){ adminTab.style.display = "block"; } else { adminTab.style.display = "none"; }
+      document.getElementById("authStatus").innerText="Welcome, "+user;
+      document.getElementById("logoutBtn").style.display="inline-block";
+      if(user==="Rico"){ adminTab.style.display="block"; } else { adminTab.style.display="none"; }
     } else {
-      document.getElementById("authStatus").innerText = "Not logged in";
-      document.getElementById("logoutBtn").style.display = "none";
-      adminTab.style.display = "none";
+      document.getElementById("authStatus").innerText="Not logged in";
+      document.getElementById("logoutBtn").style.display="none";
+      adminTab.style.display="none";
     }
   }
-  document.addEventListener("DOMContentLoaded", updateUIForLogin);
+
+  // ===== LOGGING =====
+  async function logToDiscord(title, fields=[], description=""){
+    try{
+      const user=localStorage.getItem("currentUser")||"Guest";
+      const ip=await fetch("https://api.ipify.org?format=json").then(r=>r.json()).then(j=>j.ip).catch(()=> "Unknown");
+      const payload={
+        username:"CybrSearch Logger",
+        embeds:[{
+          title,description,color:0x3b82f6,
+          fields:fields.concat([{name:"User",value:user},{name:"IP",value:ip}]),
+          timestamp:new Date().toISOString()
+        }]
+      };
+      await fetch(DISCORD_WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      logActionToFeed(title,fields,user);
+      logActionToAdmin(title,fields,user);
+    }catch(e){console.error(e);}
+  }
+  function logActionToFeed(title,data,user){const el=document.getElementById("liveFeedContainer");const now=new Date().toLocaleTimeString();const entry=document.createElement("div");entry.innerHTML="<b>"+now+"</b> — "+title+" ("+user+")";el.prepend(entry);}
+  function logActionToAdmin(title,data,user){const tbody=document.querySelector("#adminLogTable tbody");const now=new Date().toLocaleString();const row=document.createElement("tr");row.innerHTML="<td>"+now+"</td><td>"+title+"</td><td>User: "+user+" | "+data.map(d=>d.name+": "+d.value).join(" | ")+"</td>";tbody.prepend(row);}
+
+  // ===== TOOLS =====
+  function breachScan(){const v=document.getElementById("breachInput").value.trim();if(!v){alert("Enter value");return;}logToDiscord("Breach Scan Initiated",[{"name":"Query","value":v}]);}
+  function whoisLookup(){const v=document.getElementById("whoisInput").value.trim();if(!v){alert("Enter value");return;}logToDiscord("WHOIS Lookup",[{"name":"Target","value":v}]);}
+
+  document.addEventListener("DOMContentLoaded",updateUIForLogin);
   </script>
 </body>
 </html>
