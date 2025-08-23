@@ -11,13 +11,24 @@
     body{margin:0;font-family:Inter,system-ui;background:#0b0f14;color:#e6eefc}
     .sidebar{position:fixed;top:0;left:0;width:220px;height:100%;background:#121824;padding:20px;box-sizing:border-box}
     .sidebar h2{margin-bottom:20px}
-    .sidebar a{display:block;padding:10px;color:#e6eefc;text-decoration:none;border-radius:8px}
+    .sidebar a{display:flex;align-items:center;gap:8px;padding:10px;color:#e6eefc;text-decoration:none;border-radius:8px;font-weight:500}
     .sidebar a:hover{background:#1c2534}
     .content{margin-left:240px;padding:20px}
-    .panel{background:#121824;border:1px solid #1c2534;border-radius:12px;padding:16px;margin-bottom:20px}
-    .btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer}
+    .panel{background:#121824;border:1px solid #1c2534;border-radius:12px;padding:16px;margin-bottom:20px;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+    .btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:500}
     .btn.primary{background:#4f7cff;color:#fff}
-    .log-item{padding:6px;border-bottom:1px solid #1c2534;font-size:0.9em}
+    .btn.ghost{background:transparent;border:1px solid #4f7cff;color:#4f7cff}
+    .log-item{padding:6px;font-size:0.9em;border-bottom:1px solid #1c2534}
+    .log-item time{color:#999;margin-right:8px}
+    .result-card{background:#1a2233;padding:12px;border-radius:10px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.5);transition:transform .2s}
+    .result-card:hover{transform:translateY(-2px)}
+    .result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .badge{padding:2px 6px;border-radius:6px;font-size:0.75em;color:#fff}
+    .badge.good{background:#22c55e}
+    .badge.warn{background:#f59e0b}
+    .badge.danger{background:#ef4444}
+    .filters{margin-bottom:12px}
+    .filters button{margin-right:6px}
     .modal{display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:1000}
     .modal.active{display:flex}
     .modal-content{background:#fff;color:#333;border-radius:12px;padding:20px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto}
@@ -26,101 +37,124 @@
   </style>
 </head>
 <body>
-  <!-- Sidebar Navigation -->
   <div class="sidebar">
     <h2>Cybr Searches</h2>
-    <a href="#" onclick="setTool('email')">📧 Email</a>
-    <a href="#" onclick="setTool('person')">👤 Person</a>
-    <a href="#" onclick="setTool('phone')">📱 Phone</a>
-    <a href="#" onclick="setTool('domain')">🌐 Domain</a>
-    <a href="#" onclick="setTool('ip')">💻 IP</a>
-    <a href="#" onclick="openLegalModal()">📜 Privacy & Legal</a>
+    <a href="#" onclick="setTool('email')"><i class="fa fa-envelope"></i>Email</a>
+    <a href="#" onclick="setTool('person')"><i class="fa fa-user"></i>Person</a>
+    <a href="#" onclick="setTool('phone')"><i class="fa fa-phone"></i>Phone</a>
+    <a href="#" onclick="setTool('domain')"><i class="fa fa-globe"></i>Domain</a>
+    <a href="#" onclick="setTool('ip')"><i class="fa fa-desktop"></i>IP</a>
+    <a href="#" onclick="openLegalModal()"><i class="fa fa-scale-balanced"></i>Privacy & Legal</a>
   </div>
 
-  <!-- Main Content -->
   <div class="content">
-    <!-- Auth Gate -->
     <div id="authGate" class="panel">
       <h3>Login or Sign Up</h3>
       <input id="authEmail" type="email" placeholder="Email" style="width:100%;margin-bottom:8px"/>
       <input id="authPass" type="password" placeholder="Password" style="width:100%;margin-bottom:12px"/>
       <div style="display:flex;gap:10px">
         <button class="btn primary" onclick="login()">Login</button>
-        <button class="btn" onclick="signup()">Sign Up</button>
+        <button class="btn ghost" onclick="signup()">Sign Up</button>
       </div>
     </div>
 
-    <!-- App -->
     <div id="app" style="display:none">
       <div class="panel">
         <h3 id="toolTitle">Search</h3>
         <input id="query" type="text" placeholder="Enter query..." style="width:100%;margin-bottom:12px"/>
         <button class="btn primary" onclick="analyze()">Analyze</button>
       </div>
-      <div id="results" class="panel"><h3>Results</h3><div id="resultsBox"></div></div>
+
+      <div id="results" class="panel">
+        <h3>Results</h3>
+        <div class="filters">
+          <button class="btn ghost" onclick="filterResults('all')">All</button>
+          <button class="btn ghost" onclick="filterResults('email')">Email</button>
+          <button class="btn ghost" onclick="filterResults('person')">Person</button>
+          <button class="btn ghost" onclick="filterResults('phone')">Phone</button>
+          <button class="btn ghost" onclick="filterResults('domain')">Domain</button>
+          <button class="btn ghost" onclick="filterResults('ip')">IP</button>
+        </div>
+        <div id="resultsBox"></div>
+      </div>
+
       <div class="panel">
         <h3>Logs</h3>
         <div id="logs"></div>
         <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn" onclick="exportJSON()">Download JSON</button>
-          <button class="btn" onclick="exportCSV()">Download CSV</button>
-          <button class="btn" onclick="clearLogs()">Clear Logs</button>
+          <button class="btn ghost" onclick="exportJSON()">Download JSON</button>
+          <button class="btn ghost" onclick="exportCSV()">Download CSV</button>
+          <button class="btn ghost" onclick="clearLogs()">Clear Logs</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Privacy & Legal Modal -->
   <div id="legalModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeLegalModal()">&times;</span>
       <h2>📜 Privacy & Legal</h2>
-      <p><strong>Introduction:</strong> Cybr Searches is a tool that OSINT-style search workflows. Transparency and trust are important.</p>
+      <p><strong>Introduction:</strong> Cybr Searches is a demo tool that simulates OSINT-style search workflows. Transparency and trust are important.</p>
       <p><strong>What We Log:</strong> Actions such as login, sign up, session start, and searches are logged locally in your browser.</p>
       <p><strong>Use of Data:</strong> Logs are for demo and debugging purposes only, and not shared externally by default.</p>
       <p><strong>Data Removal:</strong> You can clear logs anytime with the “Clear Logs” button, and remove account data by clearing local storage.</p>
       <p><strong>User Rights:</strong> You control your local data: export, clear, or reset the app. No hidden tracking.</p>
-      <p><strong>Disclaimer:</strong> This is an educational a production OSINT system.</p>
+      <p><strong>Disclaimer:</strong> This is an educational demo, not a production OSINT system.</p>
     </div>
   </div>
 
 <script>
-const state={tool:'email',logs:[],users:JSON.parse(localStorage.getItem('users')||'{}')};
+const state={tool:'email',logs:[],users:JSON.parse(localStorage.getItem('users')||'{}'),results:[]};
 
 function renderLogs(){
   const box=document.getElementById('logs');
   box.innerHTML='';
-  state.logs.forEach(l=>{
+  state.logs.slice().reverse().forEach(l=>{
     const d=document.createElement('div');
     d.className='log-item';
-    d.textContent=`[${l.time}] ${l.msg}`;
-    box.prepend(d);
+    d.innerHTML=`<time>[${l.time}]</time> <strong>${l.msg}</strong>`;
+    box.appendChild(d);
   });
+  box.scrollTop=box.scrollHeight;
 }
 function logActivity(msg){
   const entry={time:new Date().toLocaleTimeString(),msg};
   state.logs.push(entry);
   renderLogs();
+  // 🔗 Hook: Here you could forward logs to your own server endpoint
 }
 
 function setTool(tool){state.tool=tool;document.getElementById('toolTitle').textContent=tool.charAt(0).toUpperCase()+tool.slice(1)+' Search';}
 
 function fakeResult(tool,q){
-  if(tool==='ip') return `ASN: 13335 • ISP: Cloudflare • Location: San Francisco, US • Risk: low • rDNS: host-${q.replace(/\./g,'-')}.example.net`;
-  if(tool==='email') return `Found breach matches for ${q}`;
-  if(tool==='phone') return `Carrier: DemoTel • Line type: mobile`;
-  if(tool==='domain') return `WHOIS protected • Hosting: DemoHost`;
-  if(tool==='person') return `Profile matches for ${q}`;
-  return 'No data';
+  if(tool==='ip') return {type:'ip',value:q,detail:`ASN: 13335 • ISP: Cloudflare • Location: San Francisco, US • rDNS: host-${q.replace(/\./g,'-')}.example.net`,badge:'good'};
+  if(tool==='email') return {type:'email',value:q,detail:`Found breach matches for ${q}`,badge:'warn'};
+  if(tool==='phone') return {type:'phone',value:q,detail:`Carrier: DemoTel • Line type: mobile`,badge:'good'};
+  if(tool==='domain') return {type:'domain',value:q,detail:`WHOIS protected • Hosting: DemoHost`,badge:'warn'};
+  if(tool==='person') return {type:'person',value:q,detail:`Profile matches for ${q}`,badge:'danger'};
+  return {type:tool,value:q,detail:'No data',badge:'warn'};
 }
 
 function analyze(){
   const q=document.getElementById('query').value.trim();
   if(!q) return;
   const res=fakeResult(state.tool,q);
-  document.getElementById('resultsBox').innerHTML=`<div class='log-item'>${res}</div>`;
+  state.results.push(res);
+  renderResults();
   logActivity(`${state.tool} searched: ${q}`);
 }
+
+function renderResults(filter='all'){
+  const box=document.getElementById('resultsBox');
+  box.innerHTML='';
+  state.results.filter(r=>filter==='all'||r.type===filter).forEach(r=>{
+    const card=document.createElement('div');
+    card.className='result-card';
+    card.innerHTML=`<div class='result-header'><span><strong>${r.value}</strong></span><span class='badge ${r.badge}'>${r.badge.toUpperCase()}</span></div><div>${r.detail}</div>`;
+    box.appendChild(card);
+  });
+}
+function filterResults(type){renderResults(type);}
 
 function signup(){
   const email=document.getElementById('authEmail').value;
