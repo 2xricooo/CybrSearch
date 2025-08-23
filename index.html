@@ -266,7 +266,7 @@
   function logActionToFeed(title, data=[]){
     const feed = JSON.parse(localStorage.getItem('liveFeed')||'[]');
     const now = new Date().toLocaleTimeString();
-    const entry = { time: now, title, details: data.map(d=>`${d.name}: ${d.value}`).join(' | ') };
+    const entry = { time: now, title, details: data.map(d=>\`\${d.name}: \${d.value}\`).join(' | ') };
     feed.unshift(entry); if(feed.length>80) feed.pop();
     localStorage.setItem('liveFeed', JSON.stringify(feed));
     renderLiveFeed();
@@ -274,14 +274,14 @@
   function renderLiveFeed(){
     const feed = JSON.parse(localStorage.getItem('liveFeed')||'[]');
     const el = document.getElementById('liveFeedContainer'); if(!el) return;
-    el.innerHTML = feed.map(log=>`<div class="mb-2"><strong>${log.time}</strong> — ${log.title}<br><span class="text-secondary">${log.details}</span></div>`).join('');
+    el.innerHTML = feed.map(log=>\`<div class="mb-2"><strong>\${log.time}</strong> — \${log.title}<br><span class="text-secondary">\${log.details}</span></div>\`).join('');
   }
 
   // ======= ADMIN LOGS (local) =======
   function logActionToAdmin(title, data=[]){
     const logs = JSON.parse(localStorage.getItem('adminLogs')||'[]');
     const now = new Date().toLocaleString();
-    const entry = { time: now, title, details: data.map(d=>`${d.name}: ${d.value}`).join(' | ') };
+    const entry = { time: now, title, details: data.map(d=>\`\${d.name}: \${d.value}\`).join(' | ') };
     logs.unshift(entry); if(logs.length>500) logs.pop();
     localStorage.setItem('adminLogs', JSON.stringify(logs));
     renderAdminLogs();
@@ -295,7 +295,7 @@
     let filtered = logs.filter(l=> l.title.toLowerCase().includes(q) || l.details.toLowerCase().includes(q) || l.time.toLowerCase().includes(q));
     if(order==='oldest') filtered = filtered.slice().reverse();
 
-    tbody.innerHTML = filtered.map(l=>`<tr><td>${l.time}</td><td>${l.title}</td><td>${l.details}</td></tr>`).join('');
+    tbody.innerHTML = filtered.map(l=>\`<tr><td>\${l.time}</td><td>\${l.title}</td><td>\${l.details}</td></tr>\`).join('');
   }
   function exportAdminLogs(){
     const logs = localStorage.getItem('adminLogs')||'[]';
