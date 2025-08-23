@@ -28,351 +28,89 @@
       </button>
       <div class="collapse navbar-collapse" id="nav">
         <ul class="navbar-nav ms-auto nav-pills gap-2">
-          <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#home"><i class="fa-solid fa-house me-1"></i>Home</a></li>
-          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tools"><i class="fa-solid fa-screwdriver-wrench me-1"></i>Tools</a></li>
-          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#feed"><i class="fa-solid fa-wave-square me-1"></i>Live Feed</a></li>
-          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#admin"><i class="fa-solid fa-chart-line me-1"></i>Admin</a></li>
+          <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#home">🏠 Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tools">🛠 Tools</a></li>
+          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#feed">📊 Live Feed</a></li>
+          <li class="nav-item"><a class="nav-link" id="admin-tab" data-bs-toggle="tab" href="#admin" style="display:none;">📈 Admin</a></li>
+          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#account">👤 Account</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
   <main class="container py-4">
+    <div id="authStatus" class="mb-3 text-end text-secondary">Not logged in</div>
+    <button id="logoutBtn" class="btn btn-sm btn-outline-danger mb-3 float-end" style="display:none;" onclick="logout()">Logout</button>
+    <div class="clearfix"></div>
     <div class="tab-content">
-      <!-- HOME -->
       <section class="tab-pane fade show active" id="home">
-        <div class="row g-4">
-          <div class="col-lg-8">
-            <div class="card shadow-soft p-4">
-              <h3 class="mb-2">Welcome to <span class="text-primary">CybrSearch</span></h3>
-              <p class="text-secondary">A compact, client-side toolkit for quick checks and logging. Every action you run is logged to your Discord webhook and shown in the local live feed & admin dashboard.</p>
-              <ul class="text-secondary mb-0">
-                <li>Unified logging with rich context (IP, geo, user agent, <span class="mono">sessionId</span>).</li>
-                <li>Admin dashboard with search + JSON export.</li>
-                <li>No backend required (webhook only). Consider proxying your webhook in production.</li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="card shadow-soft p-4">
-              <div class="d-flex align-items-center gap-3">
-                <div class="display-6 text-primary"><i class="fa-solid fa-satellite-dish"></i></div>
-                <div>
-                  <div class="text-secondary">Current Webhook</div>
-                  <div class="mono small" id="webhookEcho">discord.com/api/webhooks/…</div>
-                </div>
-              </div>
-              <hr>
-              <button class="btn btn-outline-primary w-100" id="testPing"><i class="fa-solid fa-paper-plane me-2"></i>Send Test Ping</button>
-            </div>
-          </div>
-        </div>
+        <div class="card p-4"><h3>Welcome to CybrSearch</h3></div>
       </section>
-
-      <!-- TOOLS -->
-      <section class="tab-pane fade" id="tools">
-        <div class="row g-4">
-          <!-- Breach Scan -->
-          <div class="col-lg-6">
-            <div class="card tool-card p-4 h-100">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="mb-0"><i class="fa-solid fa-bug me-2 text-danger"></i>Breach Scan</h5>
-                <span class="pill bg-danger-subtle text-danger">log-only</span>
-              </div>
-              <label class="form-label">Email or Username</label>
-              <input class="form-control" id="breachInput" placeholder="e.g. alice@example.com"/>
-              <div class="form-text">Simulated scan — sends query to logs.</div>
-              <button class="btn btn-danger mt-3" id="breachBtn">Scan & Log</button>
+      <section class="tab-pane fade" id="tools"><div class="card p-4"><h5>Tools Section</h5></div></section>
+      <section class="tab-pane fade" id="feed"><div class="card p-4"><h5>Live Feed</h5><div id="liveFeedContainer"></div></div></section>
+      <section class="tab-pane fade" id="admin"><div class="card p-4"><h5>Admin Dashboard</h5><table class="table table-dark" id="adminLogTable"><tbody></tbody></table></div></section>
+      <section class="tab-pane fade" id="account">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card p-3">
+              <h5>Sign Up</h5>
+              <input id="signupUser" class="form-control mb-2" placeholder="Username"/>
+              <input id="signupPass" type="password" class="form-control mb-2" placeholder="Password"/>
+              <button class="btn btn-success" onclick="handleSignup()">Sign Up</button>
             </div>
           </div>
-
-          <!-- WHOIS -->
-          <div class="col-lg-6">
-            <div class="card tool-card p-4 h-100">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="mb-0"><i class="fa-solid fa-network-wired me-2 text-info"></i>WHOIS Lookup</h5>
-                <span class="pill bg-info-subtle text-info">log-only</span>
-              </div>
-              <label class="form-label">IP or Domain</label>
-              <input class="form-control" id="whoisInput" placeholder="e.g. 8.8.8.8 or example.com"/>
-              <div class="form-text">Simulated lookup — sends query to logs.</div>
-              <button class="btn btn-info mt-3" id="whoisBtn">Lookup & Log</button>
+          <div class="col-md-6">
+            <div class="card p-3">
+              <h5>Login</h5>
+              <input id="loginUser" class="form-control mb-2" placeholder="Username"/>
+              <input id="loginPass" type="password" class="form-control mb-2" placeholder="Password"/>
+              <button class="btn btn-primary" onclick="handleLogin()">Login</button>
             </div>
-          </div>
-
-          <!-- Email Intel -->
-          <div class="col-lg-6">
-            <div class="card tool-card p-4 h-100">
-              <h5 class="mb-2"><i class="fa-solid fa-envelope-open-text me-2 text-warning"></i>Email Intelligence</h5>
-              <label class="form-label">Email</label>
-              <input class="form-control" id="emailInput" placeholder="user@domain.com"/>
-              <button class="btn btn-warning mt-3" id="emailBtn">Check & Log</button>
-            </div>
-          </div>
-
-          <!-- Username OSINT -->
-          <div class="col-lg-6">
-            <div class="card tool-card p-4 h-100">
-              <h5 class="mb-2"><i class="fa-solid fa-user-ninja me-2 text-success"></i>Username OSINT</h5>
-              <label class="form-label">Username</label>
-              <input class="form-control" id="userInput" placeholder="e.g. cybrhunter"/>
-              <button class="btn btn-success mt-3" id="userBtn">Search & Log</button>
-            </div>
-          </div>
-
-          <!-- Domain Recon -->
-          <div class="col-lg-6">
-            <div class="card tool-card p-4 h-100">
-              <h5 class="mb-2"><i class="fa-solid fa-globe me-2 text-primary"></i>Domain Recon</h5>
-              <label class="form-label">Domain</label>
-              <input class="form-control" id="domainInput" placeholder="example.com"/>
-              <button class="btn btn-primary mt-3" id="domainBtn">Recon & Log</button>
-            </div>
-          </div>
-
-          <!-- Password Generator -->
-          <div class="col-lg-6">
-            <div class="card tool-card p-4 h-100">
-              <h5 class="mb-2"><i class="fa-solid fa-key me-2 text-secondary"></i>Password Generator</h5>
-              <div class="row g-2">
-                <div class="col-6">
-                  <label class="form-label">Length</label>
-                  <input type="number" class="form-control" id="pwdLen" value="16" min="8" max="64"/>
-                </div>
-                <div class="col-6 d-flex align-items-end">
-                  <button class="btn btn-outline-secondary w-100" id="pwdBtn">Generate & Log</button>
-                </div>
-              </div>
-              <input class="form-control mt-2 mono" id="pwdOut" readonly/>
-            </div>
-          </div>
-
-          <!-- Hash Lookup -->
-          <div class="col-lg-6">
-            <div class="card tool-card p-4 h-100">
-              <h5 class="mb-2"><i class="fa-solid fa-fingerprint me-2 text-light"></i>Hash Lookup</h5>
-              <label class="form-label">Hash</label>
-              <input class="form-control mono" id="hashInput" placeholder="paste hash here"/>
-              <button class="btn btn-light mt-3" id="hashBtn">Lookup & Log</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- LIVE FEED -->
-      <section class="tab-pane fade" id="feed">
-        <div class="card p-4">
-          <h5 class="mb-3"><i class="fa-solid fa-wave-square me-2 text-primary"></i>Live Feed</h5>
-          <div id="liveFeedContainer" class="live-feed"></div>
-        </div>
-      </section>
-
-      <!-- ADMIN -->
-      <section class="tab-pane fade" id="admin">
-        <div class="card p-4 mb-4">
-          <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-2">
-            <h5 class="mb-0"><i class="fa-solid fa-chart-line me-2 text-primary"></i>Admin Dashboard</h5>
-            <div class="d-flex gap-2">
-              <input type="text" id="adminSearch" class="form-control form-control-sm" placeholder="Search logs…" oninput="renderAdminLogs()">
-              <select id="adminSort" class="form-select form-select-sm" onchange="renderAdminLogs()">
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-              </select>
-              <button class="btn btn-sm btn-outline-warning" onclick="exportAdminLogs()"><i class="fa-solid fa-file-arrow-down me-1"></i>Export JSON</button>
-              <button class="btn btn-sm btn-outline-danger" onclick="if(confirm('Clear local Admin logs?')){localStorage.removeItem('adminLogs');renderAdminLogs();}"><i class="fa-solid fa-trash-can me-1"></i>Clear</button>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-dark table-striped admin-log-table" id="adminLogTable">
-              <thead>
-                <tr>
-                  <th style="width:180px">Time</th>
-                  <th style="width:260px">Title</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
           </div>
         </div>
       </section>
     </div>
   </main>
 
-  <footer class="py-4 border-top border-secondary-subtle text-center text-secondary small">
-    <div class="container">© <span id="year"></span> CybrSearch · Client-side demo. Avoid exposing secrets in production.</div>
-  </footer>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-  // ======= CONFIG =======
-  const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1408830668057743360/IKwfdTYSpFfSDURSOdcxFJiVTDWNC6MhzTH7NX0vSFd93UIklE1kSSRfDJXbwKnb0hHs"; // Provided by you
-
-  // Echo masked webhook
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const echo = document.getElementById('webhookEcho');
-    if (echo) {
-      const part = DISCORD_WEBHOOK_URL.slice(0, 34);
-      echo.textContent = part + "…";
+  function getUsers(){ return JSON.parse(localStorage.getItem("users")||"[]"); }
+  function saveUsers(users){ localStorage.setItem("users", JSON.stringify(users)); }
+  function handleSignup(){
+    let u = document.getElementById("signupUser").value.trim();
+    let p = document.getElementById("signupPass").value.trim();
+    if(!u || !p){ alert("Enter username and password"); return; }
+    let users = getUsers();
+    if(users.find(x=>x.username===u)){ alert("Username already exists!"); return; }
+    users.push({username:u,password:p});
+    saveUsers(users);
+    alert("Signup successful! Please login.");
+  }
+  function handleLogin(){
+    let u = document.getElementById("loginUser").value.trim();
+    let p = document.getElementById("loginPass").value.trim();
+    let users = getUsers();
+    let found = users.find(x=>x.username===u && x.password===p);
+    if(!found){ alert("Invalid credentials"); return; }
+    localStorage.setItem("currentUser", u);
+    updateUIForLogin();
+    alert("Logged in as "+u);
+  }
+  function logout(){ localStorage.removeItem("currentUser"); updateUIForLogin(); }
+  function updateUIForLogin(){
+    let user = localStorage.getItem("currentUser");
+    let adminTab = document.getElementById("admin-tab");
+    if(user){
+      document.getElementById("authStatus").innerText = "Welcome, "+user;
+      document.getElementById("logoutBtn").style.display = "inline-block";
+      if(user==="Rico"){ adminTab.style.display = "block"; } else { adminTab.style.display = "none"; }
+    } else {
+      document.getElementById("authStatus").innerText = "Not logged in";
+      document.getElementById("logoutBtn").style.display = "none";
+      adminTab.style.display = "none";
     }
-    document.getElementById('year').textContent = new Date().getFullYear();
-  });
-
-  // ======= SESSION =======
-  function getSessionId(){
-    let id = localStorage.getItem('cybrsearch_session_id');
-    if(!id){ id = 'sess-' + Math.random().toString(36).slice(2,10) + '-' + Date.now(); localStorage.setItem('cybrsearch_session_id', id); }
-    return id;
   }
-
-  // ======= LOGGING =======
-  async function logToDiscord(title, fields=[], description=""){
-    try{
-      const sessionId = getSessionId();
-      const ip = await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(j=>j.ip).catch(()=> 'Unknown');
-
-      let location = 'Unknown';
-      try{
-        const geo = await fetch(`https://ipapi.co/${ip}/json/`).then(r=>r.json());
-        if(geo && geo.country_name){ location = `${geo.city||'Unknown City'}, ${geo.region||'Unknown Region'}, ${geo.country_name}`; }
-      }catch(e){}
-
-      const userAgent = navigator.userAgent;
-
-      const payload = {
-        username: 'CybrSearch Logger',
-        avatar_url: 'https://i.imgur.com/7QbQZzH.png',
-        embeds: [{
-          title, description, color: 0x3b82f6,
-          fields: fields.concat([
-            { name: 'Session ID', value: sessionId, inline: false },
-            { name: 'Visitor IP', value: ip, inline: true },
-            { name: 'Location', value: location, inline: false },
-            { name: 'User Agent', value: userAgent.substring(0, 250), inline: false }
-          ]),
-          timestamp: new Date().toISOString()
-        }]
-      };
-
-      await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
-
-      // Local mirrors
-      logActionToFeed(title, fields);
-      logActionToAdmin(title, fields);
-    }catch(err){ console.error('Discord log failed:', err); }
-  }
-
-  // ======= LIVE FEED (local) =======
-  function logActionToFeed(title, data=[]){
-    const feed = JSON.parse(localStorage.getItem('liveFeed')||'[]');
-    const now = new Date().toLocaleTimeString();
-    const entry = { time: now, title, details: data.map(d=>\`\${d.name}: \${d.value}\`).join(' | ') };
-    feed.unshift(entry); if(feed.length>80) feed.pop();
-    localStorage.setItem('liveFeed', JSON.stringify(feed));
-    renderLiveFeed();
-  }
-  function renderLiveFeed(){
-    const feed = JSON.parse(localStorage.getItem('liveFeed')||'[]');
-    const el = document.getElementById('liveFeedContainer'); if(!el) return;
-    el.innerHTML = feed.map(log=>\`<div class="mb-2"><strong>\${log.time}</strong> — \${log.title}<br><span class="text-secondary">\${log.details}</span></div>\`).join('');
-  }
-
-  // ======= ADMIN LOGS (local) =======
-  function logActionToAdmin(title, data=[]){
-    const logs = JSON.parse(localStorage.getItem('adminLogs')||'[]');
-    const now = new Date().toLocaleString();
-    const entry = { time: now, title, details: data.map(d=>\`\${d.name}: \${d.value}\`).join(' | ') };
-    logs.unshift(entry); if(logs.length>500) logs.pop();
-    localStorage.setItem('adminLogs', JSON.stringify(logs));
-    renderAdminLogs();
-  }
-  function renderAdminLogs(){
-    const logs = JSON.parse(localStorage.getItem('adminLogs')||'[]');
-    const tbody = document.querySelector('#adminLogTable tbody'); if(!tbody) return;
-    const q = (document.getElementById('adminSearch')?.value||'').toLowerCase();
-    const order = document.getElementById('adminSort')?.value||'newest';
-
-    let filtered = logs.filter(l=> l.title.toLowerCase().includes(q) || l.details.toLowerCase().includes(q) || l.time.toLowerCase().includes(q));
-    if(order==='oldest') filtered = filtered.slice().reverse();
-
-    tbody.innerHTML = filtered.map(l=>\`<tr><td>\${l.time}</td><td>\${l.title}</td><td>\${l.details}</td></tr>\`).join('');
-  }
-  function exportAdminLogs(){
-    const logs = localStorage.getItem('adminLogs')||'[]';
-    const blob = new Blob([logs], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'cybrsearch_admin_logs.json'; a.click();
-  }
-
-  // ======= TOOL WIRING =======
-  document.addEventListener('DOMContentLoaded', ()=>{
-    renderLiveFeed();
-    renderAdminLogs();
-    logToDiscord('Visitor loaded the page');
-
-    // Buttons auto-log label
-    document.querySelectorAll('button').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const label = btn.textContent.trim()||'Unnamed button';
-        if(btn.id !== 'testPing') logToDiscord('Button clicked', [{ name:'Label', value: label }]);
-      });
-    });
-
-    // Test Ping
-    document.getElementById('testPing').addEventListener('click', ()=>{
-      logToDiscord('Test Ping', [{ name:'Info', value:'Manual test from Home card' }], 'Webhook connectivity check');
-    });
-
-    // Breach Scan
-    document.getElementById('breachBtn').addEventListener('click', ()=>{
-      const val = document.getElementById('breachInput').value.trim();
-      if(!val) return alert('Enter an email/username');
-      logToDiscord('Breach Scan Initiated', [{ name:'Query', value: val }]);
-    });
-
-    // WHOIS
-    document.getElementById('whoisBtn').addEventListener('click', ()=>{
-      const val = document.getElementById('whoisInput').value.trim();
-      if(!val) return alert('Enter IP or domain');
-      logToDiscord('WHOIS Lookup', [{ name:'Target', value: val }]);
-    });
-
-    // Email Intel
-    document.getElementById('emailBtn').addEventListener('click', ()=>{
-      const val = document.getElementById('emailInput').value.trim();
-      if(!val) return alert('Enter email');
-      logToDiscord('Email Intel Check', [{ name:'Email', value: val }]);
-    });
-
-    // Username OSINT
-    document.getElementById('userBtn').addEventListener('click', ()=>{
-      const val = document.getElementById('userInput').value.trim();
-      if(!val) return alert('Enter username');
-      logToDiscord('Username OSINT', [{ name:'Username', value: val }]);
-    });
-
-    // Domain Recon
-    document.getElementById('domainBtn').addEventListener('click', ()=>{
-      const val = document.getElementById('domainInput').value.trim();
-      if(!val) return alert('Enter domain');
-      logToDiscord('Domain Recon', [{ name:'Domain', value: val }]);
-    });
-
-    // Password Generator
-    document.getElementById('pwdBtn').addEventListener('click', ()=>{
-      const len = Math.max(8, Math.min(64, parseInt(document.getElementById('pwdLen').value||'16', 10)));
-      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{};:,.<>?';
-      let out=''; for(let i=0;i<len;i++){ out += chars[Math.floor(Math.random()*chars.length)]; }
-      document.getElementById('pwdOut').value = out;
-      logToDiscord('Password Generated', [{ name:'Length', value: String(len) }]);
-    });
-
-    // Hash Lookup
-    document.getElementById('hashBtn').addEventListener('click', ()=>{
-      const val = document.getElementById('hashInput').value.trim();
-      if(!val) return alert('Enter hash');
-      logToDiscord('Hash Lookup', [{ name:'Hash', value: val.slice(0,32) + (val.length>32?'…':'') }]);
-    });
-  });
+  document.addEventListener("DOMContentLoaded", updateUIForLogin);
   </script>
 </body>
 </html>
