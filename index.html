@@ -8,31 +8,21 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
   <style>
     body { background: radial-gradient(1200px 600px at 10% -10%, rgba(59,130,246,.12), transparent), #0b0f17; }
-    .brand { letter-spacing: .5px; }
     .card { border-radius: 1rem; }
-    .shadow-soft { box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .admin-log-table { font-size: .9rem; }
-    .admin-log-table th, .admin-log-table td { vertical-align: middle; }
-    .tool-card .form-text { opacity: .8; }
-    .pill { font-size: .8rem; padding: .15rem .5rem; border-radius: .5rem; }
-    .live-feed { max-height: 420px; overflow: auto; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .live-feed { max-height: 400px; overflow-y: auto; }
   </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg border-bottom border-primary-subtle py-3 sticky-top" style="backdrop-filter: blur(6px); background: rgba(11,15,23,.7)">
     <div class="container">
-      <a class="navbar-brand brand fw-semibold" href="#"><i class="fa-solid fa-shield-halved me-2 text-primary"></i>CybrSearch</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="nav">
+      <a class="navbar-brand fw-semibold" href="#"><i class="fa-solid fa-shield-halved me-2 text-primary"></i>CybrSearch</a>
+      <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto nav-pills gap-2">
-          <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#home">🏠 Home</a></li>
-          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tools">🛠 Tools</a></li>
-          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#feed">📊 Live Feed</a></li>
+          <li class="nav-item"><a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home">🏠 Home</a></li>
+          <li class="nav-item"><a class="nav-link" id="tools-tab" data-bs-toggle="tab" href="#tools">🛠 Tools</a></li>
+          <li class="nav-item"><a class="nav-link" id="feed-tab" data-bs-toggle="tab" href="#feed">📊 Live Feed</a></li>
           <li class="nav-item"><a class="nav-link" id="admin-tab" data-bs-toggle="tab" href="#admin" style="display:none;">📈 Admin</a></li>
-          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#account">👤 Account</a></li>
+          <li class="nav-item"><a class="nav-link active" id="account-tab" data-bs-toggle="tab" href="#account">👤 Account</a></li>
         </ul>
       </div>
     </div>
@@ -43,22 +33,32 @@
     <button id="logoutBtn" class="btn btn-sm btn-outline-danger mb-3 float-end" style="display:none;" onclick="logout()">Logout</button>
     <div class="clearfix"></div>
     <div class="tab-content">
-      <section class="tab-pane fade show active" id="home">
-        <div class="card p-4"><h3>Welcome to CybrSearch</h3></div>
+      <!-- Home -->
+      <section class="tab-pane fade" id="home">
+        <div class="card p-4"><h3 id="homeContent">Welcome to CybrSearch</h3></div>
       </section>
+      <!-- Tools -->
       <section class="tab-pane fade" id="tools">
         <div class="row g-4">
           <div class="col-md-6"><div class="card p-3"><h5>Breach Scan</h5><input id="breachInput" class="form-control mb-2"/><button class="btn btn-danger" onclick="breachScan()">Scan</button></div></div>
           <div class="col-md-6"><div class="card p-3"><h5>WHOIS Lookup</h5><input id="whoisInput" class="form-control mb-2"/><button class="btn btn-info" onclick="whoisLookup()">Lookup</button></div></div>
+          <div class="col-md-6"><div class="card p-3"><h5>Email Intel</h5><input id="emailInput" class="form-control mb-2"/><button class="btn btn-warning" onclick="emailIntel()">Check</button></div></div>
+          <div class="col-md-6"><div class="card p-3"><h5>Username OSINT</h5><input id="userInput" class="form-control mb-2"/><button class="btn btn-success" onclick="userOsint()">Search</button></div></div>
+          <div class="col-md-6"><div class="card p-3"><h5>Domain Recon</h5><input id="domainInput" class="form-control mb-2"/><button class="btn btn-primary" onclick="domainRecon()">Recon</button></div></div>
+          <div class="col-md-6"><div class="card p-3"><h5>Password Generator</h5><input id="pwdLen" type="number" value="12" min="8" max="64" class="form-control mb-2"/><button class="btn btn-secondary" onclick="pwdGen()">Generate</button><input id="pwdOut" class="form-control mt-2" readonly/></div></div>
+          <div class="col-md-6"><div class="card p-3"><h5>Hash Lookup</h5><input id="hashInput" class="form-control mb-2"/><button class="btn btn-light" onclick="hashLookup()">Lookup</button></div></div>
         </div>
       </section>
+      <!-- Feed -->
       <section class="tab-pane fade" id="feed">
-        <div class="card p-4"><h5>Live Feed</h5><div id="liveFeedContainer"></div></div>
+        <div class="card p-4"><h5>Live Feed</h5><div id="liveFeedContainer" class="live-feed"></div></div>
       </section>
+      <!-- Admin -->
       <section class="tab-pane fade" id="admin">
         <div class="card p-4"><h5>Admin Dashboard</h5><table class="table table-dark" id="adminLogTable"><tbody></tbody></table></div>
       </section>
-      <section class="tab-pane fade" id="account">
+      <!-- Account -->
+      <section class="tab-pane fade show active" id="account">
         <div class="row">
           <div class="col-md-6"><div class="card p-3"><h5>Sign Up</h5><input id="signupUser" class="form-control mb-2" placeholder="Username"/><input id="signupPass" type="password" class="form-control mb-2" placeholder="Password"/><button class="btn btn-success" onclick="handleSignup()">Sign Up</button></div></div>
           <div class="col-md-6"><div class="card p-3"><h5>Login</h5><input id="loginUser" class="form-control mb-2" placeholder="Username"/><input id="loginPass" type="password" class="form-control mb-2" placeholder="Password"/><button class="btn btn-primary" onclick="handleLogin()">Login</button></div></div>
@@ -98,14 +98,18 @@
   function updateUIForLogin(){
     let user=localStorage.getItem("currentUser");
     let adminTab=document.getElementById("admin-tab");
+    let lockedTabs=["home-tab","tools-tab","feed-tab"];
     if(user){
       document.getElementById("authStatus").innerText="Welcome, "+user;
       document.getElementById("logoutBtn").style.display="inline-block";
+      lockedTabs.forEach(id=>document.getElementById(id).style.display="block");
       if(user==="Rico"){ adminTab.style.display="block"; } else { adminTab.style.display="none"; }
     } else {
       document.getElementById("authStatus").innerText="Not logged in";
       document.getElementById("logoutBtn").style.display="none";
+      lockedTabs.forEach(id=>document.getElementById(id).style.display="none");
       adminTab.style.display="none";
+      document.getElementById("account-tab").click();
     }
   }
 
@@ -125,7 +129,7 @@
       await fetch(DISCORD_WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
       logActionToFeed(title,fields,user);
       logActionToAdmin(title,fields,user);
-    }catch(e){console.error(e);}
+    }catch(e){console.error("Discord log error",e);}
   }
   function logActionToFeed(title,data,user){const el=document.getElementById("liveFeedContainer");const now=new Date().toLocaleTimeString();const entry=document.createElement("div");entry.innerHTML="<b>"+now+"</b> — "+title+" ("+user+")";el.prepend(entry);}
   function logActionToAdmin(title,data,user){const tbody=document.querySelector("#adminLogTable tbody");const now=new Date().toLocaleString();const row=document.createElement("tr");row.innerHTML="<td>"+now+"</td><td>"+title+"</td><td>User: "+user+" | "+data.map(d=>d.name+": "+d.value).join(" | ")+"</td>";tbody.prepend(row);}
@@ -133,6 +137,11 @@
   // ===== TOOLS =====
   function breachScan(){const v=document.getElementById("breachInput").value.trim();if(!v){alert("Enter value");return;}logToDiscord("Breach Scan Initiated",[{"name":"Query","value":v}]);}
   function whoisLookup(){const v=document.getElementById("whoisInput").value.trim();if(!v){alert("Enter value");return;}logToDiscord("WHOIS Lookup",[{"name":"Target","value":v}]);}
+  function emailIntel(){const v=document.getElementById("emailInput").value.trim();if(!v){alert("Enter email");return;}logToDiscord("Email Intel Check",[{"name":"Email","value":v}]);}
+  function userOsint(){const v=document.getElementById("userInput").value.trim();if(!v){alert("Enter username");return;}logToDiscord("Username OSINT",[{"name":"Username","value":v}]);}
+  function domainRecon(){const v=document.getElementById("domainInput").value.trim();if(!v){alert("Enter domain");return;}logToDiscord("Domain Recon",[{"name":"Domain","value":v}]);}
+  function pwdGen(){const len=parseInt(document.getElementById("pwdLen").value)||12;const chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";let out="";for(let i=0;i<len;i++){out+=chars[Math.floor(Math.random()*chars.length)];}document.getElementById("pwdOut").value=out;logToDiscord("Password Generated",[{"name":"Length","value":len}]);}
+  function hashLookup(){const v=document.getElementById("hashInput").value.trim();if(!v){alert("Enter hash");return;}logToDiscord("Hash Lookup",[{"name":"Hash","value":v.slice(0,30)+(v.length>30?"…":"")}]);}
 
   document.addEventListener("DOMContentLoaded",updateUIForLogin);
   </script>
